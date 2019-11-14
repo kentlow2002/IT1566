@@ -1,0 +1,73 @@
+.navbar, .narbar-nav {
+  background-color: rgb(77,77,77);
+  box-shadow: none;
+  font-family: "Red Hat Text",sans-serif;
+}
+
+.navbar-brand {
+  font-size:1.5em;
+  color: rgb(255,255,255);
+}
+
+.nav-link {
+  margin: auto 5px;
+  font-size: 1.2em;
+  font-weight: 400;
+  text-align: center;
+  color: rgb(255, 255, 255);
+}
+
+.active {
+  font-weight: 500;
+  background-color: rgb(238, 240, 242);
+  border-radius: 10px;
+  color: rgb(0,0,0);
+}
+
+.navbar-brand:hover {
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+}
+
+.nav-link:hover {
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+}
+
+.active:hover {
+  color: rgb(0, 0, 0);
+  text-decoration: underline;
+}
+
+.navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(128,128,128, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.navbar-toggler:hover {
+  opacity: 0.5;
+}
+
+.content {
+  font-family: "Ubuntu",sans-serif;
+  font-size: 1.2em;
+  margin-top: 20px;
+
+}
+
+textarea {
+  resize: none;
+}
+
+label {
+  margin-right:3px;
+}
+
+input {
+  margin-right:5px;
+  width: auto;
+  min-width: 100px;
+}
+
+.title {
+  font-size: 1.5em;
+}
