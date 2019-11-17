@@ -50,6 +50,8 @@
 .content {
   font-family: "Ubuntu",sans-serif;
   font-size: 1.2em;
+  width: 90%;
+  margin: auto;
   margin-top: 20px;
 
 }
@@ -63,9 +65,21 @@ label {
 }
 
 input {
-  margin-right:5px;
+  margin: 0px;
   width: auto;
   min-width: 100px;
+}
+
+#login {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 10px;
+}
+
+#signup {
+  margin-top: 20px;
+  padding: 10px;
 }
 
 .title {
