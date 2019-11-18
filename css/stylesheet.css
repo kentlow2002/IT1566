@@ -71,3 +71,20 @@ input {
 .title {
   font-size: 1.5em;
 }
+
+.table {
+  margin: auto;
+  width: 80%
+}
+
+table, th, td {
+   border: black 2px solid;
+   text-align: center;
+}
+
+.btn{
+  background-color:grey;
+}
+.staffUpdateForm{
+  text-align:center;
+}

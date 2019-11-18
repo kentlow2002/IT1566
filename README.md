@@ -12,3 +12,8 @@ User (create acc, update acc details, retrieve acc details, delete acc)
 Products (create product,update product stock & price, retrieve product info, )
 
 Transactions (create report, update report, retrieve data from products, delete reports that are too long ago)
+
+functions staff
+get report
+set transaction status
+retrieve report about products
