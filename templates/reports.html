@@ -3,59 +3,65 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Red+Hat+Text|Ubuntu&display=swap" crossorigin="anonymous">
+    <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Red+Hat+Text|Ubuntu&display=swap" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="../css/stylesheet.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <title>Welcome - X Store</title>
+    <title>Reports</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg sticky-top">
-      <a class="navbar-brand" href="index.html" title="Click here to go back to home page">X Store</a>
+      <a class="navbar-brand" href="index.html" title="Click here to go back to home page">IMS</a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-          <div class="nav navbar-nav ml-auto">
-            <a class="nav-link" href="login.html" id="login">Log in</a>
-            <a class="nav-link" href="signup.html" id="signup">Sign up</a>
+          <div class="nav navbar-nav">
+            <a class="nav-link" href="products.html" id="products">View Products</a>
+            <a class="nav-link" href="orderhistory.html" id="orderhistory">View Past Orders</a>
+          </div>
+          <div class="nav navbar-nav">
+            <a class="nav-link" href="profile.html" id="profile">View Profile</a>
           </div>
         </div>
     </nav>
 
     <div class="container-fluid content">
       <div class="row justify-content-center">
-        <div class="col-sm-12">
-          <h4>Popular Products</h4>
+        <div class="col-sm-6">
+          <p class="text-center">Monthly (Total)</p>
         </div>
       </div>
-
-      <div  id="popular" class="row justify-content-center">
-        <div class="col-sm-3">
-          <img class="img-fluid" src="../assets/oculus.jpeg" style="">
-          <p class="text-center">Oculus Rift</p>
-        </div>
-        <div class="col-sm-3">
-          <img class="img-fluid" src="../assets/oculus.jpeg" style="">
-          <p class="text-center">Oculus Rift</p>
-        </div>
-        <div class="col-sm-3">
-          <img class="img-fluid" src="../assets/oculus.jpeg" style="">
-          <p class="text-center">Oculus Rift</p>
-        </div>
-        <div class="col-sm-3">
-          <img class="img-fluid" src="../assets/oculus.jpeg" style="">
-          <p class="text-center">Oculus Rift</p>
-        </div>
+      <div id="table" style="display:block" align = "center">
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Total Items Sold</th>
+              <th>Total Revenue ($)</th>
+              <th>Commission Earned ($)</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1/1/2019</td>
+              <td>3000</td>
+              <td>4000</td>
+              <td>400</td>
+              <td><button class="button button3"><strong><u>Delete</u></strong></button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <div class="row justify-content-centre">
+        <div class="col-md-6">
 
-      <div class="row justify-content-center">
-        
+        </div>
       </div>
     </div>
-
   </body>
   <script src="js/js.js"></script>
 </html>
