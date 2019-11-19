@@ -20,7 +20,7 @@
         <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
           <div class="nav navbar-nav">
             <a class="nav-link" href="products.html" id="products">View report</a>
-            <a class="nav-link" href="staffOrders.html" id="orderhistory">View Orders</a>
+            <a class="nav-link" href="orderhistory.html" id="orderhistory">View Pending Orders</a>
           </div>
           <div class="nav navbar-nav">
             <a class="nav-link" href="staffProfile.html" id="profile">View Profile</a>
@@ -31,18 +31,29 @@
     <div class="container-fluid content">
       <div class="row justify-content-center">
         <div class="col-sm-6">
-          <h1 class="text-center"><b>Staff page</b></h1>
+          <h1 class="text-center"><b>Orders page</b></h1>
 
         </div>
       </div>
 
       <div class="row justify-content-center">
         <div class="col-sm-6">
-          <p class="text-center">Welcome to the staff dashboard</p>
-          <p class="text-center">Price of items sold: #</p>
-          <p class="text-center">Commission earned: # </p>
-          <p class="text-center">Amount of items sold: #</p>
-          <!-- add on stats -->
+          <table class="table justify-content-centre text-center">
+            <tr>
+              <td>Buyer</td>
+              <td>Seller</td>
+              <td>Order ID</td>
+              <td>status</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>John Tan</td>
+              <td>Sam Tan</td>
+              <td>123</td>
+              <td>Pending</td>
+              <td><a href="staffUpdate.html"><button class="btn">Update</button></td></a>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
