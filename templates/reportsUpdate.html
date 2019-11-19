@@ -31,32 +31,26 @@
     <div class="container-fluid content">
       <div class="row justify-content-center">
         <div class="col-sm-6">
-          <p class="text-center"><strong>Monthly (Total)</strong></p>
+          <p class="text-center"><strong>Date Update</strong></p>
         </div>
       </div>
-      <div id="table" style="display:block" align = "center">
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Total Items Sold</th>
-              <th>Total Revenue ($)</th>
-              <th>Commission Earned ($)</th>
-              <th>Update</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1/1/2019</td>
-              <td>3000</td>
-              <td>4000</td>
-              <td>400</td>
-              <td><button class="button button2"><strong><u>Update</u></strong></button></td>
-              <td><button class="button button3"><strong><u>Delete</u></strong></button></td>
-            </tr>
-          </tbody>
-        </table>
+      <div id="reportsUpdate" align="center">
+        <form class="form" action="index.html" method="post">
+          Date: <br>
+          <input type="text" name="" placeholder="1/1/2019" readonly>
+          <br>
+          Total Items Sold: <br>
+          <input type="number" name="" value="3000">
+          <br>
+          Total Revenue ($) <br>
+          <input type="number" name="" value="4000">
+          <br>
+          Commission Earned ($) <br>
+          <input type="number" name="" value="400">
+          <br>
+          <br>
+          <input type="button" name="Update" value="Update" class="button button2">
+        </form>
       </div>
       <div class="row justify-content-centre">
         <div class="col-md-6">
