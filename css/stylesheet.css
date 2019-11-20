@@ -86,11 +86,6 @@ input {
   font-size: 1.5em;
 }
 
-<<<<<<< HEAD
-
-/* Wen Da's CSS */
-=======
-<<<<<<< HEAD
 .table {
   margin: auto;
   width: 80%
@@ -107,8 +102,8 @@ table, th, td {
 .staffUpdateForm{
   text-align:center;
 }
-=======
->>>>>>> 5eae8269d4db5f53560d65affc18120ebd461524
+
+
 #table th, td {
   padding: 10px;
 }
@@ -130,12 +125,8 @@ table, th, td {
 .button3 {background-color: #f44336;} /* Red */
 .button4 {background-color: #e7e7e7; color: black;} /* Gray */
 .button5 {background-color: #555555;} /* Black */
-<<<<<<< HEAD
 .button6 {background-color: #ffff00;} /* Yellow */
 
 #reportsUpdate form input {
   width: 500px
 }
-=======
->>>>>>> 16bacea3bef0ec74738c5133db3aa3e9bfd545bd
->>>>>>> 5eae8269d4db5f53560d65affc18120ebd461524
