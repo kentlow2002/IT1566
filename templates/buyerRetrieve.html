@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+      img {
+          width: 200px;
+          height: auto;
+          margin: auto;
+          }
+    </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Red+Hat+Text|Ubuntu&display=swap" crossorigin="anonymous">
@@ -19,48 +26,37 @@
       </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
           <div class="nav navbar-nav">
-            <a class="nav-link" href="staffIndex.html" id="products">Home</a>
-            <a class="nav-link" href="staffOrders.html" id="orderhistory">View Pending Orders</a>
+            <a class="nav-link" href="products.html" id="products">View Products</a>
+            <a class="nav-link" href="orderhistory.html" id="orderhistory">View Past Orders</a>
           </div>
           <div class="nav navbar-nav">
-            <a class="nav-link" href="staffProfile.html" id="profile">View Profile</a>
-          </div>
-					<div class="nav navbar-nav">
-            <a class="nav-link" href="createStaff.html" id="profile">Create staff account</a>
-          </div>
-          <div class="nav navbar-nav">
-            <a class="nav-link" href="retrieveAcc.html" id="profile">View accounts</a>
+            <a class="nav-link" href="profile.html" id="profile">View Profile</a>
           </div>
         </div>
     </nav>
 
-	    <div class="container-fluid content">
-	      <div class="row justify-content-center">
-	        <div class="col-sm-12">
-	         	<h4 class="text-center">Create staff account</h4>
-	        </div>
-	      </div>
+    <div class="container-fluid content">
+      <div class="row justify-content-center">
+        <div class="row-sm-6">
+          <p class="text-center">Welcome, Buyer!</p>
+          <p class="text-center">These are your previous buy orders!</p>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-2 justify-content-center">
+          <img src='..\assets\oculus.jpeg'class="img-thumbnail"width="200px" height="auto"></img>
+          <p class="text-center">Oculus Rift VR Headset</p>
+          <p class="text-center">Price: $650</p>
+          <img src='..\assets\ps4pro.jpg'class="img-thumbnail" width="200px" height="auto"></img>
+          <p class="text-center">PS4 Pro</p>
+          <p class="text-center">Price: $540</p>
+          <img src='..\assets\galaxy fold black.jpg'class="img-thumbnail" width="200px" height="auto"></img>
+          <p class="text-center">Samsung Galaxy Fold</p>
+          <p class="text-center">Price:$3000</p>
 
-			<div class="row justify-content-center">
-				<div class="col-sm-6">
-					<form id="signup" class="form" action="signedup.html">
-						<div class="form-group">
-							<label for="username"> Username </label>
-							<input type="text" class="form-control" id="username">
-						</div>
-						<div class="form-group">
-							<label for="email"> Email </label>
-							<input type="email" class="form-control" id="email">
-						</div>
-		      			<div class="form-group">
-							<label for="passw"> Password </label>
-							<input type="password" class="form-control" id="passw">
-						</div>
-						<button type="submit" class="btn btn-primary">Create account</button>
-		      		</form>
-				</div>
-			</div>
-		</div>
-  	</body>
-  	<script src="js/js.js"></script>
+      </div>
+    </div>
+  </div>
+  </body>
+  <script src="js/js.js"></script>
 </html>
