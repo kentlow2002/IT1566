@@ -1,13 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <style>
-      img {
-          width: 200px;
-          height: auto;
-          margin: auto;
-          }
-    </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"  href="https://fonts.googleapis.com/css?family=Red+Hat+Text|Ubuntu&display=swap" crossorigin="anonymous">
@@ -26,11 +19,11 @@
       </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
           <div class="nav navbar-nav">
-            <a class="nav-link" href="products.html" id="products">View Products</a>
-            <a class="nav-link" href="orderhistory.html" id="orderhistory">View Past Orders</a>
+            <a class="nav-link" href="products.html" id="products">View report</a>
+            <a class="nav-link" href="orderhistory.html" id="orderhistory">View Pending Orders</a>
           </div>
           <div class="nav navbar-nav">
-            <a class="nav-link" href="profile.html" id="profile">View Profile</a>
+            <a class="nav-link" href="staffProfile.html" id="profile">View Profile</a>
           </div>
         </div>
     </nav>
@@ -38,22 +31,32 @@
     <div class="container-fluid content">
       <div class="row justify-content-center">
         <div class="col-sm-6">
-          <p class="text-center">Welcome, Buyer!</p>
-          <p class="text-center">Here are some products recommended for you!</p>
+          <h1 class="text-center"><b>Orders page</b></h1>
+
         </div>
       </div>
-      <div class="row justify-content-center">
-        <div class="col-md-2 justify-content-center">
-          <img src='..\assets\oculus.jpeg'class="img-thumbnail"width="200px" height="auto"></img>
-          <p class="text-center">Oculus Rift VR Headset</p>
-          <img src='..\assets\ps4pro.jpg'class="img-thumbnail" width="200px" height="auto"></img>
-          <p class="text-center">PS4 Pro</p>
-          <img src='..\assets\galaxy fold black.jpg'class="img-thumbnail" width="200px" height="auto"></img>
-          <p class="text-center">Samsung Galaxy Fold</p>
 
+      <div class="row justify-content-center">
+        <div class="col-sm-6">
+          <table class="table justify-content-centre text-center">
+            <tr>
+              <td>Buyer</td>
+              <td>Seller</td>
+              <td>Order ID</td>
+              <td>status</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>John Tan</td>
+              <td>Sam Tan</td>
+              <td>123</td>
+              <td>Pending</td>
+              <td><a href="staffUpdate.html"><button class="btn">Update</button></td></a>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
   </body>
   <script src="js/js.js"></script>
 </html>
