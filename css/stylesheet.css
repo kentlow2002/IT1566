@@ -48,10 +48,11 @@
 }
 
 .content {
-  font-family: "Ubuntu",sans-serif;
+  font-family: "Red Hat Text",sans-serif;
   font-size: 1.2em;
+  width: 90%;
+  margin: auto;
   margin-top: 20px;
-
 }
 
 textarea {
