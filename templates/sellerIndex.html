@@ -9,6 +9,12 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<style>
+.space{
+  margin-top: 20px
+}
+
+</style>
     <title>Home - IMS</title>
   </head>
   <body>
@@ -29,17 +35,68 @@
     </nav>
 
     <div class="container-fluid content">
-      <div class="row justify-content-center">
+    <form class="" action="index.html" method="post">
+
+      <div class="row justify-content-center text-center">
         <div class="col-sm-6">
-          <p class="text-center">Welcome to my personal website!</p>
+          <p class="text-center">List a Product</p>
         </div>
       </div>
-      <div class="row justify-content-centre">
-        <div class="col-md-6">
 
+      <div class="row" style="margin-top:20px">
+        <div class="col-sm-6 text-center" >
+          <img style="border: 1px solid black" src="../assets/oculus.jpeg" alt="VR Headset" width="200px" height="auto" >
         </div>
+
+          <div class="col-sm-6 ">
+            <!--start of input-->
+            <div class="row space">
+              <label for="name">Product Name:</label>
+              <input class="form-control" type="text" name="" value="" id="name">
+            </div>
+
+            <div class="row space">
+              <label for="name" style="">Item Condition:</label>
+              <input type="radio" name="condition" value="new"  ><span style="margin-left:-35px">New</span>
+              <input type="radio" name="condition" value="used" ><span style="margin-left:-35px">Used</span>
+            </div>
+
+            <div class="row space">
+              <label for="name">Price of Product:</label>
+              <input class="form-control" type="text" name="" value="" id="name">
+            </div>
+
+            <div class="row space">
+              <label for="name">Quantity:</label>
+              <input  class="form-control" type="number" name="" value="" id="name" min="1">
+            </div>
+
+          </div>
+
+
+            <div class="col-sm-6" >
+            </div>
+
+            <div class="col-sm-6 row space" >
+              <label for="description">Description:</label>
+              <textarea  class="form-control" rows="4" cols="50"></textarea>
+              <!--end of input-->
+            </div>
+
+            <div class="col-sm-6" >
+            </div>
+
+            <div class="col-sm-6 row space" >
+              <input class="btn btn-primary" type="submit"  value="List this product">
+            </div>
+
+
+
       </div>
     </div>
+    </form>
+
+
   </body>
   <script src="js/js.js"></script>
 </html>
