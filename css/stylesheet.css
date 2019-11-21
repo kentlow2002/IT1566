@@ -94,10 +94,6 @@ table, th, td {
    border: black 2px solid;
    text-align: center;
 }
-
-.btn{
-  background-color:grey;
-}
 .staffUpdateForm{
   text-align:center;
 }
