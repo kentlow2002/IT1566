@@ -31,35 +31,33 @@
         </div>
     </nav>
 
-    <div class="container-fluid content">
-      <div class="row justify-content-center">
-        <div class="col-sm-6">
-          <h1 class="text-center"><b>Orders page</b></h1>
+	    <div class="container-fluid content">
+	      <div class="row justify-content-center">
+	        <div class="col-sm-12">
+	         	<h4 class="text-center">Create staff account</h4>
+	        </div>
+	      </div>
 
-        </div>
-      </div>
-
-      <div class="row justify-content-center">
-        <div class="col-sm-6">
-          <table class="table justify-content-centre text-center">
-            <tr>
-              <td>Buyer</td>
-              <td>Seller</td>
-              <td>Order ID</td>
-              <td>status</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>John Tan</td>
-              <td>Sam Tan</td>
-              <td>123</td>
-              <td>Pending</td>
-              <td><a href="staffUpdate.html"><button class="btn" style='background-color:blue'>Update</button></td></a>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </div>
-  </body>
-  <script src="js/js.js"></script>
+			<div class="row justify-content-center">
+				<div class="col-sm-6">
+					<form id="signup" class="form" action="signedup.html">
+						<div class="form-group">
+							<label for="username"> Username </label>
+							<input type="text" class="form-control" id="username">
+						</div>
+						<div class="form-group">
+							<label for="email"> Email </label>
+							<input type="email" class="form-control" id="email">
+						</div>
+		      			<div class="form-group">
+							<label for="passw"> Password </label>
+							<input type="password" class="form-control" id="passw">
+						</div>
+						<button type="submit" class="btn btn-primary">Create account</button>
+		      		</form>
+				</div>
+			</div>
+		</div>
+  	</body>
+  	<script src="js/js.js"></script>
 </html>
