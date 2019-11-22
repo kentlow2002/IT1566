@@ -36,7 +36,7 @@
     <div class="container-fluid content">
       <div class="row justify-content-center">
         <div class="col-sm-6">
-          <h1 class="text-center"><b>Update Orders</b></h1>
+          <h1 class="text-center"><b>Update Orders Status</b></h1>
 
         </div>
       </div>
@@ -44,58 +44,20 @@
       <div class="row justify-content-center">
         <div class="col-sm-6">
           <form class="staffUpdateForm" action="index.html" method="post">
-            <div class="form-group">
-                <label for="buyerName">Buyer name</label>
-                <input type="text" class="form-control" placeholder="Buyer name" id='buyerName'>
+              <div class="form-group">
+                <label for="orderStatus"></label>
+                <select id="orderStatus" class="form-control">
+                  <option selected disabled>Choose</option>
+                  <option value="pending">Pending</option>
+                  <option value="shipping">Shipping</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="processing">Processing</option>
+                  <option value="delivered">Delivering</option>
+                  <option value="completed">Completed</option>
+                </select>
               </div>
               <div class="form-group">
-                  <label for="sellerName">Seller name</label>
-                  <input type="text" class="form-control" placeholder="Seller name" id='sellerName'>
-                </div>
-              <div class="form-group">
-                  <label for="productName">Product name</label>
-                  <input type="text" class="form-control" placeholder="Product name" id='productName'>
-              </div>
-              <div class="form-group">
-                  <label for="productPrice">Product price</label>
-                  <input type="number" class="form-control" placeholder="Product price" id='productPrice'>
-              </div>
-              <div class="form-group">
-                  <label for="productCondition">Product condition</label>
-                  <div class="form-check">
-                    <label class="form-check-label" for='new'>
-                      New
-                    </label>
-                    <input class="form-check-input" type="radio" name="productCondition" value="new" id='new'>
-
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label" for='used'>
-                      Used
-                    </label>
-                    <input class="form-check-input" type="radio" name="productCondition" value="Used" id='used'>
-
-                  </div>
-              </div>
-              <div class="form-group">
-                  <label for="productCondition">Order status</label>
-                  <div class="form-check">
-                    <label class="form-check-label" for='pending'>
-                      Pending
-                    </label>
-                    <input class="form-check-input" type="radio" name="orderStatus" value="pending" id='pending'>
-
-                  </div>
-                  <div class="form-check">
-                    <label class="form-check-label" for='completed'>
-                      Completed
-                    </label>
-                    <input class="form-check-input" type="radio" name="productCondition" value="completed" id='completed'>
-
-                  </div>
-              </div>
-              <div class="form-group">
-                <button type='button' name='update'>Update</button><button type="button" name="delete">Delete Order</button>
+                <button type='button' class='btn btn-primary' name='update'>Update</button>
             </div>
           </form>
         </div>
