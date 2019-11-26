@@ -37,5 +37,4 @@ Orders class
 Reports class
   Create Reports
   Retrieve Reports
-  Update Reports
   Delete Reports
