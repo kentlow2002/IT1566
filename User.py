@@ -15,6 +15,13 @@ class User:
         else:
             return ''
 
+    def loginCheck(self,passwdInput):
+        n = hashlib.sha256(passwdInput.encode('ascii')).digest()
+        if n!=self.__userPassword:
+            return 0
+        else:
+            return 1
+
     def __str__(self):
         return self.__userName+' '+self.__userEmail+' '+self.__userType
 
