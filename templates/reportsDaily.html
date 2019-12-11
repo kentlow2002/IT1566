@@ -35,6 +35,16 @@
         </div>
       </div>
       <div id="table" style="display:block" align = "center">
+        <div class="filter">
+          Day:
+          <input type="number" name="day" value="day" max="31" min="0" placeholder="Enter 0 for all">
+          Month:
+          <input type="number" name="day" value="day" max="12" min="0" placeholder="Enter 0 for all">
+          Year:
+          <input type="number" name="day" value="day" max="3000" min="0" placeholder="Enter 0 for all">
+          <button type="button" name="filter" class="button button2">Apply</button>
+        </div>
+        <br>
         <table>
           <thead>
             <tr>
@@ -42,7 +52,6 @@
               <th>Total Items Sold</th>
               <th>Total Revenue ($)</th>
               <th>Commission Earned ($)</th>
-              <th>Update</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -52,7 +61,6 @@
               <td>3000</td>
               <td>4000</td>
               <td>400</td>
-              <td><button class="button button2"><strong><u>Update</u></strong></button></td>
               <td><button class="button button3"><strong><u>Delete</u></strong></button></td>
             </tr>
           </tbody>
