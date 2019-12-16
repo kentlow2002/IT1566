@@ -90,7 +90,7 @@ input {
   width: 80%
 }
 
-table, th, td {
+#table table, th, td {
    border: black 2px solid;
    text-align: center;
 }
@@ -101,6 +101,13 @@ table, th, td {
 
 #table th, td {
   padding: 10px;
+}
+#reports table {
+  width: 80%;
+}
+#reports table * {
+  margin: auto;
+  border: 0px;
 }
 
 .button {
@@ -122,6 +129,6 @@ table, th, td {
 .button5 {background-color: #555555;} /* Black */
 .button6 {background-color: #ffff00;} /* Yellow */
 
-#reportsUpdate form input {
-  width: 500px
+#reportsCreate li {
+  display: inline;
 }
