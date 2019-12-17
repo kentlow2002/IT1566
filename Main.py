@@ -20,10 +20,17 @@ def login():
 def signUp():
     return render_template('signup.html')
 
+@app.route('/signedup')
+def signedUp():
+    return render_template('signedup.html')
+
+@app.route('/logout')
+def logOut():
+    return render_template('logout.html')
+
 @app.route('/buyer/index')
 def buyerIndex():
     return render_template('buyerIndex.html')
 
-
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
