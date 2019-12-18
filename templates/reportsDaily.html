@@ -5,8 +5,9 @@
   {% include "includes/_navbarStaff.html" %}
 {% endblock %}
 
-
 {% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
     <div class="container-fluid content">
       <div class="row justify-content-center">
         <div class="col-sm-6">
@@ -14,15 +15,24 @@
         </div>
       </div>
       <div id="table" style="display:block" align = "center">
-        <div class="filter">
-          Day:
-          <input type="number" name="day" value="day" max="31" min="0" placeholder="Leave empty for all">
-          Month:
-          <input type="number" name="day" value="day" max="12" min="0" placeholder="Leave empty for all">
-          Year:
-          <input type="number" name="day" value="day" max="3000" min="0" placeholder="Leave empty for all">
-          <button type="button" name="filter" class="button button2">Apply</button>
+        <div id="filter">
+          <div class="form-inline">
+            <div class="form-group">
+              <label for="day">Day</label>
+              <input class="form-control" id="day" name="day" type="number" min="1" max="31" value="">
+            </div>
+            <div class="form-group">
+              <label for="month">Month</label>
+              <input class="form-control" id="month" name="month" type="number" min="1" max="12" value="">
+            </div>
+            <div class="form-group">
+              <label for="year">Year</label>
+              <input class="form-control" id="year" name="year" type="number" value="">
+            </div>
+            <button class="btn button" onclick="filter()">Filter</button>
+          </div>
         </div>
+
         <br>
         <div id="reports">
           <table class="table table-striped">
@@ -35,16 +45,16 @@
                 <th>Delete</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="report">
             {% for reports in dailyList %}
               <tr>
-                <td>{{ reports.get_reportDate() }}</td>
+                <td id="date">{{ reports.get_reportDate() }}</td>
                 <td>{{ reports.get_itemSold() }}</td>
                 <td>{{ reports.get_revenue() }}</td>
                 <td>{{ reports.get_commission() }}</td>
                 <td>
                   <form action="{{url_for('reportsDeleteDaily', id=reports.get_reportDate().replace('/', '-'))}}" method="POST">
-                    <button class="button button3"><strong><u>Delete</u></strong></button>
+                    <button class="btn button button3"><strong><u>Delete</u></strong></button>
                   </form>
                 </td>
               </tr>
@@ -54,4 +64,24 @@
         </div>
       </div>
     </div>
+<script>
+function filter() {
+  // Declare variables
+  var filter, tr, td, i, txtValue;
+  filter = document.getElementById("day").value + "/" + document.getElementById("month").value + "/" + document.getElementById("year").value;
+  report = document.getElementById("report");
+  tr = report.getElementsByTagName('tr');
+
+  // Loop through all list items, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    txtValue = td.innerText;
+    if (txtValue == filter) {
+      tr[i].style.display = "";
+    } else {
+      tr[i].style.display = "none";
+    }
+  }
+}
+</script>
 {% endblock %}

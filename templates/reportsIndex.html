@@ -10,87 +10,96 @@
     <div class="container-fluid content">
       <div class="row justify-content-center">
         <div class="col-sm-6">
-          <p class="text-center"><strong>All Reports</strong></p>
+          <h1 class="text-center"><b>Staff page</b></h1>
+
         </div>
       </div>
 
+      <div class="row justify-content-center">
+        <div class="col-sm-6">
+          <p class="text-center">Welcome to the staff dashboard</p>
+          <br>
+          <h2 class="text-center">All available reports</h2>
+          <div id="reports" align="center">
+            <table>
+              <tbody>
+                <tr>
+                  <td colspan="3">
+                    <button type="button" class="btn button" onclick="location.href='/staff/create-report'">Create</button>
+                  </td>
+                </tr>
+                <tr>
+                  <div id="nested_tables">
+                    <td>
+                      <table>
+                        <tr>
+                          <td><h1>Daily</h1></td>
+                        </tr>
+                        <tr>
+                          <div>
+                            {% if dailyCount == 0 %}
+                            <td><u>0</u> reports</td>
+                            {% elif dailyCount == 1 %}
+                            <td><u>1</u> report</td>
+                            {% else %}
+                            <td><u>{{ dailyCount }}</u> reports</td>
+                            {% endif %}
+                          </div>
+                        </tr>
+                        <tr>
+                          <td><button class="btn button button2" onclick="location.href='/staff/daily-report'"><strong><u>View</u></strong></button></td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td>
+                      <table>
+                        <tr>
+                          <td><h1>Monthly</h1></td>
+                        </tr>
+                        <tr>
+                          <div>
+                            {% if monthlyCount == 0 %}
+                            <td><u>0</u> reports</td>
+                            {% elif monthlyCount == 1 %}
+                            <td><u>1</u> report</td>
+                            {% else %}
+                            <td><u>{{ monthlyCount }}</u> reports</td>
+                            {% endif %}
+                          </div>
+                        </tr>
+                        <tr>
+                          <td><button class="btn button button2" onclick="location.href='/staff/monthly-report'"><strong><u>View</u></strong></button></td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td>
+                      <table>
+                        <tr>
+                          <td><h1>Yearly</h1></td>
+                        </tr>
+                        <tr>
+                          <div>
+                            {% if yearlyCount == 0 %}
+                            <td><u>0</u> reports</td>
+                            {% elif yearlyCount == 1 %}
+                            <td><u>1</u> report</td>
+                            {% else %}
+                            <td><u>{{ yearlyCount }}</u> reports</td>
+                            {% endif %}
+                          </div>
+                        </tr>
+                        <tr>
+                          <td><button class="btn button button2" onclick="location.href='/staff/yearly-report'"><strong><u>View</u></strong></button></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </div>
+                </tr>
 
-      <div id="reports" style="display:block" align = "center">
-        <button type="button" class="button button2" onclick="location.href='/reports/create'">Create</button>
-        <br>
-        <br>
-        <table>
-          <tbody>
-            <tr>
-              <div id="nested_tables">
-                <td>
-                  <table>
-                    <tr>
-                      <td><h1>Daily</h1></td>
-                    </tr>
-                    <tr>
-                      <div>
-                        {% if dailyCount == 0 %}
-                        <td>There are no reports</td>
-                        {% elif dailyCount == 1 %}
-                        <td>There are 1 report</td>
-                        {% else %}
-                        <td>There are {{ dailyCount }} reports</td>
-                        {% endif %}
-                      </div>
-                    </tr>
-                    <tr>
-                      <td><button class="button button2" onclick="location.href='/reports/daily'"><strong><u>View</u></strong></button></td>
-                    </tr>
-                  </table>
-                </td>
-                <td>
-                  <table>
-                    <tr>
-                      <td><h1>Monthly</h1></td>
-                    </tr>
-                    <tr>
-                      <div>
-                        {% if monthlyCount == 0 %}
-                        <td>There are no reports</td>
-                        {% elif monthlyCount == 1 %}
-                        <td>There are 1 report</td>
-                        {% else %}
-                        <td>There are {{ monthlyCount }} reports</td>
-                        {% endif %}
-                      </div>
-                    </tr>
-                    <tr>
-                      <td><button class="button button2" onclick="location.href='/reports/monthly'"><strong><u>View</u></strong></button></td>
-                    </tr>
-                  </table>
-                </td>
-                <td>
-                  <table>
-                    <tr>
-                      <td><h1>Yearly</h1></td>
-                    </tr>
-                    <tr>
-                      <div>
-                        {% if yearlyCount == 0 %}
-                        <td>There are no reports</td>
-                        {% elif yearlyCount == 1 %}
-                        <td>There are 1 report</td>
-                        {% else %}
-                        <td>There are {{ yearlyCount }} reports</td>
-                        {% endif %}
-                      </div>
-                    </tr>
-                    <tr>
-                      <td><button class="button button2" onclick="location.href='/reports/yearly'"><strong><u>View</u></strong></button></td>
-                    </tr>
-                  </table>
-                </td>
-              </div>
-            </tr>
-
-          </tbody>
-        </table>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 {% endblock %}

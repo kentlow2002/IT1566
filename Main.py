@@ -3,8 +3,9 @@ import Order as o
 import Report as r
 import Product as p
 import shelve
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
-from ReportForms import CreateReportForm
+from ReportForms import CreateReportForm, CreateReportFilter
 
 
 app = Flask(__name__)
@@ -21,27 +22,18 @@ def login():
 def signUp():
     return render_template('signup.html')
 
-@app.route('/signedup')
-def signedUp():
-    return render_template('signedup.html')
-
-@app.route('/logout')
-def logOut():
-    return render_template('logout.html')
-
 @app.route('/buyer/index')
 def buyerIndex():
     return render_template('buyerIndex.html')
 
 
 # staff
-@app.route('/staff/index')
-def staffIndex():
-    return render_template('staffIndex.html')
+
+# whatever the person doing staff
 
 
 # reports
-@app.route('/reports')
+@app.route('/staff')
 def reportsIndex():
     dailyDict = {}
     db = shelve.open("reportsStorage.db", "c")
@@ -87,7 +79,7 @@ def reportsIndex():
 
     return render_template('reportsIndex.html', dailyCount=len(dailyList), monthlyCount=len(monthlyList), yearlyCount=len(yearlyList))
 
-@app.route('/reports/create', methods=["GET", "POST"])
+@app.route('/staff/create-report', methods=["GET", "POST"])
 def reportsCreate():
     createReportForm = CreateReportForm(request.form)
     if request.method == "POST" and createReportForm.validate():
@@ -103,40 +95,58 @@ def reportsCreate():
         except:
             print("Error in retrieving Reports from storage.db.")
 
+
         def dateValidator(dateToValidate):
             date = dateToValidate.split("/")
-            if int(date[0]) > 31:
-                date[0] = "31"
-            if int(date[1]) > 12:
-                date[1] = "12"
+            if len(date) == 3:
+                if int(date[0]) > 31:
+                    date[0] = "31"
+                if int(date[1]) > 12:
+                    date[1] = "12"
 
-            if len(date[0]) == 1:
-                date[0] = "0" + date[0]
-            if len(date[1]) == 1:
-                date[1] = "0" + date[1]
+                if len(date[0]) == 1:
+                    date[0] = "0" + date[0]
+                if len(date[1]) == 1:
+                    date[1] = "0" + date[1]
 
-            if createReportForm.type.data == "D":
-                date = "/".join(date)
-            elif createReportForm.type.data == "M":
-                del date[0]
-                date = "/".join(date)
-            else:
-                date = date[2]
+                if datetime.strptime("/".join(date), '%d/%m/%Y'):
+                    if createReportForm.type.data == "D":
+                        date = "/".join(date)
+                    elif createReportForm.type.data == "M":
+                        del date[0]
+                        date = "/".join(date)
+                    else:
+                        date = date[2]
+            elif len(date) == 2:
+                if int(date[0]) > 12:
+                    date[0] = "12"
+
+                if len(date[0]) == 1:
+                    date[0] = "0" + date[0]
+
+                if datetime.strptime("/".join(date), '%m/%Y'):
+                    if createReportForm.type.data == "M":
+                        date = "/".join(date)
+                    else:
+                        date = date[2]
+            elif len(date) == 1:
+                if datetime.strptime("/".join(date), '%Y'):
+                    date = date[0]
             return date
 
-
-
+        correctedDate = dateValidator(createReportForm.date.data)
+        print(correctedDate)
         transaction = open("test.txt", "r")
         if createReportForm.type.data == "D":
             productCount = 0
             productPrice = 0
             for line in transaction:
                 list = line.split(", ")
-                if dateValidator(list[0]) == dateValidator(createReportForm.date.data):
+                if dateValidator(list[0]) == correctedDate:
                     productCount += int(list[2])
                     productPrice += float(list[3])
-            report = r.Report(createReportForm.type.data, createReportForm.date.data, productCount, productPrice)
-            reportDict[report.get_reportDate()] = report
+            report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
+            reportDict[correctedDate] = report
             db["Daily"] = reportDict
 
         elif createReportForm.type.data == "M":
@@ -144,11 +154,11 @@ def reportsCreate():
             productPrice = 0
             for line in transaction:
                 list = line.split(", ")
-                if dateValidator(list[0]) == dateValidator(createReportForm.date.data):
+                if dateValidator(list[0]) == correctedDate:
                     productCount += int(list[2])
                     productPrice += float(list[3])
-            report = r.Report(createReportForm.type.data, createReportForm.date.data, productCount, productPrice)
-            reportDict[report.get_reportDate()] = report
+            report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
+            reportDict[correctedDate] = report
             db["Monthly"] = reportDict
 
         else:
@@ -156,11 +166,11 @@ def reportsCreate():
             productPrice = 0
             for line in transaction:
                 list = line.split(", ")
-                if dateValidator(list[0]) == dateValidator(createReportForm.date.data):
+                if dateValidator(list[0]) == correctedDate:
                     productCount += int(list[2])
                     productPrice += float(list[3])
-            report = r.Report(createReportForm.type.data, createReportForm.date.data, productCount, productPrice)
-            reportDict[report.get_reportDate()] = report
+            report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
+            reportDict[correctedDate] = report
             db["Yearly"] = reportDict
 
         transaction.close()
@@ -176,33 +186,34 @@ def reportsCreate():
             return redirect(url_for("reportsIndex"))
     return render_template('reportsCreate.html', form=createReportForm)
 
-@app.route('/reports/daily')
+@app.route('/staff/daily-report')
 def reportsDaily():
     dailyDict = {}
     db = shelve.open("reportsStorage.db", "r")
     try:
         dailyDict = db["Daily"]
+        sortedList = sorted(dailyDict.items(), key=lambda x: datetime.strptime(x[0], '%d/%m/%Y'))
         dailyList = []
-        for key in dailyDict:
-            report = dailyDict.get(key)
-            dailyList.append(report)
+        for report in sortedList:
+            dailyList.append(report[1])
     except:
         print("Error in retrieving Daily Records.")
         dailyList = []
     finally:
         db.close()
+
     return render_template('reportsDaily.html', dailyList=dailyList)
 
-@app.route('/reports/monthly')
+@app.route('/staff/monthly-report')
 def reportsMonthly():
     monthlyDict = {}
     db = shelve.open("reportsStorage.db", "r")
     try:
         monthlyDict = db["Monthly"]
+        sortedList = sorted(monthlyDict.items(), key=lambda x: datetime.strptime(x[0], '%m/%Y'))
         monthlyList = []
-        for key in monthlyDict:
-            report = monthlyDict.get(key)
-            monthlyList.append(report)
+        for report in sortedList:
+            monthlyList.append(report[1])
     except:
         print("Error in retrieving Monthly Records.")
         monthlyList = []
@@ -210,16 +221,16 @@ def reportsMonthly():
         db.close()
     return render_template('reportsMonthly.html', monthlyList=monthlyList)
 
-@app.route('/reports/yearly')
+@app.route('/staff/yearly-report')
 def reportsYearly():
     yearlyDict = {}
     db = shelve.open("reportsStorage.db", "r")
     try:
         yearlyDict = db["Yearly"]
+        sortedList = sorted(yearlyDict.items(), key=lambda x: datetime.strptime(x[0], '%Y'))
         yearlyList = []
-        for key in yearlyDict:
-            report = yearlyDict.get(key)
-            yearlyList.append(report)
+        for report in sortedList:
+            yearlyList.append(report[1])
     except:
         print("Error in retrieving Yearly Records.")
         yearlyList = []
@@ -227,7 +238,7 @@ def reportsYearly():
         db.close()
     return render_template('reportsYearly.html', yearlyList=yearlyList)
 
-@app.route('/reports/daily/delete/<id>', methods=["POST"])
+@app.route('/staff/daily-report/delete/<id>', methods=["POST"])
 def reportsDeleteDaily(id):
     dailyDict = {}
     db = shelve.open("reportsStorage.db", "w")
@@ -240,7 +251,7 @@ def reportsDeleteDaily(id):
 
     return redirect(url_for("reportsDaily"))
 
-@app.route('/reports/monthly/delete/<id>', methods=["POST"])
+@app.route('/staff/monthly-report/delete/<id>', methods=["POST"])
 def reportsDeleteMonthly(id):
     monthlyDict = {}
     db = shelve.open("reportsStorage.db", "w")
@@ -253,7 +264,7 @@ def reportsDeleteMonthly(id):
 
     return redirect(url_for("reportsMonthly"))
 
-@app.route('/reports/yearly/delete/<id>', methods=["POST"])
+@app.route('/staff/yearly-report/delete/<id>', methods=["POST"])
 def reportsDeleteYearly(id):
     yearlyDict = {}
     db = shelve.open("reportsStorage.db", "w")
@@ -267,4 +278,4 @@ def reportsDeleteYearly(id):
     return redirect(url_for("reportsYearly"))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

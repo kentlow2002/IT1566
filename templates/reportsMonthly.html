@@ -42,7 +42,7 @@
                 <td>{{ reports.get_commission() }}</td>
                 <td>
                   <form action="{{url_for('reportsDeleteMonthly', id=reports.get_reportDate().replace('/', '-'))}}" method="POST">
-                    <button class="button button3"><strong><u>Delete</u></strong></button>
+                    <button class="btn button button3"><strong><u>Delete</u></strong></button>
                   </form>
                 </td>
               </tr>
