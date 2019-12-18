@@ -19,15 +19,15 @@
           <div class="form-inline">
             <div class="form-group">
               <label for="day">Day</label>
-              <input class="form-control" id="day" name="day" type="number" min="1" max="31" value="">
+              <input class="form-control" id="day" type="number" min="1" max="31" value="">
             </div>
             <div class="form-group">
               <label for="month">Month</label>
-              <input class="form-control" id="month" name="month" type="number" min="1" max="12" value="">
+              <input class="form-control" id="month" type="number" min="1" max="12" value="">
             </div>
             <div class="form-group">
               <label for="year">Year</label>
-              <input class="form-control" id="year" name="year" type="number" value="">
+              <input class="form-control" id="year" type="number" min="1990" value="">
             </div>
             <button class="btn button" onclick="filter()">Filter</button>
           </div>
@@ -67,19 +67,82 @@
 <script>
 function filter() {
   // Declare variables
-  var filter, tr, td, i, txtValue;
-  filter = document.getElementById("day").value + "/" + document.getElementById("month").value + "/" + document.getElementById("year").value;
+  var dayFilter, monthFilter, yearFilter, tr, td, i, date;
+  dayFilter = document.getElementById("day").value;
+  monthFilter = document.getElementById("month").value;
+  yearFilter = document.getElementById("year").value;
   report = document.getElementById("report");
   tr = report.getElementsByTagName('tr');
 
   // Loop through all list items, and hide those who don't match the search query
   for (i = 0; i < tr.length; i++) {
     td = tr[i].getElementsByTagName("td")[0];
-    txtValue = td.innerText;
-    if (txtValue == filter) {
+    date = td.innerText.split("/");
+    if (dayFilter.length == 1) {
+      dayFilter = "0" + dayFilter;
+    }
+    if (monthFilter.length == 1) {
+      monthFilter = "0" + monthFilter;
+    }
+
+    if (dayFilter != "" && monthFilter != "" && yearFilter != "") {
+      if (dayFilter == date[0] && monthFilter == date[1] && yearFilter == date[2]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter == "" && monthFilter != "" && yearFilter != "") {
+      if (monthFilter == date[1] && yearFilter == date[2]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter == "" && monthFilter == "" && yearFilter != "") {
+      if (yearFilter == date[2]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter != "" && monthFilter == "" && yearFilter == "") {
+      if (dayFilter == date[0]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter != "" && monthFilter != "" && yearFilter == "") {
+      if (dayFilter == date[0] && monthFilter == date[1]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter != "" && monthFilter == "" && yearFilter != "") {
+      if (dayFilter == date[0] && yearFilter == date[2]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter == "" && monthFilter != "" && yearFilter == "") {
+      if (monthFilter == date[1]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+
+    else if (dayFilter == "" && monthFilter == "" && yearFilter == "") {
       tr[i].style.display = "";
-    } else {
-      tr[i].style.display = "none";
     }
   }
 }

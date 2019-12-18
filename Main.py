@@ -5,7 +5,7 @@ import Product as p
 import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
-from ReportForms import CreateReportForm, CreateReportFilter
+from ReportForms import CreateReportForm
 
 
 app = Flask(__name__)
@@ -135,7 +135,6 @@ def reportsCreate():
             return date
 
         correctedDate = dateValidator(createReportForm.date.data)
-        print(correctedDate)
         transaction = open("test.txt", "r")
         if createReportForm.type.data == "D":
             productCount = 0
