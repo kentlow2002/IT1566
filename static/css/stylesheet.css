@@ -132,3 +132,7 @@ input {
 #reportsCreate li {
   display: inline;
 }
+
+#filter * {
+  display:inline;
+}
