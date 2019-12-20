@@ -6,6 +6,7 @@ import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 from ReportForms import CreateReportForm
+from UserForms import CreateUserForm
 
 
 app = Flask(__name__)
@@ -18,9 +19,36 @@ def index():
 def login():
     return render_template('login.html')
 
-@app.route('/signup')
+@app.route('/logout')
+def logout():
+    return render_template('logout.html')
+
+@app.route('/signup',methods=["GET","POST"])
 def signUp():
-    return render_template('signup.html')
+    createUserForm = CreateUserForm(request.form)
+    if request.method == 'POST' and createUserForm.validate():
+        usersDict = {}
+        db = shelve.open('Users.db', 'c')
+        try:
+            usersDict = db['Users']
+            count = len(usersDict)
+        except:
+            print("Error in retrieving Users from storage.db.")
+            count = 0
+        user = u.User(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
+        usersDict[user.get_userID()] = user
+        db['Users'] = usersDict
+        # Test codes
+        '''usersDict = db['Users']
+        user = usersDict[user.get_userID()]
+        print(user.get_firstName(), user.get_lastName(), "was stored in shelve successfully with userID =", user.get_userID())
+        db.close()'''
+        return redirect(url_for("signedUp"))
+    return render_template('signup.html', form=createUserForm)
+
+@app.route('/signedup')
+def signedUp():
+    return render_template('signedup.html')
 
 @app.route('/buyer/index')
 def buyerIndex():
@@ -277,4 +305,4 @@ def reportsDeleteYearly(id):
     return redirect(url_for("reportsYearly"))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

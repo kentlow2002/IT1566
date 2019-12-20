@@ -2,7 +2,7 @@ import hashlib
 
 
 class User:
-    def __init__(self,userName,userEmail,userPassword,userType):
+    def __init__(self,userName,userEmail,userPassword,userType,userID):
         self.__userName = userName
         self.__userEmail = userEmail
         self.__userPassword = self.passwdCheck(userPassword)
