@@ -133,6 +133,11 @@ input {
   display: inline;
 }
 
+#reportsCreate ul {
+  list-style-type: none;
+  padding: 0px;
+}
+
 #filter * {
   display:inline;
 }

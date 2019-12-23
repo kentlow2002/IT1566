@@ -162,7 +162,8 @@ def reportsCreate():
                     date = date[0]
             return date
 
-        correctedDate = dateValidator(createReportForm.date.data)
+        formDate = createReportForm.day.data + "/" + createReportForm.month.data + "/" + createReportForm.year.data
+        correctedDate = dateValidator(formDate)
         transaction = open("test.txt", "r")
         if createReportForm.type.data == "D":
             productCount = 0
