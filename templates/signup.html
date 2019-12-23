@@ -11,15 +11,19 @@
 				<div class="col-sm-6">
 					<form id="signup" class="form" method="POST">
 						<div class="form-group">
-							
+
 							{{ render_field(form.username, class="form-control") }}
 						</div>
 						<div class="form-group">
-							
+
+							{{ render_field(form.type, class="form-check") }}
+						</div>
+						<div class="form-group">
+
 							{{ render_field(form.email, class="form-control") }}
 						</div>
 		      	<div class="form-group">
-							
+
 							{{ render_field(form.password, class="form-control") }}
 						</div>
 						<button type="submit" class="btn btn-primary">Sign up</button>

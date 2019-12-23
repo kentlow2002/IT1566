@@ -35,8 +35,8 @@ def signUp():
         except:
             print("Error in retrieving Users from storage.db.")
             count = 0
-        user = u.User(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
-        usersDict[user.get_userID()] = user
+        user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+        usersDict[user.getID()] = user
         db['Users'] = usersDict
         # Test codes
         '''usersDict = db['Users']
