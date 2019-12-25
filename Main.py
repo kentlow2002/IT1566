@@ -6,7 +6,7 @@ import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for
 from ReportForms import CreateReportForm
-from UserForms import CreateUserForm
+from UserForms import CreateUserForm, UserLogInForm
 
 
 app = Flask(__name__)
@@ -15,9 +15,34 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/login')
+@app.route('/login', methods=["GET","POST"])
 def login():
-    return render_template('login.html')
+    userLogInForm = UserLogInForm(request.form)
+    if request.method == 'POST' and userLogInForm.validate():
+        usersDict = {}
+        db = shelve.open('Users.db', 'r')
+        try:
+            usersDict = db['Users']
+        except:
+            print("Error in retrieving Users from storage.db.")
+
+        try:
+            usernameValid = 0
+            passwordValid = 0
+            for i,j in usersDict.items():
+                if userLogInForm.username.data == j.getUsername():
+                    usernameValid = 1
+                if j.loginCheck(userLogInForm.password.data) == 1:
+                    passwordValid = 1
+
+            if passwordValid == 1 and usernameValid == 1:
+                return redirect(url_for("buyerIndex"))
+
+        except:
+            print("ERROR")
+
+        return redirect(url_for("logout"))
+    return render_template('login.html', form=userLogInForm)
 
 @app.route('/logout')
 def logout():
@@ -35,7 +60,10 @@ def signUp():
         except:
             print("Error in retrieving Users from storage.db.")
             count = 0
-        user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+        if createUserForm.type.data == "B":
+            user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+        else:
+            user = u.Seller(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
         usersDict[user.getID()] = user
         db['Users'] = usersDict
         # Test codes
@@ -49,6 +77,10 @@ def signUp():
 @app.route('/signedup')
 def signedUp():
     return render_template('signedup.html')
+
+@app.route('/userEdit')
+def userEdit():
+    return render_template('userEdit.html')
 
 @app.route('/buyer/index')
 def buyerIndex():

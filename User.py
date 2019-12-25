@@ -42,7 +42,7 @@ class User:
         return self.__userID
 
     def __str__(self):
-        return self.__username+' '+self.__userEmail+' '+self.__userType
+        return self.__username+' '+self.__userEmail+' '+str(self.__userPassword)+' '+self.__userType+' '+str(self.__userID)
 
 class Buyer(User):
     def __init__(self,username,userEmail,userPassword,userType,userID):
