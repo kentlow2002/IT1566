@@ -4,9 +4,9 @@ import Report as r
 import Product as p
 import shelve
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 from ReportForms import CreateReportForm
-from UserForms import CreateUserForm, UserLogInForm
+from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
 
 
 app = Flask(__name__)
@@ -29,17 +29,21 @@ def login():
         try:
             usernameValid = 0
             passwordValid = 0
+            userID = -1
             for i,j in usersDict.items():
-                if userLogInForm.username.data == j.getUsername():
+                if userLogInForm.username.data == j.getUsername() and j.loginCheck(userLogInForm.password.data) == 1:
                     usernameValid = 1
-                if j.loginCheck(userLogInForm.password.data) == 1:
                     passwordValid = 1
+                    userID = j.getID()
 
             if passwordValid == 1 and usernameValid == 1:
-                return redirect(url_for("buyerIndex"))
+                resp = make_response(redirect(url_for("buyerIndex")))
+                resp.set_cookie("userID",str(userID))
+                print("checking")
+                return resp
 
-        except:
-            print("ERROR")
+        except Exception as e:
+            print("ERROR", e)
 
         return redirect(url_for("logout"))
     return render_template('login.html', form=userLogInForm)
@@ -78,8 +82,17 @@ def signUp():
 def signedUp():
     return render_template('signedup.html')
 
-@app.route('/userEdit')
+@app.route('/userEdit',methods=["GET","POST"])
 def userEdit():
+    userUpdateForm = UserUpdateForm(request.form)
+    usersDict = {}
+    db = shelve.open('Users.db', 'r')
+    try:
+        usersDict = db['Users']
+    except:
+        print("Error reading db")
+
+    username = usersDict[userID]
     return render_template('userEdit.html')
 
 @app.route('/buyer/index')
