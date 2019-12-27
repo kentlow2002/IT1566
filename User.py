@@ -1,7 +1,7 @@
 import hashlib
+from flask_login import UserMixin
 
-
-class User:
+class User(UserMixin):
     def __init__(self,username,userEmail,userPassword,userType,userID):
         self.__username = username
         self.__userEmail = userEmail
@@ -39,6 +39,9 @@ class User:
         return self.__userType
 
     def getID(self):
+        return self.__userID
+
+    def get_id(self):
         return self.__userID
 
     def __str__(self):
