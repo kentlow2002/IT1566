@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 {% block title %} Edit Profile {% endblock %}
 {% block navbar %}
-	{% include "includes/_navbar.html" %}
+	{% if usertype == "Buyer" %}
+		{% include "includes/_navbarBuyer.html" %}
+	{% elif usertype == "Seller" %}
+		{% include "includes/_navbarSeller.html" %}
+	{% else %}
+		{% include "includes/_navbarStaff.html" %}
+	{% endif %}
 {% endblock %}
 
 {% block content %}
-{{ from "includes/_formhelper.html" import render_field }}
+{% from "includes/_formhelper.html" import render_field %}
 	      <div class="row justify-content-center">
 	        <div class="col-sm-12">
 	         	<h4 class="text-center">Edit account details</h4>

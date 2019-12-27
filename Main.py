@@ -54,7 +54,7 @@ def login():
 
             if passwordValid == 1 and usernameValid == 1:
                 login_user(usersDict.get(userID))
-                resp = make_response(redirect(url_for("buyerIndex")))
+                resp = make_response(redirect(url_for("userEdit")))
                 resp.set_cookie("userID",str(userID))
                 print("checking")
                 return resp
@@ -110,8 +110,17 @@ def userEdit():
     except:
         print("Error reading db")
 
-    username = usersDict[userID]
-    return render_template('userEdit.html')
+    userID = int(request.cookies.get("userID"))
+    user = usersDict[userID]
+    userType = user.getType()
+    userUpdateForm.username.data = user.getUsername()
+    userUpdateForm.email.data = user.getEmail()
+    if request.method == "POST" and userUpdateForm.validate():
+        if user.loginCheck(userUpdateForm.oldPassword.data):
+            user.setEmail(userUpdateForm.email.data)
+            user.setPassword(userUpdateForm.newPassword.data)
+        return redirect(url_for('buyerIndex'))
+    return render_template('userEdit.html', form=userUpdateForm, usertype=userType)
 
 @app.route('/buyer/index')
 # @login_required

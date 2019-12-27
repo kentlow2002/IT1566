@@ -27,7 +27,7 @@ class User(UserMixin):
         self.__userEmail = newUserEmail
 
     def setPassword(self,newPassword):
-        self.__userPassword = newPassword
+        self.__userPassword = self.passwdCheck(newPassword)
 
     def getUsername(self):
         return self.__username
