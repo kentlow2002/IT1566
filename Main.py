@@ -25,7 +25,7 @@ def load_user(user_id):
         usersDict = db['Users']
     except:
         print("Error in retrieving Users from storage.db.")
-    return usersDict.get(user_id)
+    return usersDict.get(user_id).getID
 
 @app.route('/')
 def index():
