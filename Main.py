@@ -37,7 +37,7 @@ def login():
                     userID = j.getID()
 
             if passwordValid == 1 and usernameValid == 1:
-                resp = make_response(redirect(url_for("buyerIndex")))
+                resp = make_response(redirect(url_for("userEdit")))
                 resp.set_cookie("userID",str(userID))
                 print("checking")
                 return resp
