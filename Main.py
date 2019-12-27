@@ -5,11 +5,27 @@ import Product as p
 import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+import os
 from ReportForms import CreateReportForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
 
 
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    usersDict = {}
+    db = shelve.open('Users.db', 'r')
+    try:
+        usersDict = db['Users']
+    except:
+        print("Error in retrieving Users from storage.db.")
+    return usersDict.get(user_id)
 
 @app.route('/')
 def index():
@@ -37,7 +53,8 @@ def login():
                     userID = j.getID()
 
             if passwordValid == 1 and usernameValid == 1:
-                resp = make_response(redirect(url_for("userEdit")))
+                login_user(usersDict.get(userID))
+                resp = make_response(redirect(url_for("buyerIndex")))
                 resp.set_cookie("userID",str(userID))
                 print("checking")
                 return resp
@@ -50,6 +67,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+    logout_user()
     return render_template('logout.html')
 
 @app.route('/signup',methods=["GET","POST"])
@@ -96,6 +114,7 @@ def userEdit():
     return render_template('userEdit.html')
 
 @app.route('/buyer/index')
+# @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
 
