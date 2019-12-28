@@ -62,8 +62,8 @@ class Seller(User):
         return 0
 
 class Staff(User):
-    def __init__(self,userName,userEmail,userPassword,userType,userID):
-        super().__init__(username,userEmail,userPassword,'staff',userID)
+    def __init__(self,username,userEmail,userPassword,userID):
+        super().__init__(username,userEmail,userPassword,'Staff',userID)
 
     def staffDelete():
         return 0

@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, PasswordField, SubmitField
+from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, PasswordField, BooleanField, SubmitField
 
 
 class CreateUserForm(Form):
@@ -10,6 +10,7 @@ class CreateUserForm(Form):
 class UserLogInForm(Form):
     username = StringField('Username', [validators.Length(min=8,max=150), validators.DataRequired()])
     password = PasswordField('Password', [validators.Length(min=12,max=150), validators.DataRequired()])
+    remember = BooleanField("Remember me")
 
 class UserUpdateForm(Form):
     username = StringField('Username', [validators.Length(min=8,max=150), validators.DataRequired()])
