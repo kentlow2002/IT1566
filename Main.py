@@ -116,10 +116,18 @@ def userEdit():
     userUpdateForm.username.data = user.getUsername()
     userUpdateForm.email.data = user.getEmail()
     if request.method == "POST" and userUpdateForm.validate():
-        if user.loginCheck(userUpdateForm.oldPassword.data):
-            user.setEmail(userUpdateForm.email.data)
-            user.setPassword(userUpdateForm.newPassword.data)
-        return redirect(url_for('buyerIndex'))
+        if form.deleteAcc.data:
+            usersDict[userID] = 0
+            return redirect('/index')
+        else:
+            if user.loginCheck(userUpdateForm.oldPassword.data):
+                user.setEmail(userUpdateForm.email.data)
+                if userUpdateForm.newPassword.data.isalnum():
+                    user.setPassword(userUpdateForm.newPassword.data)
+
+        urlString = '/'+userType.lower()+'/index'
+        return redirect(urlString)
+
     return render_template('userEdit.html', form=userUpdateForm, usertype=userType)
 
 @app.route('/buyer/index')
