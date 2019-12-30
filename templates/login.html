@@ -17,12 +17,15 @@
 							{{ render_field(form.username,class="form-control") }}
 						</div>
 		      			<div class="form-group">
-
 							{{ render_field(form.password,class="form-control") }}
 							<a href="forget.html" style="float:right;">Forgot Password?</a>
 						</div>
+						<br>
+						<div class="form-group">
+							{{ render_field(form.remember, class="checkbox") }}
+						</div>
 						<button type="submit" class="btn btn-primary">Sign in</button>
-      		</form>
+      				</form>
 				</div>
 			</div>
 		</div>

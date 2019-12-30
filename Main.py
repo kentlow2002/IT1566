@@ -156,6 +156,12 @@ def sellerIndex():
 # reports
 @app.route('/staff')
 @login_required
+def redirectStaff():
+    return redirect(url_for("reportsIndex"))
+
+
+@app.route('/staff/index')
+@login_required
 def reportsIndex():
     if current_user.is_authenticated and current_user.getType() == "Staff":
         print(current_user.getType())
