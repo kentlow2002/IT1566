@@ -9,7 +9,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 import os
 from ReportForms import CreateReportForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
-
+from staff import CreateStaffForm, StaffUpdateForm
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
@@ -149,7 +149,94 @@ def sellerIndex():
 
 
 # staff
+@app.route('/staff/create', methods=['GET', 'POST'])
+def staffCreate():
+    createUserForm = CreateUserForm(request.form)
+    if request.method == 'POST' and createUserForm.validate():
+        usersDict = {}
+        db = shelve.open('Users.db', 'c')
+        try:
+            usersDict = db['Users']
+            count = len(usersDict)
+        except:
+            print("Error in retrieving Users from storage.db.")
+            count = 0
 
+        user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
+        usersDict[user.getID()] = user
+        db['Users'] = usersDict
+        return redirect(url_for("staffAccounts"))
+    return render_template('staffCreate.html', form=createUserForm)
+
+@app.route('/deleteUser/<int:id>', methods=['POST'])
+def deleteUser(id):
+    usersDict = {}
+    db = shelve.open('Users.db', 'w')
+    usersDict = db['Users']
+    usersDict.pop(id)
+    db['Users'] = usersDict
+    db.close()
+    return redirect(url_for('staffAccounts'))
+
+@app.route('/staff/orders')
+def staffOrders():
+    return render_template('staffOrders.html')
+
+@app.route('/staff/update')
+def staffUpdate():
+    return render_template('staffUpdate.html')
+
+@app.route('/staff/faq')
+def staffFaq():
+    return render_template('staffFaq.html')
+
+#@app.route('/staff/profile')
+#def staffProfile():
+#    return render_template('staffProfile.html')
+@app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
+def updateUser(id):
+    updateStaffForm = StaffUpdateForm(request.form)
+    if request.method == 'POST' and updateStaffForm.validate():
+        userDict = {}
+        db = shelve.open('Users.db', 'w')
+        userDict = db['Users']
+        user = userDict.get(id)
+        user.setUsername(updateStaffForm.username.data)
+        user.setEmail(updateStaffForm.email.data)
+        user.setPassword(updateStaffForm.password.data)
+        db['Users'] = userDict
+        db.close()
+        return redirect(url_for('staffAccounts'))
+
+    else:
+        userDict = {}
+        db = shelve.open('Users.db', 'c')
+        userDict = db['Users']
+        db.close()
+        user = userDict.get(id)
+        updateStaffForm.username.data = user.getUsername()
+        updateStaffForm.email.data = user.getEmail()
+    return render_template('staffEdit.html', form=updateStaffForm)
+
+@app.route('/staff/accounts')
+def staffAccounts():
+    db = shelve.open("Users.db", "c")
+    try:
+        userDict = db["Users"]
+        userList = []
+        for key in userDict:
+            user = userDict.get(key)
+            userList.append(user)
+    except:
+        print("Error in retrieving user storage.")
+        userList = []
+    finally:
+        db.close()
+        print(userList)
+        for user in userList:
+            print(user.getID())
+            print(user.getUsername())
+    return render_template('retrieveAcc.html', userList=userList)
 # whatever the person doing staff
 
 
