@@ -263,13 +263,15 @@ def ask():
         createFaqForm = FaqForm(request.form)
         if request.method == 'POST':
             faqDict = {}
-            db = shelve.open('faq.db', 'c')
             try:
+                db = shelve.open('faq.db', 'c')
                 faqDict = db["ticket"]
+                count = len(faqDict)
             except:
                 print("Error in retrieving tickets from faq.db.")
+                count = 0
 
-            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType())
+            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType(), count)
             faqDict[tix.getTID()] = tix
             db["ticket"] = faqDict
             # Test codes
@@ -285,13 +287,18 @@ def ask():
 @app.route('/staff/faq') #R faq for staff
 def faqstaff():
     if current_user.is_authenticated:
-        db = shelve.open("faq.db", "c")
-        faqDict = db["ticket"]
-        faqList = []
-        for key in faqDict:
-            faqs = faqDict.get(key)
-            faqList.append(faqs)
-
+        faqList = ""
+        try:
+            db = shelve.open("faq.db", "c")
+            faqDict = db["ticket"]
+            faqList = []
+            for key in faqDict:
+                faqs = faqDict.get(key)
+                faqList.append(faqs)
+        except:
+            print("error in retrieving faqs")
+        finally:
+            db.close()
     else:
         return redirect(url_for("index"))
     return render_template('FAQstaff.html', faqList=faqList, usertype = current_user.getType())

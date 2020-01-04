@@ -1,10 +1,8 @@
 from flask_login import UserMixin
 
 class Ticket:
-    tixID = 0
-    def __init__(self, qn, ans, type):
-        Ticket.tixID += 1
-        self.__tID = Ticket.tixID
+    def __init__(self, qn, ans, type, id):
+        self.__tID = id
         self.__qn = qn
         self.__ans = ans
         self.__type = type
