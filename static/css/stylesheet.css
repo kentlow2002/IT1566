@@ -90,7 +90,7 @@ input {
   width: 80%
 }
 
-#table table, th, td {
+#table table, #table th, #table td {
    border: black 2px solid;
    text-align: center;
 }
