@@ -14,3 +14,6 @@ class StaffUpdateForm(Form):
     password = PasswordField('New Password', [validators.Length(min=12,max=150), validators.Optional()])
 #{Admin}matthias
 #helpmeplease
+class FaqForm(Form):
+    answer = StringField('Answer', [validators.Length(min=1,max=150), validators.DataRequired()])
+    question = StringField('Question', [validators.Length(min=1,max=150), validators.DataRequired()])

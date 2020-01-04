@@ -2,6 +2,7 @@ import User as u
 import Order as o
 import Report as r
 import Product as p
+import Faq as f
 import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
@@ -9,7 +10,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 import os
 from ReportForms import CreateReportForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
-from staff import CreateStaffForm, StaffUpdateForm
+from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
@@ -151,21 +152,24 @@ def sellerIndex():
 # staff
 @app.route('/staff/create', methods=['GET', 'POST'])
 def staffCreate():
-    createUserForm = CreateUserForm(request.form)
-    if request.method == 'POST' and createUserForm.validate():
-        usersDict = {}
-        db = shelve.open('Users.db', 'c')
-        try:
-            usersDict = db['Users']
-            count = len(usersDict)
-        except:
-            print("Error in retrieving Users from storage.db.")
-            count = 0
+    if current_user.is_authenticated:
+        createUserForm = CreateUserForm(request.form)
+        if request.method == 'POST' and createUserForm.validate():
+            usersDict = {}
+            db = shelve.open('Users.db', 'c')
+            try:
+                usersDict = db['Users']
+                count = len(usersDict)
+            except:
+                print("Error in retrieving Users from storage.db.")
+                count = 0
 
-        user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
-        usersDict[user.getID()] = user
-        db['Users'] = usersDict
-        return redirect(url_for("staffAccounts"))
+            user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
+            usersDict[user.getID()] = user
+            db['Users'] = usersDict
+            return redirect(url_for("staffAccounts"))
+    else:
+        return redirect(url_for("index"))
     return render_template('staffCreate.html', form=createUserForm)
 
 @app.route('/deleteUser/<int:id>', methods=['POST'])
@@ -185,10 +189,6 @@ def staffOrders():
 @app.route('/staff/update')
 def staffUpdate():
     return render_template('staffUpdate.html')
-
-@app.route('/staff/faq')
-def staffFaq():
-    return render_template('staffFaq.html')
 
 #@app.route('/staff/profile')
 #def staffProfile():
@@ -220,26 +220,113 @@ def updateUser(id):
 
 @app.route('/staff/accounts')
 def staffAccounts():
-    db = shelve.open("Users.db", "c")
-    try:
-        userDict = db["Users"]
-        userList = []
-        for key in userDict:
-            user = userDict.get(key)
-            userList.append(user)
-    except:
-        print("Error in retrieving user storage.")
-        userList = []
-    finally:
-        db.close()
-        print(userList)
-        for user in userList:
-            print(user.getID())
-            print(user.getUsername())
+    if current_user.is_authenticated:
+        db = shelve.open("Users.db", "c")
+        try:
+            userDict = db["Users"]
+            userList = []
+            for key in userDict:
+                user = userDict.get(key)
+                userList.append(user)
+        except:
+            print("Error in retrieving user storage.")
+            userList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
     return render_template('retrieveAcc.html', userList=userList)
 # whatever the person doing staff
+#FAQ
+@app.route('/faq') #R faq
+def faq():
+    if current_user.is_authenticated:
+        db = shelve.open("faq.db", "c")
+        try:
+            faqDict = db["ticket"]
+            faqList = []
+            for key in faqDict:
+                faqs = faqDict.get(key)
+                faqList.append(faqs)
 
+        except:
+            print("Error in retrieving faq storage.")
+            faqList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('FAQs.html', faqList=faqList)
+@app.route('/faq/ask', methods=['GET', 'POST'])
+def ask():
+    if current_user.is_authenticated:
+        createFaqForm = FaqForm(request.form)
+        if request.method == 'POST':
+            faqDict = {}
+            db = shelve.open('faq.db', 'c')
+            try:
+                faqDict = db["ticket"]
+            except:
+                print("Error in retrieving tickets from faq.db.")
 
+            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType())
+            faqDict[tix.getTID()] = tix
+            db["ticket"] = faqDict
+            # Test codes
+            faqDict = db["ticket"]
+            tix = faqDict[tix.getTID()]
+            print(tix.getTID(), "was stored in shelve successfully ")
+            db.close()
+            print(faqDict)
+            return redirect(url_for('faq'))
+    else:
+        return redirect(url_for("index"))
+    return render_template('FAQask.html', form= createFaqForm)
+@app.route('/staff/faq') #R faq for staff
+def faqstaff():
+    if current_user.is_authenticated:
+        db = shelve.open("faq.db", "c")
+        faqDict = db["ticket"]
+        faqList = []
+        for key in faqDict:
+            faqs = faqDict.get(key)
+            faqList.append(faqs)
+
+    else:
+        return redirect(url_for("index"))
+    return render_template('FAQstaff.html', faqList=faqList)
+
+@app.route('/answerFAQ/<int:Tid>/', methods=['GET', 'POST'])
+def ans(Tid):
+    updatefaqForm = FaqForm(request.form)
+    if current_user.is_authenticated:
+        if request.method == 'POST':
+            #try:
+            db = shelve.open("faq.db", "w")
+            faqDict = db["ticket"]
+            faq = faqDict.get(Tid)
+            print("szrdtcfgvhi")
+            faq.setAns(updatefaqForm.answer.data)
+            print(faq.getAns(), 'dtcfygvujnom')
+            db["ticket"] = faqDict
+            db.close()
+            #except:
+            #    print("Error updating faq storage.")
+            return redirect(url_for('faqstaff'))
+        else:
+            db = shelve.open('faq.db', 'w')
+            try:
+                faqDict = db["ticket"]
+                faq = faqDict.get(Tid)
+                updatefaqForm.question.data = faq.getQn()
+                updatefaqForm.answer.data = faq.getAns()
+            except:
+                print("Error in retrieving faq storage. place 2")
+            finally:
+                db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('FAQans.html', form= updatefaqForm, Quest = faq.getQn() )
 # reports
 @app.route('/staff')
 @login_required

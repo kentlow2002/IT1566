@@ -23,17 +23,9 @@
         <tbody>
         {% for faq in faqList %}
           <tr>
-            {% if usertype != "Staff" %}
-          	{% if faq.getType() == usertype %}
-            <td> Question:{{ faq.getQn() }}</td></tr><tr>
-            <td>Answer: {{ faq.getAns() }}</td>
+            <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
+            <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a></td>
           </tr>
-          {% else %}
-          <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
-          <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a>
-        </tr>
-          {% endif %}
-          {% endif %}
         {% endfor %}
         </tbody>
       </table>
