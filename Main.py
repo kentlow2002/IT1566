@@ -256,7 +256,7 @@ def faq():
             db.close()
     else:
         return redirect(url_for("index"))
-    return render_template('FAQs.html', faqList=faqList)
+    return render_template('FAQs.html', faqList=faqList, usertype = current_user.getType())
 @app.route('/faq/ask', methods=['GET', 'POST'])
 def ask():
     if current_user.is_authenticated:
@@ -281,7 +281,7 @@ def ask():
             return redirect(url_for('faq'))
     else:
         return redirect(url_for("index"))
-    return render_template('FAQask.html', form= createFaqForm)
+    return render_template('FAQask.html', form= createFaqForm, usertype = current_user.getType())
 @app.route('/staff/faq') #R faq for staff
 def faqstaff():
     if current_user.is_authenticated:
@@ -294,7 +294,7 @@ def faqstaff():
 
     else:
         return redirect(url_for("index"))
-    return render_template('FAQstaff.html', faqList=faqList)
+    return render_template('FAQstaff.html', faqList=faqList, usertype = current_user.getType())
 
 @app.route('/answerFAQ/<int:Tid>/', methods=['GET', 'POST'])
 def ans(Tid):
