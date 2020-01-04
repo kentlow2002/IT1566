@@ -14,8 +14,24 @@ class Products:
 
     def productSell(self):
         return 0
-
-
+    def get_productID(self):
+        return self.__productId
+    def get_productName(self):
+        return self.__productName
+    def set_productName(self, productName):
+        self.__productName = productName
+    def get_productStock(self):
+        return self.__productStock
+    def set_productStock(self, productStock):
+        self.__productName = productStock
+    def get_productPrice(self):
+        return self.__productPrice
+    def set_productPrice(self, productPrice):
+        self.__productPrice = productPrice
+    def get_productDesc(self):
+        return self.__productDesc
+    def set_productDesc(self, productDesc):
+        self.__productDesc = productDesc
 class ProductList:
     def __init__(self):
         self.__list = []

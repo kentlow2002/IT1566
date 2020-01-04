@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %} staff {% endblock %}
+
+{% block navbar %}
+  {% include "includes/_navbarStaff.html" %}
+{% endblock %}
+{% block content %}
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -12,19 +18,6 @@
 		<title>Welcome - X Store</title>
 	</head>
 	<body>
-	    <nav class="navbar navbar-expand-lg sticky-top">
-  			<a class="navbar-brand" href="index.html" title="Click here to go back to home page">X Store</a>
-  			<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-  		    <span class="navbar-toggler-icon"></span>
-  	  	</button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-          <div class="nav navbar-nav">
-            <a class="nav-link" href="retrieveProduct.html" id="products">View Products</a>
-            <a class="nav-link" href="#" id="orderhistory">View Past Orders</a>
-            <a class="nav-link" href="#">View Profile</a>
-          </div>
-        </div>
-	    </nav>
 
 	    <div class="container-fluid content">
 	      <div class="row justify-content-center">
@@ -44,4 +37,5 @@
 	    </div>
   	</body>
   	<script src="js/js.js"></script>
-</html>
+		{% endblock %}
+# this page is unused but just keep in case
