@@ -21,12 +21,13 @@
         <tbody>
         {% for faq in faqList %}
           <tr>
-            {% if usertype != "Staff" %}
-          	{% if faq.getType() == usertype %}
+          {% if usertype != "Staff" %}
+          	<!-- {# if faq.getType() == usertype #} {# endif #} -->
+						{% if faq.getUID() == UserID %}
             <td> Question:{{ faq.getQn() }}</td></tr><tr>
             <td>Answer: {{ faq.getAns() }}</td>
           </tr>
-					{% endif %}
+						{% endif %}
           {% else %}
           <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
           <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a>
