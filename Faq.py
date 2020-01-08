@@ -1,11 +1,12 @@
 from flask_login import UserMixin
 
 class Ticket:
-    def __init__(self, qn, ans, type, id):
+    def __init__(self, qn, ans, type, id, userID):
         self.__tID = id
         self.__qn = qn
         self.__ans = ans
         self.__type = type
+        self.__userID = userID
 
     def getQn(self):
         return self.__qn
@@ -24,3 +25,6 @@ class Ticket:
 
     def setAns(self, ans):
         self.__ans = ans
+
+    def getUID(self):
+        return self.__userID
