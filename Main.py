@@ -80,11 +80,17 @@ def signUp():
         db = shelve.open('Users.db', 'c')
         try:
             usersDict = db['Users']
-            count = len(usersDict)
+            count = 0
+            while True:
+                if usersDict[count] == "null":
+                     break
+                count += 1
+        except KeyError:
+            count = count
         except:
             print("Error in retrieving Users from storage.db.")
             count = 0
-
+        print(count)
         if createUserForm.username.data[:7] == "{Admin}":
             user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         else:
@@ -159,7 +165,13 @@ def staffCreate():
             db = shelve.open('Users.db', 'c')
             try:
                 usersDict = db['Users']
-                count = len(usersDict)
+                count = 0
+                while True:
+                    if usersDict[count] == "null":
+                         break
+                    count += 1
+            except KeyError:
+                count = count
             except:
                 print("Error in retrieving Users from storage.db.")
                 count = 0
@@ -254,22 +266,30 @@ def faq():
             faqList = []
         finally:
             db.close()
+            print(current_user.getID())
     else:
         return redirect(url_for("index"))
-    return render_template('FAQs.html', faqList=faqList)
+    return render_template('FAQs.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
 @app.route('/faq/ask', methods=['GET', 'POST'])
 def ask():
     if current_user.is_authenticated:
         createFaqForm = FaqForm(request.form)
         if request.method == 'POST':
             faqDict = {}
-            db = shelve.open('faq.db', 'c')
             try:
+                db = shelve.open('faq.db', 'c')
                 faqDict = db["ticket"]
+                count = 0
+                while True:
+                    if faqDict[count] == "null":
+                         break
+                    count += 1
+            except KeyError:
+                count = count
             except:
                 print("Error in retrieving tickets from faq.db.")
-
-            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType())
+                count = 0
+            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType(), count, current_user.getID())
             faqDict[tix.getTID()] = tix
             db["ticket"] = faqDict
             # Test codes
@@ -281,20 +301,25 @@ def ask():
             return redirect(url_for('faq'))
     else:
         return redirect(url_for("index"))
-    return render_template('FAQask.html', form= createFaqForm)
+    return render_template('FAQask.html', form= createFaqForm, usertype = current_user.getType())
 @app.route('/staff/faq') #R faq for staff
 def faqstaff():
     if current_user.is_authenticated:
-        db = shelve.open("faq.db", "c")
-        faqDict = db["ticket"]
-        faqList = []
-        for key in faqDict:
-            faqs = faqDict.get(key)
-            faqList.append(faqs)
-
+        faqList = ""
+        try:
+            db = shelve.open("faq.db", "c")
+            faqDict = db["ticket"]
+            faqList = []
+            for key in faqDict:
+                faqs = faqDict.get(key)
+                faqList.append(faqs)
+        except:
+            print("error in retrieving faqs")
+        finally:
+            db.close()
     else:
         return redirect(url_for("index"))
-    return render_template('FAQstaff.html', faqList=faqList)
+    return render_template('FAQstaff.html', faqList=faqList, usertype = current_user.getType())
 
 @app.route('/answerFAQ/<int:Tid>/', methods=['GET', 'POST'])
 def ans(Tid):
@@ -305,9 +330,7 @@ def ans(Tid):
             db = shelve.open("faq.db", "w")
             faqDict = db["ticket"]
             faq = faqDict.get(Tid)
-            print("szrdtcfgvhi")
             faq.setAns(updatefaqForm.answer.data)
-            print(faq.getAns(), 'dtcfygvujnom')
             db["ticket"] = faqDict
             db.close()
             #except:
@@ -320,13 +343,16 @@ def ans(Tid):
                 faq = faqDict.get(Tid)
                 updatefaqForm.question.data = faq.getQn()
                 updatefaqForm.answer.data = faq.getAns()
+
             except:
                 print("Error in retrieving faq storage. place 2")
             finally:
                 db.close()
+
+
     else:
         return redirect(url_for("index"))
-    return render_template('FAQans.html', form= updatefaqForm, Quest = faq.getQn() )
+    return render_template('FAQans.html', form= updatefaqForm, Quest = faq.getQn())
 # reports
 @app.route('/staff')
 @login_required

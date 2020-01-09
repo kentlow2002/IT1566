@@ -14,26 +14,26 @@
 
 <h2>FAQs</h2>
 <div class="container-fluid content">
-  <div class="row justify-content-center">
-  </div>
   <div id="table" style="display:block" align = "center">
     <br>
     <div id="faqs">
-      <table class="table table-striped">
+      <table class="table table-striped justify-content-centre text-center">
         <tbody>
         {% for faq in faqList %}
           <tr>
-            {% if usertype != "Staff" %}
-          	{% if faq.getType() == usertype %}
+          {% if usertype != "Staff" %}
+          	<!-- {# if faq.getType() == usertype #} {# endif #} -->
+						{% if faq.getUID() == UserID %}
             <td> Question:{{ faq.getQn() }}</td></tr><tr>
             <td>Answer: {{ faq.getAns() }}</td>
           </tr>
+						{% endif %}
           {% else %}
           <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
           <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a>
         </tr>
           {% endif %}
-          {% endif %}
+
         {% endfor %}
         </tbody>
       </table>
