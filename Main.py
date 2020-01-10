@@ -85,8 +85,6 @@ def signUp():
                 if usersDict[count] == "null":
                      break
                 count += 1
-        except KeyError:
-            count = count
         except:
             print("Error in retrieving Users from storage.db.")
             count = 0
