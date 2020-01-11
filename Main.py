@@ -37,8 +37,9 @@ def login():
     userLogInForm = UserLogInForm(request.form)
     if request.method == 'POST' and userLogInForm.validate():
         usersDict = {}
-        db = shelve.open('Users.db', 'r')
+
         try:
+            db = shelve.open('Users.db', 'r')
             usersDict = db['Users']
         except:
             print("Error in retrieving Users from storage.db.")
@@ -63,7 +64,7 @@ def login():
         except Exception as e:
             print("ERROR", e)
 
-        return redirect(url_for("logout"))
+        return redirect(url_for("login"))
     return render_template('login.html', form=userLogInForm)
 
 @app.route('/logout')
@@ -78,6 +79,7 @@ def signUp():
     if request.method == 'POST' and createUserForm.validate():
         usersDict = {}
         db = shelve.open('Users.db', 'c')
+        count = 0
         try:
             usersDict = db['Users']
             count = 0
@@ -87,7 +89,6 @@ def signUp():
                 count += 1
         except:
             print("Error in retrieving Users from storage.db.")
-            count = 0
         print(count)
         if createUserForm.username.data[:7] == "{Admin}":
             user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
@@ -126,9 +127,9 @@ def userEdit():
     userUpdateForm.username.data = user.getUsername()
     userUpdateForm.email.data = user.getEmail()
     if request.method == "POST" and userUpdateForm.validate():
-        if form.deleteAcc.data:
+        if userUpdateForm.deleteAcc.data:
             usersDict[userID] = 0
-            return redirect('/index')
+            return redirect('/')
         else:
             if user.loginCheck(userUpdateForm.oldPassword.data):
                 user.setEmail(userUpdateForm.email.data)
@@ -168,8 +169,6 @@ def staffCreate():
                     if usersDict[count] == "null":
                          break
                     count += 1
-            except KeyError:
-                count = count
             except:
                 print("Error in retrieving Users from storage.db.")
                 count = 0
