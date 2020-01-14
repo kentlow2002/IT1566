@@ -1,5 +1,5 @@
 import User as u
-import Order as o
+#import Order as o
 import Report as r
 import Product as p
 import Faq as f
@@ -181,6 +181,8 @@ def staffCreate():
                     if usersDict[count] == "null":
                          break
                     count += 1
+            except KeyError:
+                pass
             except:
                 print("Error in retrieving Users from storage.db.")
                 count = 0

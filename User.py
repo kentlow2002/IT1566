@@ -49,7 +49,7 @@ class User(UserMixin):
 
 class Buyer(User):
     def __init__(self,username,userEmail,userPassword,userType,userID):
-        super().__init__(username,userEmail,userPassword,userType,userID)
+        super().__init__(username,userEmail,userPassword, userType,userID)
 
     def buyerDelete(self):
         return 0
