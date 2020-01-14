@@ -114,30 +114,42 @@ def signedUp():
 @app.route('/userEdit',methods=["GET","POST"])
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
-    usersDict = {}
-    db = shelve.open('Users.db', 'r')
-    try:
-        usersDict = db['Users']
-    except:
-        print("Error reading db")
-
-    userID = int(request.cookies.get("userID"))
-    user = usersDict[userID]
-    userType = user.getType()
-    userUpdateForm.username.data = user.getUsername()
-    userUpdateForm.email.data = user.getEmail()
     if request.method == "POST" and userUpdateForm.validate():
+        usersDict = {}
+        db = shelve.open('Users.db', 'w')
+        try:
+            usersDict = db['Users']
+        except:
+            print("Error reading db")
+
+        userID = int(request.cookies.get("userID"))
+        user = usersDict.get(userID)
+        userType = user.getType()
         if userUpdateForm.deleteAcc.data:
-            usersDict[userID] = 0
+            user = 0
             return redirect('/')
         else:
             if user.loginCheck(userUpdateForm.oldPassword.data):
                 user.setEmail(userUpdateForm.email.data)
+                print("email changed",user)
                 if userUpdateForm.newPassword.data.isalnum():
                     user.setPassword(userUpdateForm.newPassword.data)
-
+        db['Users'] = usersDict
         urlString = '/'+userType.lower()+'/index'
         return redirect(urlString)
+    else:
+        usersDict = {}
+        db = shelve.open('Users.db', 'r')
+        try:
+            usersDict = db['Users']
+        except:
+            print("Error reading db")
+
+        userID = int(request.cookies.get("userID"))
+        user = usersDict.get(userID)
+        userType = user.getType()
+        userUpdateForm.username.data = user.getUsername()
+        userUpdateForm.email.data = user.getEmail()
 
     return render_template('userEdit.html', form=userUpdateForm, usertype=userType)
 
