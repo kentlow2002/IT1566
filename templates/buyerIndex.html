@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block title %} Welcome - X Store {% endblock %}
-
 {% block navbar %}
-{% include "includes/_navbarBuyer.html" %}
+{% include "includes\_navbarBuyer.html" %}
 {% block content %}
     <div class="container-fluid content">
       <div class="row justify-content-center">
@@ -13,12 +12,13 @@
       </div>
       <div class="row justify-content-center">
         <div class="col-md-2 justify-content-center">
-          <img src='..\assets\oculus.jpeg'class="img-thumbnail"width="200px" height="auto"></img>
+          <img src='..\assets\oculus.jpeg' class="img-thumbnail" width="200px" height="auto">
           <p class="text-center">Oculus Rift VR Headset</p>
-          <img src='..\assets\ps4pro.jpg'class="img-thumbnail" width="200px" height="auto"></img>
+          <img src='..\assets\ps4pro.jpg' class="img-thumbnail" width="200px" height="auto">
           <p class="text-center">PS4 Pro</p>
-          <img src='..\assets\galaxy fold black.jpg'class="img-thumbnail" width="200px" height="auto"></img>
+          <img src='..\assets\galaxy fold black.jpg' class="img-thumbnail" width="200px" height="auto">
           <p class="text-center">Samsung Galaxy Fold</p>
+        </div>
       </div>
     </div>
 {% endblock %}

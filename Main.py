@@ -1,5 +1,5 @@
 import User as u
-#import Order as o
+import Order as o
 import Report as r
 import Product as p
 import Faq as f
@@ -701,3 +701,14 @@ def reportsDeleteYearly(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+#orders
+@app.route('/order')
+@login_required
+def order():
+    if current_user.is_authenticated and current_user.getType() == "Buyer":
+        orderDict = {}
+        db = shelve.open("orderStorage.db", "c")
+        try:
+            orderDict = db["Order"]
+            OrderList = []
+        finally: db.close
