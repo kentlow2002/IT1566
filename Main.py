@@ -146,7 +146,22 @@ def userEdit():
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
-
+@app.route('/buyer/product')
+# @login_required
+def buyerProduct():
+    return render_template('buyerProduct.html')
+@app.route('/buyer/retrieve')
+# @login_required
+def buyerRetrieve():
+    return render_template('buyerRetrieve.html')
+@app.route('/buyer/cart')
+# @login_required
+def buyerCart():
+    return render_template('buyerCart.html')
+@app.route('/buyer/checkout')
+# @login_required
+def buyerCheckout():
+    return render_template('buyerCheckout.html')
 # seller
 @app.route('/seller/index')
 # @login_required
@@ -711,4 +726,5 @@ def order():
         try:
             orderDict = db["Order"]
             OrderList = []
+
         finally: db.close

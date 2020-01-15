@@ -87,7 +87,7 @@ input {
 
 .table {
   margin: auto;
-  width: 80%
+  width: 100%
 }
 
 #table table, #table th, #table td {
@@ -140,4 +140,8 @@ input {
 
 #filter * {
   display:inline;
+}
+
+.text-center {
+  margin-left: -100px !important;
 }
