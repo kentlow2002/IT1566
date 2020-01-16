@@ -6,20 +6,20 @@
 {% block content %}
     <div class="container-fluid content">
       <div class="row justify-content-center">
-        <div class="row-sm-6">
+        <div class="row-sm-3">
           <p class="text-center">Welcome, Buyer!</p>
           <p class="text-center">These are your previous buy orders!</p>
         </div>
       </div>
       <div class="row justify-content-center">
         <div class="col-md-2 justify-content-center">
-          <img src='..\assets\oculus.jpeg'class="img"width="200px" height="auto"></img>
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
           <p class="text-center">Oculus Rift VR Headset</p>
           <p class="text-center">Price: $650</p>
-          <img src='..\assets\ps4pro.jpg'class="img" width="200px" height="auto"></img>
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/ps4pro.jpg') }}" style="">
           <p class="text-center">PS4 Pro</p>
           <p class="text-center">Price: $540</p>
-          <img src='..\assets\galaxy fold black.jpg'class="img " width="200px" height="auto"></img>
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/galaxy fold black.jpg') }}" style="">
           <p class="text-center">Samsung Galaxy Fold</p>
           <p class="text-center">Price:$3000</p>
 
