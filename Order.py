@@ -1,6 +1,6 @@
 class Order:
     def __init__(self,orderId,orderDate,orderDesc,orderStatus,orderAddr,orderPrice,orderQuan):
-        self.__orderList = []
+        self.__orderDict = {}
         self.__orderId = 0 #to differentiate same products but bought by different users
         self.__orderDate = orderDate
         self.__orderDesc = orderDesc
