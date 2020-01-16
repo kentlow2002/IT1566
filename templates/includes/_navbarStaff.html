@@ -11,13 +11,14 @@
         <a class="nav-link" href="/staff/orders" id="orderhistory">View Pending Orders</a>
       </div>
       <div class="nav navbar-nav">
-        <a class="nav-link" href="/userEdit" id="profile">View Profile</a>
-      </div>
-      <div class="nav navbar-nav">
         <a class="nav-link" href="/staff/create" id="profile">Create staff account</a>
       </div>
       <div class="nav navbar-nav">
-      <li class="nav-item dropdown">
+      </div>
+      <div class="nav navbar-nav">
+        <a class="nav-link" href="/staff/accounts" id="profile">View accounts</a>
+      </div>
+      <div class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
         FAQ
         </a>
@@ -25,10 +26,15 @@
             <a class="dropdown-item" href="/faq/ask">Ask a question</a>
             <a class="dropdown-item" href="/staff/faq">View questions</a>
           </div>
-      </li>
       </div>
-      <div class="nav navbar-nav">
-        <a class="nav-link" href="/staff/accounts" id="profile">View accounts</a>
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+        Your Account
+        </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/userEdit">Edit/Delete your profile</a>
+            <a class="dropdown-item" href="/logout">Log Out</a>
+          </div>
       </div>
     </div>
 </nav>
