@@ -29,6 +29,9 @@ class User(UserMixin):
     def setPassword(self,newPassword):
         self.__userPassword = self.passwdCheck(newPassword)
 
+    def setAddr(self,newAddr):
+        self.__userAddr = newAddr
+
     def getUsername(self):
         return self.__username
 
@@ -41,6 +44,9 @@ class User(UserMixin):
     def getID(self):
         return self.__userID
 
+    def getAddr(self):
+        return self.__userAddr
+
     def get_id(self):
         return self.__userID
 
@@ -50,9 +56,19 @@ class User(UserMixin):
 class Buyer(User):
     def __init__(self,username,userEmail,userPassword,userType,userID):
         super().__init__(username,userEmail,userPassword, userType,userID)
+        self.__buyerAddr = ""
 
     def buyerDelete(self):
         return 0
+
+    def setBuyerAddr(self,newAddr):
+        self.__buyerAddr = newAddr
+
+    def getBuyerAddr(self):
+        return self.__buyerAddr
+
+    def __str__(self):
+        return super().__str__() + ' ' + self.__buyerAddr
 
 class Seller(User):
     def __init__(self,username,userEmail,userPassword,userType,userID):
