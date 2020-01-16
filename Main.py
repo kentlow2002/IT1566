@@ -1,5 +1,5 @@
 import User as u
-#import Order as o
+import Order as o
 import Report as r
 import Product as p
 import Faq as f
@@ -167,7 +167,22 @@ def userEdit():
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
-
+@app.route('/buyer/product')
+# @login_required
+def buyerProduct():
+    return render_template('buyerProduct.html')
+@app.route('/buyer/retrieve')
+# @login_required
+def buyerRetrieve():
+    return render_template('buyerRetrieve.html')
+@app.route('/buyer/cart')
+# @login_required
+def buyerCart():
+    return render_template('buyerCart.html')
+@app.route('/buyer/checkout')
+# @login_required
+def buyerCheckout():
+    return render_template('buyerCheckout.html')
 # seller
 @app.route('/seller/index')
 # @login_required
@@ -492,18 +507,42 @@ def reportsCreate():
                         date = date[0]
                 return date
 
-            formDate = createReportForm.day.data + "/" + createReportForm.month.data + "/" + createReportForm.year.data
+            if createReportForm.type.data == "D":
+                formDate = createReportForm.day.data + "/" + createReportForm.month.data + "/" + createReportForm.year.data
+            elif createReportForm.type.data == "M":
+                formDate = createReportForm.month.data + "/" + createReportForm.year.data
+            else:
+                formDate = createReportForm.year.data
             correctedDate = dateValidator(formDate)
 
-            transaction = open("test.txt", "r")
+            # transaction = open("test.txt", "r")
+
+            import stepInDB
+            orders = {
+                stepInDB.Order(0, "12/12/2019", "testing", "delivered", "address", 100, 1),
+                stepInDB.Order(1, "13/12/2019", "testing", "delivered", "address", 200, 9),
+                stepInDB.Order(2, "12/12/2019", "testing", "delivered", "address", 100, 5),
+                stepInDB.Order(3, "12/12/2019", "testing", "delivered", "address", 300, 4),
+                stepInDB.Order(4, "14/12/2019", "testing", "delivered", "address", 400, 3),
+                stepInDB.Order(5, "12/12/2019", "testing", "delivered", "address", 100, 15),
+                stepInDB.Order(6, "13/12/2019", "testing", "delivered", "address", 150, 10),
+            }
+            stepInOrdersDB = shelve.open("stepInOrdersDB.db", "c")
+            stepInOrdersDB["test"] = orders
+            stepInOrdersDB.close()
+
+
+
+            order = {}
+            stepInOrdersDB = shelve.open("stepInOrdersDB.db", "r")
+            order = stepInOrdersDB["test"]
             if createReportForm.type.data == "D":
                 productCount = 0
                 productPrice = 0
-                for line in transaction:
-                    list = line.split(", ")
-                    if dateValidator(list[0]) == correctedDate:
-                        productCount += int(list[2])
-                        productPrice += float(list[3])
+                for all in order:
+                    if dateValidator(all.get_orderDate()) == correctedDate:
+                        productCount += int(all.get_orderQuan())
+                        productPrice += float(all.get_orderPrice())
                 report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
                 reportDict[correctedDate] = report
                 db["Daily"] = reportDict
@@ -511,11 +550,10 @@ def reportsCreate():
             elif createReportForm.type.data == "M":
                 productCount = 0
                 productPrice = 0
-                for line in transaction:
-                    list = line.split(", ")
-                    if dateValidator(list[0]) == correctedDate:
-                        productCount += int(list[2])
-                        productPrice += float(list[3])
+                for all in order:
+                    if dateValidator(all.get_orderDate()) == correctedDate:
+                        productCount += int(all.get_orderQuan())
+                        productPrice += float(all.get_orderPrice())
                 report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
                 reportDict[correctedDate] = report
                 db["Monthly"] = reportDict
@@ -523,16 +561,15 @@ def reportsCreate():
             else:
                 productCount = 0
                 productPrice = 0
-                for line in transaction:
-                    list = line.split(", ")
-                    if dateValidator(list[0]) == correctedDate:
-                        productCount += int(list[2])
-                        productPrice += float(list[3])
+                for all in order:
+                    if dateValidator(all.get_orderDate()) == correctedDate:
+                        productCount += int(all.get_orderQuan())
+                        productPrice += float(all.get_orderPrice())
                 report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
                 reportDict[correctedDate] = report
                 db["Yearly"] = reportDict
 
-            transaction.close()
+            stepInOrdersDB.close()
             db.close()
 
             flash("The report for %s has be created/updated successfully" % correctedDate)
@@ -700,3 +737,15 @@ def reportsDeleteYearly(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+#orders
+@app.route('/order')
+@login_required
+def order():
+    if current_user.is_authenticated and current_user.getType() == "Buyer":
+        orderDict = {}
+        db = shelve.open("orderStorage.db", "c")
+        try:
+            orderDict = db["Order"]
+            OrderList = []
+
+        finally: db.close
