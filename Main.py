@@ -183,6 +183,11 @@ def buyerCart():
 # @login_required
 def buyerCheckout():
     return render_template('buyerCheckout.html')
+@app.route('/buyer/thanks')
+# @login_required
+def buyerThanks():
+    on
+    return render_template('buyerThanks.html')
 # seller
 @app.route('/seller/index')
 # @login_required
@@ -746,6 +751,6 @@ def order():
         db = shelve.open("orderStorage.db", "c")
         try:
             orderDict = db["Order"]
-            OrderList = []
+            OrderList = {}
 
         finally: db.close
