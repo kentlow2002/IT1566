@@ -246,10 +246,10 @@ def staffAccounts():
             db.close()
     else:
         return redirect(url_for("index"))
-    return render_template('retrieveAcc.html', userList=userList)
+    return render_template('retrieveAcc.html', userList=userList, UserID = current_user.getID())
 # whatever the person doing staff
 #FAQ
-@app.route('/faq') #R faq
+@app.route('/faq') #R faq contact us
 def faq():
     if current_user.is_authenticated:
         db = shelve.open("faq.db", "c")
@@ -269,6 +269,27 @@ def faq():
     else:
         return redirect(url_for("index"))
     return render_template('FAQs.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
+@app.route('/faqType') #R faq by user type
+def faqTypeS():
+    if current_user.is_authenticated:
+        db = shelve.open("faq.db", "c")
+        try:
+            faqDict = db["ticket"]
+            faqList = []
+            for key in faqDict:
+                faqs = faqDict.get(key)
+                faqList.append(faqs)
+
+        except:
+            print("Error in retrieving faq storage.")
+            faqList = []
+        finally:
+            db.close()
+            print(current_user.getID())
+    else:
+        return redirect(url_for("index"))
+    return render_template('FAQtype.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
+
 @app.route('/faq/ask', methods=['GET', 'POST'])
 def ask():
     if current_user.is_authenticated:
@@ -284,7 +305,10 @@ def ask():
                          break
                     count += 1
             except KeyError:
-                count = count
+                try:
+                    count = count
+                except UnboundLocalError:
+                    count = 0
             except:
                 print("Error in retrieving tickets from faq.db.")
                 count = 0
