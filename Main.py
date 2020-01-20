@@ -49,10 +49,11 @@ def login():
             passwordValid = 0
             userID = -1
             for i,j in usersDict.items():
-                if userLogInForm.username.data == j.getUsername() and j.loginCheck(userLogInForm.password.data) == 1:
-                    usernameValid = 1
-                    passwordValid = 1
-                    userID = j.getID()
+                if j != None:
+                    if userLogInForm.username.data == j.getUsername() and j.loginCheck(userLogInForm.password.data) == 1:
+                        usernameValid = 1
+                        passwordValid = 1
+                        userID = j.getID()
 
             if passwordValid == 1 and usernameValid == 1:
                 login_user(usersDict.get(userID), remember=userLogInForm.remember.data)
@@ -76,13 +77,13 @@ def logout():
 @app.route('/signup',methods=["GET","POST"])
 def signUp():
     createUserForm = CreateUserForm(request.form)
+    userLogInForm = UserLogInForm(request.form)
     if request.method == 'POST' and createUserForm.validate():
         usersDict = {}
         db = shelve.open('Users.db', 'c')
         count = 0
         try:
             usersDict = db['Users']
-            count = 0
             while True:
                 if usersDict[count] == "null":
                      break
@@ -104,7 +105,11 @@ def signUp():
         user = usersDict[user.get_userID()]
         print(user.get_firstName(), user.get_lastName(), "was stored in shelve successfully with userID =", user.get_userID())
         db.close()'''
-        return redirect(url_for("signedUp"))
+        login_user(usersDict.get(count), remember=userLogInForm.remember.data)
+        resp = make_response(redirect(url_for("userEdit")))
+        resp.set_cookie("userID",str(count))
+        print("checking")
+        return resp
     return render_template('signup.html', form=createUserForm)
 
 @app.route('/signedup')
@@ -114,30 +119,46 @@ def signedUp():
 @app.route('/userEdit',methods=["GET","POST"])
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
-    usersDict = {}
-    db = shelve.open('Users.db', 'r')
-    try:
-        usersDict = db['Users']
-    except:
-        print("Error reading db")
-
-    userID = int(request.cookies.get("userID"))
-    user = usersDict[userID]
-    userType = user.getType()
-    userUpdateForm.username.data = user.getUsername()
-    userUpdateForm.email.data = user.getEmail()
     if request.method == "POST" and userUpdateForm.validate():
+        usersDict = {}
+        db = shelve.open('Users.db', 'c')
+        try:
+            usersDict = db['Users']
+        except:
+            print("Error reading db")
+
+        userID = int(request.cookies.get("userID"))
+        user = usersDict.get(userID)
+        print(user)
+        userType = user.getType()
         if userUpdateForm.deleteAcc.data:
-            usersDict[userID] = 0
+            print('deleting')
+            usersDict[userID] = None
+            db['Users'] = usersDict
             return redirect('/')
         else:
             if user.loginCheck(userUpdateForm.oldPassword.data):
                 user.setEmail(userUpdateForm.email.data)
+                print("email changed",user)
                 if userUpdateForm.newPassword.data.isalnum():
                     user.setPassword(userUpdateForm.newPassword.data)
-
+        db['Users'] = usersDict
         urlString = '/'+userType.lower()+'/index'
         return redirect(urlString)
+    else:
+        print("lul")
+        usersDict = {}
+        db = shelve.open('Users.db', 'r')
+        try:
+            usersDict = db['Users']
+        except:
+            print("Error reading db")
+
+        userID = int(request.cookies.get("userID"))
+        user = usersDict.get(userID)
+        userType = user.getType()
+        userUpdateForm.username.data = user.getUsername()
+        userUpdateForm.email.data = user.getEmail()
 
     return render_template('userEdit.html', form=userUpdateForm, usertype=userType)
 
@@ -146,7 +167,27 @@ def userEdit():
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
-
+@app.route('/buyer/product')
+# @login_required
+def buyerProduct():
+    return render_template('buyerProduct.html')
+@app.route('/buyer/retrieve')
+# @login_required
+def buyerRetrieve():
+    return render_template('buyerRetrieve.html')
+@app.route('/buyer/cart')
+# @login_required
+def buyerCart():
+    return render_template('buyerCart.html')
+@app.route('/buyer/checkout')
+# @login_required
+def buyerCheckout():
+    return render_template('buyerCheckout.html')
+@app.route('/buyer/thanks')
+# @login_required
+def buyerThanks():
+    on
+    return render_template('buyerThanks.html')
 # seller
 @app.route('/seller/index')
 # @login_required
@@ -734,5 +775,6 @@ def order():
         db = shelve.open("orderStorage.db", "c")
         try:
             orderDict = db["Order"]
-            OrderList = []
+            OrderList = {}
+
         finally: db.close
