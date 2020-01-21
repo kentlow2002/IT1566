@@ -12,7 +12,7 @@
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
 
-<h2>Your Questions</h2>
+<h2>FAQs</h2>
 <div class="container-fluid content">
   <div id="table" style="display:block" align = "center">
     <br>
@@ -22,7 +22,7 @@
         {% for faq in faqList %}
           <tr>
           {% if usertype != "Staff" %}
-        	{% if faq.getUID() == UserID %}
+        	{% if faq.getType() == usertype %}
             <td> Question:{{ faq.getQn() }}</td></tr><tr>
             <td>Answer: {{ faq.getAns() }}</td>
           </tr>
