@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}List a Product{% endblock %}
+  {% block navbar %}
+  {% include 'includes/_navbarSeller.html' %}
+  {% endblock %}
+
+
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+<style>
+.space{
+  margin-top: 20px
+}
+</style>
+
+<div class="container-fluid content">
+<form method='POST' action="" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+
+  <div class="row justify-content-center text-center">
+    <div class="col-sm-6">
+      <p class="text-center">List a Product</p>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:20px">
+    <div class="col-sm-6 text-center" >
+      <img class="img-fluid" style="border: 1px solid black; margin-top: 15px; height: 250px; width: 250px" src="../../../{{ product.get_productPicture() }}">
+          {{ render_field(form.productPicture, class="custom-file") }}
+
+    </div>
+
+      <div class="col-sm-6 ">
+        <!--start of input-->
+        <div class="form-group">
+          {{ render_field(form.productName, class="form-control") }}
+        </div>
+
+        <div class="row space">
+          <div class="form-group">
+            {{ render_field(form.productCondition, class="form-check") }}
+          </div>
+        </div>
+
+        <div class="row space">
+          <div class="form-group">
+            {{ render_field(form.productPrice, class="form-control") }}
+          </div>
+        </div>
+
+        <div class="row space">
+          <div class="form-group">
+            {{ render_field(form.productQuantity, class="form-control") }}
+          </div>
+        </div>
+
+      </div>
+
+
+        <div class="col-sm-6" >
+        </div>
+
+        <div class="col-sm-6 row space" >
+          <div class="form-group">
+            {{ render_field(form.productDescription, class="form-control") }}
+          </div>
+          <!--end of input-->
+        </div>
+
+        <div class="col-sm-6" >
+        </div>
+
+        <div class="col-sm-6 row space" >
+          <input class="btn btn-primary" type="submit"  value="Update this product">
+        </div>
+
+  </div>
+
+</form>
+
+</div>
+
+{% endblock %}
+
+
+
+
+

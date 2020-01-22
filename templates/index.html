@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %} Welcome - X Store {% endblock %}
+
+{% block content %}
+    <div class="container-fluid content">
+      <div class="row justify-content-center">
+        <div class="col-sm-12">
+          <h4>Popular Products</h4>
+        </div>
+      </div>
+
+      <div  id="popular" class="row justify-content-center">
+        <div class="col-sm-3">
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
+          <p class="text-center">Oculus Rift</p>
+        </div>
+        <div class="col-sm-3">
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
+          <p class="text-center">Oculus Rift</p>
+        </div>
+        <div class="col-sm-3">
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
+          <p class="text-center">Oculus Rift</p>
+        </div>
+        <div class="col-sm-3">
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
+          <p class="text-center">Oculus Rift</p>
+        </div>
+      </div>
+      <hr>
+      <div class="row justify-content-center">
+        <div class="col-sm-12">
+          <h4 style="margin-top:15px;">Promotions</h4>
+        </div>
+      </div>
+
+      <div  id="promotions" class="row justify-content-center">
+        <div class="col-sm-3">
+          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
+          <p class="text-center">50% off for Oculus Rift!</p>
+        </div>
+      </div>
+    </div>
+    <hr>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %} staff {% endblock %}
+
+{% block navbar %}
+  {% include "includes/_navbarStaff.html" %}
+{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+  <body>
+
+	    <div class="container-fluid content">
+	      <div class="row justify-content-center">
+	        <div class="col-sm-12">
+	         	<h4 class="text-center">Answer: {{ Quest }}</h4>
+	        </div>
+	      </div>
+
+			<div class="row justify-content-center">
+				<div class="col-sm-6">
+					<form id="signup" method="post" class="form">
+						<div class="form-group">
+							{{ render_field(form.answer, class="form-control") }}
+						</div>
+						<button type="submit" class="btn btn-primary">Answer question</button>
+		      		</form>
+				</div>
+      </div>
+{% endblock %}

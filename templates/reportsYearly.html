@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %} Reports {% endblock %}
+
+{% block navbar %}
+  {% include "includes/_navbarStaff.html" %}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container-fluid content">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+          </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <div class="row justify-content-center">
+        <div class="col-sm-6">
+          <p class="text-center"><strong>Yearly (Total)</strong></p>
+        </div>
+      </div>
+      <div id="table" style="display:block" align = "center">
+        <div id="filter">
+          <div class="form-inline">
+            <div class="form-group">
+              <label for="year">Year</label>
+              <input class="form-control" id="year" type="number" min="1990" value="">
+            </div>
+            <button class="btn button" onclick="filter()">Filter</button>
+          </div>
+        </div>
+        <br>
+        <div id="reports">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Total Items Sold</th>
+                <th>Total Revenue ($)</th>
+                <th>Commission Earned ($)</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody id="report">
+            {% for reports in yearlyList %}
+              <tr>
+                <td id="date">{{ reports.get_reportDate() }}</td>
+                <td>{{ reports.get_itemSold() }}</td>
+                <td>{{ reports.get_revenue() }}</td>
+                <td>{{ reports.get_commission() }}</td>
+                <td>
+                  <form action="{{url_for('reportsDeleteYearly', id=reports.get_reportDate())}}" method="POST">
+                    <button class="btn button button3"><strong><u>Delete</u></strong></button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+<script>
+function filter() {
+  // Declare variables
+  var dayFilter, monthFilter, yearFilter, tr, td, i, date;
+  yearFilter = document.getElementById("year").value;
+  report = document.getElementById("report");
+  tr = report.getElementsByTagName('tr');
+
+  // Loop through all list items, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    date = td.innerText.split("/");
+
+    if (yearFilter != "") {
+      if (yearFilter == date[0]) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+    else if (yearFilter == "") {
+      tr[i].style.display = "";
+    }
+  }
+}
+</script>
+{% endblock %}

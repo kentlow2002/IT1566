@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %} Ask a Question {% endblock %}
+{% block navbar %}
+	{% if usertype == "Buyer" %}
+		{% include "includes/_navbarBuyer.html" %}
+	{% elif usertype == "Seller" %}
+		{% include "includes/_navbarSeller.html" %}
+	{% else %}
+		{% include "includes/_navbarStaff.html" %}
+	{% endif %}
+{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<h2>FAQs</h2>
+<div class="container-fluid content">
+  <div class="row justify-content-center">
+  </div>
+  <div id="table" style="display:block" align = "center">
+    <br>
+    <div id="faqs">
+      <table class="table table-striped">
+        <tbody>
+        {% for faq in faqList %}
+          <tr>
+            <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
+            <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
