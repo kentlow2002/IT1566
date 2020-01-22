@@ -501,11 +501,6 @@ def reportsCreate():
             def dateValidator(dateToValidate):
                 date = dateToValidate.split("/")
                 if len(date) == 3:
-                    if int(date[0]) > 31:
-                        date[0] = "31"
-                    if int(date[1]) > 12:
-                        date[1] = "12"
-
                     if len(date[0]) == 1:
                         date[0] = "0" + date[0]
                     if len(date[1]) == 1:
@@ -536,13 +531,31 @@ def reportsCreate():
                         date = date[0]
                 return date
 
+
             if createReportForm.type.data == "D":
                 formDate = createReportForm.day.data + "/" + createReportForm.month.data + "/" + createReportForm.year.data
             elif createReportForm.type.data == "M":
                 formDate = createReportForm.month.data + "/" + createReportForm.year.data
             else:
                 formDate = createReportForm.year.data
-            correctedDate = dateValidator(formDate)
+
+            try:
+                correctedDate = dateValidator(formDate)
+                today = datetime.today()
+
+                if createReportForm.type.data == "D":
+                    today = today.strftime("%d/%m/%Y")
+                elif createReportForm.type.data == "M":
+                    today = today.strftime("%m/%Y")
+                else:
+                    today = today.strftime("%Y")
+
+                if correctedDate > today:
+                    flash("The date %s have not pass, Please try again." % correctedDate)
+                    return redirect(url_for("reportsCreate"))
+            except:
+                flash("The date %s is a invalid date/format, Please try again." % formDate)
+                return redirect(url_for("reportsCreate"))
 
             # transaction = open("test.txt", "r")
 
@@ -566,42 +579,69 @@ def reportsCreate():
             stepInOrdersDB = shelve.open("stepInOrdersDB.db", "r")
             order = stepInOrdersDB["test"]
             if createReportForm.type.data == "D":
-                productCount = 0
-                productPrice = 0
-                for all in order:
-                    if dateValidator(all.get_orderDate()) == correctedDate:
-                        productCount += int(all.get_orderQuan())
-                        productPrice += float(all.get_orderPrice())
-                report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
-                reportDict[correctedDate] = report
-                db["Daily"] = reportDict
+                if today >= correctedDate:
+                    if correctedDate not in reportDict:
+                        productCount = 0
+                        productPrice = 0
+                        for all in order:
+                            if dateValidator(all.get_orderDate()) == correctedDate:
+                                productCount += int(all.get_orderQuan())
+                                productPrice += float(all.get_orderPrice())
+                        report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
+                        reportDict[correctedDate] = report
+                        db["Daily"] = reportDict
+                    else:
+                        db["Daily"] = reportDict
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % correctedDate)
+                        return redirect(url_for("reportsCreate"))
+                else:
+                    flash("The date %s have to be elapsed to be created." % correctedDate)
+                    return redirect(url_for("reportsCreate"))
 
             elif createReportForm.type.data == "M":
-                productCount = 0
-                productPrice = 0
-                for all in order:
-                    if dateValidator(all.get_orderDate()) == correctedDate:
-                        productCount += int(all.get_orderQuan())
-                        productPrice += float(all.get_orderPrice())
-                report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
-                reportDict[correctedDate] = report
-                db["Monthly"] = reportDict
+                if today > correctedDate:
+                    if correctedDate not in reportDict:
+                        productCount = 0
+                        productPrice = 0
+                        for all in order:
+                            if dateValidator(all.get_orderDate()) == correctedDate:
+                                productCount += int(all.get_orderQuan())
+                                productPrice += float(all.get_orderPrice())
+                        report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
+                        reportDict[correctedDate] = report
+                        db["Monthly"] = reportDict
+                    else:
+                        db["Monthly"] = reportDict
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % correctedDate)
+                        return redirect(url_for("reportsCreate"))
+                else:
+                    flash("The date %s have to be elapsed to be created." % correctedDate)
+                    return redirect(url_for("reportsCreate"))
 
             else:
-                productCount = 0
-                productPrice = 0
-                for all in order:
-                    if dateValidator(all.get_orderDate()) == correctedDate:
-                        productCount += int(all.get_orderQuan())
-                        productPrice += float(all.get_orderPrice())
-                report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
-                reportDict[correctedDate] = report
-                db["Yearly"] = reportDict
+                if today > correctedDate:
+                    if correctedDate not in reportDict:
+                        productCount = 0
+                        productPrice = 0
+                        for all in order:
+                            if dateValidator(all.get_orderDate()) == correctedDate:
+                                productCount += int(all.get_orderQuan())
+                                productPrice += float(all.get_orderPrice())
+                        report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
+                        reportDict[correctedDate] = report
+                        db["Yearly"] = reportDict
+                    else:
+                        db["Yearly"] = reportDict
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % correctedDate)
+                        return redirect(url_for("reportsCreate"))
+                else:
+                    flash("The date %s have to be elapsed to be created." % correctedDate)
+                    return redirect(url_for("reportsCreate"))
 
             stepInOrdersDB.close()
             db.close()
 
-            flash("The report for %s has be created/updated successfully" % correctedDate)
+            flash("The report for %s has be generated successfully" % correctedDate)
             if createReportForm.type.data == "D":
                 return redirect(url_for("reportsDaily"))
             elif createReportForm.type.data == "M":
@@ -611,6 +651,7 @@ def reportsCreate():
             else:
                 return redirect(url_for("reportsIndex"))
         return render_template('reportsCreate.html', form=createReportForm)
+
     elif current_user.is_authenticated and current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
     elif current_user.is_authenticated and current_user.getType() == "Seller":
