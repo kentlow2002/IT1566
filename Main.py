@@ -3,6 +3,7 @@ import Order as o
 import Report as r
 import Product as p
 import Faq as f
+import Cart as c
 import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
@@ -11,7 +12,7 @@ import os
 from ReportForms import CreateReportForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
-
+from CartForm import CartUpdateForm
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 login_manager = LoginManager()
@@ -167,17 +168,42 @@ def userEdit():
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
-@app.route('/buyer/product')
+@app.route('/buyer/product', methods = ['GET','POST'])
 # @login_required
 def buyerProduct():
+    if request.method == 'POST':
+        cartDict = {}
+        try:
+            cartDict = db['Cart']
+        except:
+            print("Error in retrieving Users from storage.db.dat")
+        finally:
+            # get the product,  qty,
+            # CHECK if exist,
+                # if exist, you should not create a new object, you should retrieve the existing object and increase the qty
+                # else, create a cart object by sending the product and qty in, add to cartDict
+            # save back to shelve
+        return redirect(url_for("cart"))
+
+    # GET
+    # retrieve one product
     return render_template('buyerProduct.html')
 @app.route('/buyer/retrieve')
 # @login_required
 def buyerRetrieve():
     return render_template('buyerRetrieve.html')
-@app.route('/buyer/cart')
-# @login_required
-def buyerCart():
+@app.route('/buyer/cart', methods = ['GET','POST'])
+def cart():
+    #if current_user.is_authenticated:
+    cartUpdateForm = CartUpdateForm(request.form)
+    if request.method == 'POST' and cartUpdateForm.validate():
+        cartDict = {}
+        try:
+            db = shelve.open('storage.db.dat', "r")
+            cartDict = db["Products"]
+        except Exception as e:
+            print(e)
+        return redirect(url_for("buyerCheckout"))
     return render_template('buyerCart.html')
 @app.route('/buyer/checkout')
 # @login_required
@@ -763,18 +789,17 @@ def reportsDeleteYearly(id):
     else:
         return redirect(url_for("index"))
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
 #orders
 @app.route('/order')
-@login_required
+#@login_required
 def order():
-    if current_user.is_authenticated and current_user.getType() == "Buyer":
+    #if current_user.is_authenticated and current_user.getType() == "Buyer":
         orderDict = {}
         db = shelve.open("orderStorage.db", "c")
         try:
             orderDict = db["Order"]
-            OrderList = {}
+        except Excecption as e:
+            print(e)
+if __name__ == '__main__':
+    app.run(debug=True)
 
-        finally: db.close
