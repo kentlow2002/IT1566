@@ -14,7 +14,7 @@ class Product:
         self.__productDescription = productDescription
         self.__productPicture = productPicture
         self.__productStatus = "public"
-        self.__userID = userID
+        self.__userID = int(userID)
 
     def productBuy(self):
         return 0

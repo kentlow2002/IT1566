@@ -191,8 +191,9 @@ def buyerThanks():
     return render_template('buyerThanks.html')
 # seller
 
-#@login_required
+
 @app.route('/seller/index')
+@login_required
 def sellerIndex():
 
     productsDict = {}
@@ -202,14 +203,22 @@ def sellerIndex():
         productsDict = db['products']
         productsList = []
         hiddenList = []
+        print(current_user.getID())
         for key in productsDict:   # loop through Dictionary
+            print("Main py : have products")
             product = productsDict.get(key)
-            if product.get_productStatus() == "public":
-                print("hello")
-                productsList.append(product)
-            else:
-                print("bye")
-                hiddenList.append(product)
+            print(product.get_productName())
+            print(product.get_userID())
+            userID = int(current_user.getID())
+            print("TEst", product.get_userID())
+            if userID == product.get_userID():
+                print("test")
+                if product.get_productStatus() == "public":
+                    print("hello")
+                    productsList.append(product)
+                else:
+                    print("bye")
+                    hiddenList.append(product)
         db.close()
     except:
         hiddenList = []
@@ -248,9 +257,11 @@ def sellerListProduct():
         # this saves it to the object
                     filepath = os.path.join("../../../static/assets", productPicture.filename)
 
-        userID = int(request.cookies.get("userID"))
-
+        userID = int(current_user.getID())
+        print("Main.py ln 258")
+        print(userID)
         product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
+        print(userID)
 
         # Save the User instance in the usersDict, using userID as the key
         productsDict[product.get_productId()] = product
