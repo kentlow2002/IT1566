@@ -11,7 +11,7 @@ class CreateStaffForm(Form):
 class StaffUpdateForm(Form):
     username = StringField('Username', [validators.Length(min=8,max=150), validators.DataRequired()])
     email = StringField('Email', [validators.Length(min=8,max=150), validators.Email(), validators.DataRequired()])
-    password = PasswordField('New Password', [validators.Length(min=12,max=150), validators.Optional()])
+    password = PasswordField('New Password', [validators.Length(min=12,max=150), validators.DataRequired()])
 #{Admin}matthias
 #helpmeplease
 #matthiasb
