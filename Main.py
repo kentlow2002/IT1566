@@ -9,6 +9,8 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 import os
 from ReportForms import CreateReportForm
+from ProductForms import CreateProductForm
+
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 
@@ -186,13 +188,194 @@ def buyerCheckout():
 @app.route('/buyer/thanks')
 # @login_required
 def buyerThanks():
-    on
     return render_template('buyerThanks.html')
 # seller
+
+
 @app.route('/seller/index')
-# @login_required
+@login_required
 def sellerIndex():
-    return render_template('sellerIndex.html')
+
+    productsDict = {}
+
+    try:
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        productsList = []
+        hiddenList = []
+        print(current_user.getID())
+        for key in productsDict:   # loop through Dictionary
+            print("Main py : have products")
+            product = productsDict.get(key)
+            print(product.get_productName())
+            print(product.get_userID())
+            userID = int(current_user.getID())
+            print("TEst", product.get_userID())
+            if userID == product.get_userID():
+                print("test")
+                if product.get_productStatus() == "public":
+                    print("hello")
+                    productsList.append(product)
+                else:
+                    print("bye")
+                    hiddenList.append(product)
+        db.close()
+    except:
+        hiddenList = []
+    return render_template('sellerIndex.html', productsList=productsList, count=len(productsList), hiddenList=hiddenList)
+
+
+@app.route('/seller/listing', methods=['GET', 'POST'])
+def sellerListProduct():
+    createProductForm = CreateProductForm(request.form)
+    if request.method == 'POST' and createProductForm.validate():
+        print("test for validate")
+        productsDict = {}
+        db = shelve.open('products.db', 'c')
+
+        try:
+            productsDict = db['products']
+            p.Product.countId = db['ProductCountId']
+
+        except:
+            print("Error in retrieving Users form storage.db")
+
+
+        # create an instance of class User
+        # send data from the form to class initializer
+        if request.files:
+                    productPicture = request.files[createProductForm.productPicture.name]
+
+                    # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
+                    print(productPicture)
+
+                    productPicture.save(os.path.join("static/assets", productPicture.filename))
+
+                    # this shows the path where it gets saved to
+                    print(os.path.join("static/assets", productPicture.filename))
+
+        # this saves it to the object
+                    filepath = os.path.join("../../../static/assets", productPicture.filename)
+
+        userID = int(current_user.getID())
+        print("Main.py ln 258")
+        print(userID)
+        product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
+        print(userID)
+
+        # Save the User instance in the usersDict, using userID as the key
+        productsDict[product.get_productId()] = product
+        db['products'] = productsDict
+
+        # Save the countID to shelve/persistence
+
+        db['ProductCountId'] = p.Product.countId
+        print(product.get_productName(), "was stored in shelve successfully with Product ID =", product.get_productId())
+
+        db.close()
+
+        return redirect(url_for('sellerIndex'))
+
+    return render_template('sellerListProduct.html', form=createProductForm)
+
+@app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
+def updateProduct(id):
+    updateProductForm = CreateProductForm(request.form)
+    #   POST: when click on submit button to send the data to server
+
+
+    if request.method == 'POST' and updateProductForm.validate():
+        productDict = {}
+        db = shelve.open('products.db', 'w')
+        productDict = db['products']
+
+        product = productDict.get(id)
+        product.set_productName(updateProductForm.productName.data)
+        product.set_productCondition(updateProductForm.productCondition.data)
+        product.set_productPrice(updateProductForm.productPrice.data)
+        product.set_productQuantity(updateProductForm.productQuantity.data)
+        product.set_productDesc(updateProductForm.productDescription.data)
+        if request.files:
+            try:
+                productPicture = request.files[updateProductForm.productPicture.name]
+
+                # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
+                print(productPicture)
+
+                productPicture.save(os.path.join("static/assets", productPicture.filename))
+
+                # this shows the path where it gets saved to
+                print(os.path.join("static/assets", productPicture.filename))
+
+                # this saves it to the object
+                filepath = os.path.join("../../../static/assets", productPicture.filename)
+                product.set_productPicture(filepath)
+            except:
+                product.set_productPicture(product.get_productPicture())
+
+        db['products'] = productDict  # write to shelve
+        db.close()
+
+        return redirect(url_for('sellerIndex'))
+
+    #   GET: when the page loads
+    else:
+        # these 4 lines are exactly the same as retrieve data
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        db.close()
+
+        #   find the data from Data Dictionary
+        product = productsDict.get(id)
+
+
+
+        #   display the data in the field
+        updateProductForm.productName.data = product.get_productName()
+        updateProductForm.productCondition.data = product.get_productCondition()
+        updateProductForm.productPrice.data = product.get_productPrice()
+        updateProductForm.productQuantity.data = product.get_productQuantity()
+        updateProductForm.productDescription.data = product.get_productDescription()
+
+
+        return render_template('updateProduct.html', form=updateProductForm, product=product)
+
+
+
+
+@app.route('/seller/hideProduct/<int:id>/', methods=['GET', 'POST'])
+def hideProduct(id):
+    productsDict = {}
+    # retrieve from persistence
+    db = shelve.open('products.db', 'w')
+    productsDict = db['products']
+    product = productsDict.get(id)
+    product.set_productStatusHidden()
+
+    db['products'] = productsDict
+
+    db.close()
+    print("product: ", productsDict)
+
+    return redirect(url_for('sellerIndex'))
+
+@app.route('/seller/showProduct/<int:id>/', methods=['GET', 'POST'])
+def showProduct(id):
+    print("hi")
+
+    productsDict = {}
+    # retrieve from persistence
+    db = shelve.open('products.db', 'w')
+    productsDict = db['products']
+    product = productsDict.get(id)
+    product.set_productStatusPublic()
+
+    db['products'] = productsDict
+
+    db.close()
+    print("product: ", productsDict)
+    return redirect(url_for('sellerIndex'))
 
 
 # staff
@@ -509,11 +692,16 @@ def reportsCreate():
                     if datetime.strptime("/".join(date), '%d/%m/%Y'):
                         if createReportForm.type.data == "D":
                             date = "/".join(date)
+                            date = datetime.strptime(date, "%d/%m/%Y")
                         elif createReportForm.type.data == "M":
-                            del date[0]
+                            del date[:1]
                             date = "/".join(date)
+                            date = datetime.strptime(date, "%m/%Y")
                         else:
-                            date = date[2]
+                            print(date)
+                            del date[:2]
+                            date = "/".join(date)
+                            date = datetime.strptime(date, "%Y")
                 elif len(date) == 2:
                     if int(date[0]) > 12:
                         date[0] = "12"
@@ -524,11 +712,11 @@ def reportsCreate():
                     if datetime.strptime("/".join(date), '%m/%Y'):
                         if createReportForm.type.data == "M":
                             date = "/".join(date)
-                        else:
-                            date = date[2]
+                            date = datetime.strptime(date, "%m/%Y")
                 elif len(date) == 1:
                     if datetime.strptime("/".join(date), '%Y'):
                         date = date[0]
+                        date = datetime.strptime(date, "%Y")
                 return date
 
 
@@ -541,14 +729,13 @@ def reportsCreate():
 
             try:
                 correctedDate = dateValidator(formDate)
-                today = datetime.today()
-
                 if createReportForm.type.data == "D":
-                    today = today.strftime("%d/%m/%Y")
+                    strCorrectedDate = correctedDate.strftime("%d/%m/%Y")
                 elif createReportForm.type.data == "M":
-                    today = today.strftime("%m/%Y")
+                    strCorrectedDate = correctedDate.strftime("%m/%Y")
                 else:
-                    today = today.strftime("%Y")
+                    strCorrectedDate = correctedDate.strftime("%Y")
+                today = datetime.today()
 
                 if correctedDate > today:
                     flash("The date %s have not pass, Please try again." % correctedDate)
@@ -568,6 +755,8 @@ def reportsCreate():
                 stepInDB.Order(4, "14/12/2019", "testing", "delivered", "address", 400, 3),
                 stepInDB.Order(5, "12/12/2019", "testing", "delivered", "address", 100, 15),
                 stepInDB.Order(6, "13/12/2019", "testing", "delivered", "address", 150, 10),
+                stepInDB.Order(7, "13/12/2018", "testing", "delivered", "address", 150, 10),
+                stepInDB.Order(8, "13/12/2017", "testing", "delivered", "address", 150, 10),
             }
             stepInOrdersDB = shelve.open("stepInOrdersDB.db", "c")
             stepInOrdersDB["test"] = orders
@@ -580,68 +769,68 @@ def reportsCreate():
             order = stepInOrdersDB["test"]
             if createReportForm.type.data == "D":
                 if today >= correctedDate:
-                    if correctedDate not in reportDict:
+                    if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
                         for all in order:
-                            if dateValidator(all.get_orderDate()) == correctedDate:
+                            if dateValidator(all.get_orderDate()).strftime("%d/%m/%Y") == strCorrectedDate:
                                 productCount += int(all.get_orderQuan())
                                 productPrice += float(all.get_orderPrice())
-                        report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
-                        reportDict[correctedDate] = report
+                        report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
+                        reportDict[strCorrectedDate] = report
                         db["Daily"] = reportDict
                     else:
                         db["Daily"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % correctedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % correctedDate)
+                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
 
             elif createReportForm.type.data == "M":
                 if today > correctedDate:
-                    if correctedDate not in reportDict:
+                    if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
                         for all in order:
-                            if dateValidator(all.get_orderDate()) == correctedDate:
+                            if dateValidator(all.get_orderDate()).strftime("%m/%Y") == strCorrectedDate:
                                 productCount += int(all.get_orderQuan())
                                 productPrice += float(all.get_orderPrice())
-                        report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
-                        reportDict[correctedDate] = report
+                        report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
+                        reportDict[strCorrectedDate] = report
                         db["Monthly"] = reportDict
                     else:
                         db["Monthly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % correctedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % correctedDate)
+                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
 
             else:
                 if today > correctedDate:
-                    if correctedDate not in reportDict:
+                    if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
                         for all in order:
-                            if dateValidator(all.get_orderDate()) == correctedDate:
+                            if dateValidator(all.get_orderDate()).strftime("%Y") == strCorrectedDate:
                                 productCount += int(all.get_orderQuan())
                                 productPrice += float(all.get_orderPrice())
-                        report = r.Report(createReportForm.type.data, correctedDate, productCount, productPrice)
-                        reportDict[correctedDate] = report
+                        report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
+                        reportDict[strCorrectedDate] = report
                         db["Yearly"] = reportDict
                     else:
                         db["Yearly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % correctedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % correctedDate)
+                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
 
             stepInOrdersDB.close()
             db.close()
 
-            flash("The report for %s has be generated successfully" % correctedDate)
+            flash("The report for %s has be generated successfully" % strCorrectedDate)
             if createReportForm.type.data == "D":
                 return redirect(url_for("reportsDaily"))
             elif createReportForm.type.data == "M":

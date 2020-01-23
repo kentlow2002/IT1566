@@ -16,7 +16,6 @@
 <div class="container-fluid content">
 <form method='POST' action="" enctype="multipart/form-data">
   {{ form.hidden_tag() }}
-
   <div class="row justify-content-center text-center">
     <div class="col-sm-6">
       <p class="text-center">List a Product</p>
@@ -25,9 +24,7 @@
 
   <div class="row" style="margin-top:20px">
     <div class="col-sm-6 text-center" >
-      <img class="img-fluid" style="border: 1px solid black; margin-top: 15px; height: 250px; width: 250px" src="../../../{{ product.get_productPicture() }}">
-          {{ render_field(form.productPicture, class="custom-file") }}
-
+          {{ render_field(form.productPicture, class="custom-file", required="") }}
     </div>
 
       <div class="col-sm-6 ">
@@ -71,7 +68,7 @@
         </div>
 
         <div class="col-sm-6 row space" >
-          <input class="btn btn-primary" type="submit"  value="Update this product">
+          <input class="btn btn-primary" type="submit"  value="List this product">
         </div>
 
   </div>
@@ -81,8 +78,4 @@
 </div>
 
 {% endblock %}
-
-
-
-
 
