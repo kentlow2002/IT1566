@@ -4,7 +4,7 @@ import random as rand
 class Product:
     countId = 0
 
-    def __init__(self, productName, productCondition, productPrice, productQuantity, productDescription, productPicture):
+    def __init__(self, productName, productCondition, productPrice, productQuantity, productDescription, productPicture, userID):
         Product.countId += 1
         self.__productId = Product.countId  # differentiates products with same name
         self.__productName = productName
@@ -13,7 +13,8 @@ class Product:
         self.__productPrice = productPrice
         self.__productDescription = productDescription
         self.__productPicture = productPicture
-
+        self.__productStatus = "public"
+        self.__userID = int(userID)
 
     def productBuy(self):
         return 0
@@ -44,6 +45,11 @@ class Product:
     def get_productPicture(self):
         return self.__productPicture
 
+    def get_productStatus(self):
+        return self.__productStatus
+
+    def get_userID(self):
+        return self.__userID
 
     # accessor
 
@@ -68,4 +74,8 @@ class Product:
     def set_productPicture(self, productPicture):
         self.__productPicture = productPicture
 
+    def set_productStatusPublic(self):
+        self.__productStatus = "public"
 
+    def set_productStatusHidden(self):
+        self.__productStatus = "hidden"

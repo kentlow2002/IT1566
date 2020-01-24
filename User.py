@@ -9,6 +9,7 @@ class User(UserMixin):
         self.__userType = userType
         self.__userID = userID
 
+
     def passwdCheck(self,passwd):
         m = hashlib.sha256(passwd.encode('ascii')).digest()
         return m
