@@ -13,52 +13,48 @@
         </div>
       </div>
 
-      <div class="row" style="margin-top:20px">
-        <div class="col-sm-6 text-center" >
-          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
+
+
+{% for product in productsList %}
+        <div class="row">
+
+        <div class="col-sm-4 ">
+          <img class="img-fluid" style="border: 1px solid black; margin-top: 15px; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt=""  >
         </div>
 
-          <div class="col-sm-6">
-            <!--start of input-->
-            <div class="row">
-              <p class="text-left">Product Name:</p>
-              <p class="text-left"> Oculus Rift VR Headset</p>
-            </div>
+        <div class="col-sm-6">
+          <div class="row">
+            <h2><a href="">{{ product.get_productName() }}</a></h2>
+          </div>
+          <div class="row">
+            <span style="font-size:120%"><b>Price: {{ product.get_productPrice() }}</b></span>
+          </div>
+          {% if product.get_productCondition() == "N" %}
+          <div class="row">
+            <span>Product Condition: New</span>
+          </div>
+          {% elif product.get_productCondition() == "U" %}
+          <div class="row">
+            <span>Product Condition: Used</span>
+          </div>
+          {% endif %}
 
-            <div class="row space">
-              <p class="text-left">Item Condition:</p>
-              <p class="text-left">New</p>
-            </div>
-
-            <div class="row space">
-              <p class="text-left">Price of Product:</p>
-              <p class="text-left"> $650 </p>
-            </div>
-
-            <div class="row space">
-              <label for="name">Quantity:</label>
-              <input  class="form-control" type="number" name="" value="" id="name" min="1">
-            </div>
+          <div class="row">
+            <span>Quantity: {{ product.get_productQuantity() }}</span>
           </div>
 
-            <div class="col-sm-6" >
-            </div>
+          <div class="row">
+            <span>Description: {{ product.get_productDescription() }} </span>
+          </div>
+        </div>
 
-            <div class="col-sm-6 row space" >
-              <label>Description:</label>
-              <p class="text">Oculus Rift is one of the most popular VR devices for PCs. The glasses are designed to completely immerse its user in virtual reality and they allow you to track the movement of controllers and the position of the headset in space. Rift has an impressive range of games and applications. In 2018, Oculus took second place among the VR glasses manufacturers with a share of 19.4% on the world market due to a good correlation of price, quality, and usability.</p>
-              <!--end of input-->
-            </div>
-
-            <div class="col-sm-6" >
-            </div>
-
-            <div class="col-sm-6 row space" >
-              <a href="/buyer/cart" class="button">Buy this product!</a>
-
-
-
-
+              <div class="col-sm-2 row space" >
+              <a href="/buyer/cart" class="button" >Buy this product!</a>
+              </div>
       </div>
+      <br>
+      <br>
+  {% endfor %}
+    </form>
     </div>
 {% endblock %}

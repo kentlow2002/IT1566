@@ -164,15 +164,36 @@ def userEdit():
 
     return render_template('userEdit.html', form=userUpdateForm, usertype=userType)
 
+
 # buyer
 @app.route('/buyer/index')
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
+
 @app.route('/buyer/product')
 # @login_required
 def buyerProduct():
-    return render_template('buyerProduct.html')
+    productsDict = {}
+
+    try:
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            print("Main py : have products")
+            product = productsDict.get(key)
+            if product.get_productStatus() == "public":
+                productsList.append(product)
+            else:
+                print("bye")
+
+        db.close()
+    except:
+        productsList = []
+
+    return render_template('buyerProduct.html',  productsList=productsList)
+
 @app.route('/buyer/retrieve')
 # @login_required
 def buyerRetrieve():
