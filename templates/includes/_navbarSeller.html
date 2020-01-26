@@ -6,23 +6,36 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-    <ul class="nav navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="/seller/index" id="products">My Products</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/seller/listing" id="orderhistory">List a Product</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-          My Profile
-        </a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="/userEdit">Edit/Delete your profile</a>
-          <a class="dropdown-item" href="/logout">Log Out</a>
-        </div>
-    </ul>
-
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div>
+      <ul class="nav navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/seller/index" id="products">My Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/seller/listing" id="orderhistory">List a Product</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+            Contact Us
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/faqType">FAQ</a>
+            <a class="dropdown-item" href="/faq/ask">Ask a question</a>
+            <a class="dropdown-item" href="/faq">View your questions</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="nav navbar-nav ml-auto">
+      <ul class="nav navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/userEdit">My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">Log Out</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>

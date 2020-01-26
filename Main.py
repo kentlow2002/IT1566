@@ -59,10 +59,18 @@ def login():
 
             if passwordValid == 1 and usernameValid == 1:
                 login_user(usersDict.get(userID), remember=userLogInForm.remember.data)
-                resp = make_response(redirect(url_for("userEdit")))
+                if current_user.getType() == "Buyer":
+                    resp = make_response(redirect(url_for("buyerIndex")))
+                elif current_user.getType() == "Seller":
+                    resp = make_response(redirect(url_for("sellerIndex")))
+                else:
+                    resp = make_response(redirect(url_for("reportsIndex")))
                 resp.set_cookie("userID",str(userID))
                 print("checking")
                 return resp
+            else:
+                flash("Invalid Username/Password! Please Try Again.")
+                return redirect(url_for("login"))
 
         except Exception as e:
             print("ERROR", e)
@@ -566,11 +574,15 @@ def ask():
             print(tix.getTID(), "was stored in shelve successfully ")
             db.close()
             print(faqDict)
-            return redirect(url_for('faq'))
+            if current_user.getType() != "Staff":
+                return redirect(url_for('faq'))
+            else:
+                return redirect(url_for("faqstaff"))
     else:
         return redirect(url_for("index"))
     return render_template('FAQask.html', form= createFaqForm, usertype = current_user.getType())
 @app.route('/staff/faq') #R faq for staff
+@login_required
 def faqstaff():
     if current_user.is_authenticated:
         faqList = ""

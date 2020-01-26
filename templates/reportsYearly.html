@@ -81,7 +81,7 @@
               <label for="year">Year</label>
               <input class="form-control" id="year" type="number" min="1990" value="">
             </div>
-            <button class="btn button" onclick="filter()">Filter</button>
+            <button class="btn button btn-success" onclick="filter()">Filter</button>
           </div>
         </div>
         <br>
@@ -105,7 +105,7 @@
                 <td>{{ reports.get_commission() }}</td>
                 <td>
                   <form action="{{url_for('reportsDeleteYearly', id=reports.get_reportDate())}}" method="POST">
-                    <button class="btn button button3"><strong><u>Delete</u></strong></button>
+                    <button class="btn button btn-danger"><strong><u>Delete</u></strong></button>
                   </form>
                 </td>
               </tr>

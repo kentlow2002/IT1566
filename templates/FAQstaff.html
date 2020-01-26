@@ -12,20 +12,30 @@
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
 
-<h2>FAQs</h2>
 <div class="container-fluid content">
   <div class="row justify-content-center">
+		<h2>FAQs</h2>
   </div>
   <div id="table" style="display:block" align = "center">
     <br>
     <div id="faqs">
       <table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Type:</th>
+						<th>Question:</th>
+						<th>Answer:</th>
+						<th>Update</th>
+					</tr>
+				</thead>
         <tbody>
         {% for faq in faqList %}
           <tr>
-            <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
-            <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a></td>
-          </tr>
+						<td>{{ faq.getType() }}</td>
+            <td>{{ faq.getQn() }}</td>
+						<td>{{ faq.getAns() }}</td>
+						<td><button class="btn btn-warning" type="button" name="button" onclick="location.href='/answerFAQ/{{faq.getTID()}}'">Update Answer</button></td>
+					</tr>
         {% endfor %}
         </tbody>
       </table>

@@ -5,56 +5,40 @@
 {% endblock %}
 {% block content %}
     <div class="container-fluid content">
-    <form class="" action="index.html" method="post">
-
-      <div class="row justify-content-center text-center">
-        <div class="col-sm-6">
-          <p class="text-center">Buy this Product</p>
-        </div>
-      </div>
-
-
-
-{% for product in productsList %}
-        <div class="row">
-
-        <div class="col-sm-4 ">
-          <img class="img-fluid" style="border: 1px solid black; margin-top: 15px; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt=""  >
-        </div>
-
-        <div class="col-sm-6">
-          <div class="row">
-            <h2><a href="">{{ product.get_productName() }}</a></h2>
-          </div>
-          <div class="row">
-            <span style="font-size:120%"><b>Price: {{ product.get_productPrice() }}</b></span>
-          </div>
-          {% if product.get_productCondition() == "N" %}
-          <div class="row">
-            <span>Product Condition: New</span>
-          </div>
-          {% elif product.get_productCondition() == "U" %}
-          <div class="row">
-            <span>Product Condition: Used</span>
-          </div>
-          {% endif %}
-
-          <div class="row">
-            <span>Quantity: {{ product.get_productQuantity() }}</span>
-          </div>
-
-          <div class="row">
-            <span>Description: {{ product.get_productDescription() }} </span>
+      <form class="" action="index.html" method="post">
+        <div class="row justify-content-center text-center">
+          <div class="col-sm-6">
+            <h2 class="text-center">Buy this Product</h2>
           </div>
         </div>
 
-              <div class="col-sm-2 row space" >
-              <a href="/buyer/cart" class="button" >Buy this product!</a>
-              </div>
-      </div>
-      <br>
-      <br>
-  {% endfor %}
-    </form>
+
+
+        {% for product in productsList %}
+        <br>
+          <div class="row">
+            <div class="col-sm-4">
+              <img class="img-fluid" style="border: 1px solid black; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="">
+            </div>
+
+            <div class="col-sm-6">
+              <h3><b>{{ product.get_productName() }}</b></h3>
+              <p>Price: ${{ product.get_productPrice() }}</p>
+              {% if product.get_productCondition() == "N" %}
+                <p>Product Condition: New</p>
+              {% elif product.get_productCondition() == "U" %}
+                <p>Product Condition: Used</p>
+              {% endif %}
+              <p>Quantity: {{ product.get_productQuantity() }}</p>
+              <p>Description: {{ product.get_productDescription() }}</p>
+            </div>
+
+            <div class="col-sm-2" style="margin:auto">
+              <a href="/buyer/cart" class="btn button btn-primary" >Buy this product!</a>
+            </div>
+          </div>
+        <br>
+        {% endfor %}
+      </form>
     </div>
 {% endblock %}
