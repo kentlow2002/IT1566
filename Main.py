@@ -7,18 +7,30 @@ import shelve
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from flask_mail import Mail, Message
 import os
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm
 
-from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm
+from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 
 app = Flask(__name__)
+app.config.update(dict(
+    DEBUG = True,
+    MAIL_SERVER = 'smtp.gmail.com',
+    MAIL_PORT = 587,
+    MAIL_USE_TLS = True,
+    MAIL_USE_SSL = False,
+    MAIL_DEFAULT_SENDER = 'xstorenyp@gmail.com',
+    MAIL_USERNAME = 'xstorenyp@gmail.com',
+    MAIL_PASSWORD = 'admin2020!',
+))
 app.secret_key = os.urandom(16)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+mail = Mail(app)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -135,7 +147,7 @@ def userEdit():
         userType = user.getType()
         if userUpdateForm.deleteAcc.data:
             print('deleting')
-            usersDict[userID] = None
+            usersDict.pop(userID)
             db['Users'] = usersDict
             return redirect('/')
         else:
@@ -163,6 +175,25 @@ def userEdit():
         userUpdateForm.email.data = user.getEmail()
 
     return render_template('userEdit.html', form=userUpdateForm, usertype=userType)
+
+@app.route('/forget',methods=['GET','POST'])
+def forget():
+    forgetPassForm = ForgetPassForm(request.form)
+    if request.method == "POST" and forgetPassForm.validate():
+        usersDict = {}
+        try:
+            db = shelve.open('Users.db','r')
+            usersDict = db['Users']
+        except Exception as e:
+            print(e)
+        userEmail = forgetPassForm.email.data
+        for i in usersDict:
+            if usersDict[i].getEmail() == userEmail:
+                msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password:")
+                mail.send(msg)
+                usersDict[i].setPassword("")
+                return render_template('thankemail.html')
+    return render_template('forget.html', form=forgetPassForm)
 
 # buyer
 @app.route('/buyer/index')

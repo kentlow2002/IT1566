@@ -27,7 +27,7 @@
 						</div>
 		      			<div class="form-group">
 									{{ form.password.label }}
-									 <a href="forget.html" style="float:right;font-size:0.9em">Forgot Password?</a>
+									 <a href="/forget" style="float:right;font-size:0.9em">Forgot Password?</a>
 							    {{ form.password(class="form-control")|safe }}
 							    {% if form.password.errors %}
 							        {% for error in form.password.errors %}

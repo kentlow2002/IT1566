@@ -1,40 +1,55 @@
-<nav class="navbar navbar-expand-lg sticky-top">
+<nav class="navbar navbar-expand-lg sticky-top bg-dark navbar-dark">
+  <!-- brand/logo -->
   <a class="navbar-brand" href="/staff" title="Click here to go back to home page">IMS</a>
+
+  <!-- button is for responsive in mobile -->
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-    <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-      <div class="nav navbar-nav">
-        <a class="nav-link" href="/staff" id="products">Home</a>
-      </div>
-      <div class="nav navbar-nav">
-        <a class="nav-link" href="/staff/orders" id="orderhistory">View Pending Orders</a>
-      </div>
-      <div class="nav navbar-nav">
-        <a class="nav-link" href="/staff/create" id="profile">Create staff account</a>
-      </div>
-      <div class="nav navbar-nav">
-      </div>
-      <div class="nav navbar-nav">
-        <a class="nav-link" href="/staff/accounts" id="profile">View accounts</a>
-      </div>
-      <div class="nav-item dropdown">
+
+  <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+    <!-- links -->
+    <ul class="nav navbar-nav">
+      <!-- dropdown -->
+      <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-        FAQ
+          Reports
         </a>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="/faq/ask">Ask a question</a>
-            <a class="dropdown-item" href="/staff/faq">View questions</a>
-          </div>
-      </div>
-      <div class="nav-item dropdown">
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/staff">View Reportss</a>
+          <a class="dropdown-item" href="/staff/create-report">Generate Reports</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-        My Profile
+          Admin Management
         </a>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="/userEdit">Edit/Delete your profile</a>
-            <a class="dropdown-item" href="/logout">Log Out</a>
-          </div>
-      </div>
-    </div>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/staff/create-report">Generate Reports</a>
+          <a class="dropdown-item" href="/staff/orders">View Pending Orders</a>
+          <a class="dropdown-item" href="/staff/create" id="profile">Create staff account</a>
+          <a class="dropdown-item" href="/staff/accounts" id="profile">View Accounts</a>
+        </div>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+          FAQ
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/faq/ask">Ask a question</a>
+          <a class="dropdown-item" href="/staff/faq">View questions</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+          My Profile
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/userEdit">Edit/Delete your profile</a>
+          <a class="dropdown-item" href="/logout">Log Out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
 </nav>
