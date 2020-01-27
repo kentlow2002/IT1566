@@ -9,37 +9,43 @@
 
     <div class="container-fluid content">
       <div class="row justify-content-center">
-        <div class="col-sm-6">
-          <h1 class="text-center"><b>Accounts list</b></h1>
-          </div>
-          <table class="table justify-content-centre text-center">
-            <tr>
-              <td>Account ID</td>
-              <td>Username</td>
-              <td>Email</td>
-              <td>Type</td>
-              <td></td>
-              <td></td>
-            </tr>
-            {% for user in userList %}
-            <tr>
-              <td>{{ user.getID() }}</td>
-              <td>{{ user.getUsername() }}</td>
-              <td>{{ user.getEmail() }}</td>
-              <td>{{ user.getType() }}</td>
-              <td><a href="/staffEdit/{{user.getID()}}" class="btn btn-warning">Update</a></td>
-              <td>
-              {%  if user.getID() != UserID  %}
-                <form action="{{url_for('deleteUser', id=user.getID())}}" method="POST">
-                <input type="submit" value="Delete" class="btn btn-danger"onclick="return confirm('Are you sure you want to delete this user?');">
-                </form>
-              {%  endif  %}
-              </td>
-            </tr>
-            {% endfor %}
+        <h2>Accounts list</h2>
+      </div>
+      <div id="table">
+        <br>
+        <div id="accounts">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Account ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Type</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in userList %}
+              <tr>
+                <td>{{ user.getID() }}</td>
+                <td>{{ user.getUsername() }}</td>
+                <td>{{ user.getEmail() }}</td>
+                <td>{{ user.getType() }}</td>
+                <td><a href="/staffEdit/{{user.getID()}}" class="btn btn-warning">Update</a></td>
+                <td>
+                  {%  if user.getID() != UserID  %}
+                  <form action="{{url_for('deleteUser', id=user.getID())}}" method="POST">
+                    <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">
+                  </form>
+                  {%  endif  %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
           </table>
+        </div>
       </div>
     </div>
-  </body>
   <script src="js/js.js"></script>
 {% endblock %}
