@@ -185,16 +185,19 @@ def buyerProduct():
     if request.method == 'POST':
         cartDict = {}
         try:
+            db = shelve.open('products.db','c')
             cartDict = db['Cart']
+            addtocart = make_response(redirect(url_for("buyerCart")))
+            resp.set_cookie("Cart",str(Cart))
         except:
-            print("Error in retrieving Users from storage.db.dat")
+            print("Error in retrieving Users from products.db.dat")
         finally:
             # get the product,  qty,
             # CHECK if exist,
                 # if exist, you should not create a new object, you should retrieve the existing object and increase the qty
                 # else, create a cart object by sending the product and qty in, add to cartDict
             # save back to shelve
-        return redirect(url_for("cart"))
+        return redirect(url_for("buyerCart"))
 
     # GET
     # retrieve one product
@@ -210,7 +213,7 @@ def cart():
     if request.method == 'POST' and cartUpdateForm.validate():
         cartDict = {}
         try:
-            db = shelve.open('storage.db.dat', "r")
+            db = shelve.open('products.db.dat', "r")
             cartDict = db["Products"]
         except Exception as e:
             print(e)
