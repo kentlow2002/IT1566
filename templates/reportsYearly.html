@@ -7,6 +7,8 @@
 
 
 {% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
     <div class="container-fluid content">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -23,6 +25,55 @@
           <p class="text-center"><strong>Yearly (Total)</strong></p>
         </div>
       </div>
+      <div class="chart-container">
+        <canvas id="myChart" width="200" height="80">
+          <p>Your browser does not support canvas</p>
+        </canvas>
+        <script>
+          var report = document.getElementById("myChart").getContext("2d");
+
+          var char = new Chart(report, {
+            // the type of Chart
+            type: "bar",
+
+            // the data for our datasets
+            data: {
+              labels: [
+              {% for reports in yearlyList %}
+              "{{ reports.get_reportDate() }}",
+              {% endfor %}
+              ],
+              datasets: [{
+                label: "Number of items sold",
+                data: [
+                {% for reports in yearlyList %}
+                {{ reports.get_itemSold() }},
+                {% endfor %}
+                ],
+                backgroundColor: "rgba(255, 0, 0, 0.5)"
+              }, {
+                label: "Average Price Per Item ($)",
+                data: [
+                {% for reports in yearlyList %}
+                {{ reports.get_revenue() }}/{{ reports.get_itemSold() }},
+                {% endfor %}
+                ],
+                backgroundColor: "rgba(11, 156, 49, 0.5)",
+
+              }]
+            },
+            options: {
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }]
+              }
+            }
+          })
+        </script>
+      </div>
       <div id="table" style="display:block" align = "center">
         <div id="filter">
           <div class="form-inline">
@@ -30,7 +81,7 @@
               <label for="year">Year</label>
               <input class="form-control" id="year" type="number" min="1990" value="">
             </div>
-            <button class="btn button" onclick="filter()">Filter</button>
+            <button class="btn button btn-success" onclick="filter()">Filter</button>
           </div>
         </div>
         <br>
@@ -54,7 +105,7 @@
                 <td>{{ reports.get_commission() }}</td>
                 <td>
                   <form action="{{url_for('reportsDeleteYearly', id=reports.get_reportDate())}}" method="POST">
-                    <button class="btn button button3"><strong><u>Delete</u></strong></button>
+                    <button class="btn button btn-danger"><strong><u>Delete</u></strong></button>
                   </form>
                 </td>
               </tr>

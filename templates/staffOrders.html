@@ -8,38 +8,38 @@
 
     <div class="container-fluid content">
       <div class="row justify-content-center">
-        <div class="col-sm-6">
           <h1 class="text-center"><b>Orders page</b></h1>
-
-        </div>
       </div>
+      <div id="table">
+        <br>
+        <div id="orders">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Order Description</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orderList %}
+              <tr>
+                <td>{{ order.get_orderId() }}</td>
+                <td>{{ order.get_orderDate() }}</td>
+                <td>{{ order.get_orderDesc() }}</td>
+                <td>{{ order.get_orderStatus() }}</td>
+                <td>{{ order.get_orderAddr() }}</td>
 
-      <div class="row justify-content-center">
-        <div class="col-sm-6">
-          <table class="table justify-content-centre text-center">
-            <tr>
-              <td>Order ID</td>
-              <td>Order Date</td>
-              <td>Order Description</td>
-              <td>status</td>
-              <td></td>
-            </tr>
-            {% for order in orderList %}
-            <tr>
-              <td>{{ order.get_orderId() }}</td>
-              <td>{{ order.get_orderDate() }}</td>
-              <td>{{ order.get_orderDesc() }}</td>
-              <td>{{ order.get_orderStatus() }}</td>
-              <td>{{ order.get_orderAddr() }}</td>
-
-              <td><a href="staffUpdate.html"><button class="btn" style='background-color:blue'>Update</button></a></td>
-            </tr>
-            {% endfor %}
+                <td><a href="staffUpdate.html"><button class="btn" style='background-color:blue'>Update</button></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
           </table>
         </div>
       </div>
     </div>
-  </body>
   <script src="js/js.js"></script>
 {% endblock %}
 #this page is half done but its used to display orders

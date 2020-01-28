@@ -5,17 +5,43 @@
 {% endblock %}
 {% block content %}
     <div class="container-fluid content">
-    <form class="" action="index.html" method="post">
-
+      <form class="" action="index.html" method="post">
       <div class="row justify-content-center text-center">
         <div class="col-sm-6">
+          <h2>Your Cart</h2>
           <br>
+<<<<<<< HEAD
             <h2>Your Cart</h2>
           <br>
-          <div class="col-sm-12" >
-              <a href="/buyer/checkout" class="button">Proceed to Checkout</a>
+=======
+          <div id="table">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Edit Item</th>
+                  <th>Delete Item</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Oculus Rift S</td>
+                  <td>1</td>
+                  <td>$650</td>
+                  <td><button type="button" class="btn button btn-warning" onclick="location.href='/buyer/product">Edit</button></td>
+                  <td><button type="button" class="btn button btn-danger" onclick="location.href='/buyer/cart">Delete</button></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-
+>>>>>>> f69d6b397596fc50b77ba7d01d760eeb76ea62c5
+          <div class="col-sm-12" >
+            <br>
+            <a href="/buyer/checkout" class="btn button btn-primary">Proceed to Checkout</a>
+          </div>
+        </div>
       </div>
     </div>
 {% endblock %}

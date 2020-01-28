@@ -12,27 +12,24 @@
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
 
-<h2>Your Questions</h2>
 <div class="container-fluid content">
   <div id="table" style="display:block" align = "center">
+		<h3>Your Questions</h3>
     <br>
     <div id="faqs">
       <table class="table table-striped justify-content-centre text-center">
+				<thead>
+					<th>Question</th>
+					<th>Answer</th>
+				</thead>
         <tbody>
         {% for faq in faqList %}
-          <tr>
-          {% if usertype != "Staff" %}
-        	{% if faq.getUID() == UserID %}
-            <td> Question:{{ faq.getQn() }}</td></tr><tr>
-            <td>Answer: {{ faq.getAns() }}</td>
-          </tr>
-						{% endif %}
-          {% else %}
-          <td> Question:{{ faq.getQn() }}</td><td>Type: {{ faq.getType() }}</td></tr><tr>
-          <td>Answer: {{ faq.getAns() }}</td><td><a href="/answerFAQ/{{faq.getTID()}}" class="btn btn-warning">Update Answer</a>
-        </tr>
-          {% endif %}
-
+					{% if faq.getUID() == UserID %}
+        		<tr>
+          		<td>{{ faq.getQn() }}</td>
+							<td>{{ faq.getAns() }}</td>
+						</tr>
+					{% endif %}
         {% endfor %}
         </tbody>
       </table>

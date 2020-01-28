@@ -1,7 +1,12 @@
+* {
+  font-family: "Red Hat Text",sans-serif;
+
+}
+
+/* navbar css */
 .navbar, .narbar-nav {
   background-color: rgb(77,77,77);
   box-shadow: none;
-  font-family: "Red Hat Text",sans-serif;
 }
 
 .navbar-brand {
@@ -15,6 +20,11 @@
   font-weight: 400;
   text-align: center;
   color: rgb(255, 255, 255);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255,255,255,.9);
+  font-size: 100%;
 }
 
 .active {
@@ -48,11 +58,11 @@
 }
 
 .content {
-  font-family: "Red Hat Text",sans-serif;
-  font-size: 1.2em;
+  font-size: 1.1em;
   width: 90%;
   margin: auto;
   margin-top: 20px;
+  margin-bottom: 200px;
 }
 
 textarea {
@@ -85,33 +95,41 @@ input {
   font-size: 1.5em;
 }
 
-.table {
-  margin: auto;
-  width: 80%
-}
 
-#table table, #table th, #table td {
-   border: black 2px solid;
-   text-align: center;
-}
 .staffUpdateForm{
   text-align:center;
 }
 
+.table {
+  margin: auto;
+  width: 80%;
+  text-align: center;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.table thead th {
+  border-bottom: 0px;
+}
+.borderlessTable * {
+  margin: auto;
+  text-align: center;
+  border: 0px;
+}
+
+#table table, #table table thead {
+   border: black 2px solid;
+   margin: auto;
+}
 
 #table th, td {
   padding: 10px;
 }
-#reports table {
-  width: 80%;
-}
-#reports table * {
-  margin: auto;
-  border: 0px;
-}
+
 
 .button {
-  background-color: #4CAF50; /* Green */
   border: none;
   color: white;
   padding: 15px 32px;
@@ -123,11 +141,6 @@ input {
   cursor: pointer;
 }
 
-.button2 {background-color: #008CBA;} /* Blue */
-.button3 {background-color: #f44336;} /* Red */
-.button4 {background-color: #e7e7e7; color: black;} /* Gray */
-.button5 {background-color: #555555;} /* Black */
-.button6 {background-color: #ffff00;} /* Yellow */
 
 #reportsCreate li {
   display: inline;

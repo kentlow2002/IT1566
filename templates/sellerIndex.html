@@ -10,105 +10,73 @@
 
 <div class="container-fluid content justify-content-center">
   <div class="row">
-    <div class="col-sm-2 ">
-      <h1><u>My Products</u></h1>
+    <div class="col-sm-3">
+      <h2><b>My Products</b></h2>
+      <br>
     </div>
   </div>
 
   {% for product in productsList %}
-        <div class="row">
+  <div class="row">
+    <div class="col-sm-4 ">
+      <img class="img-fluid" style="border: 1px solid black; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="">
+    </div>
 
-        <div class="col-sm-4 ">
-          <img class="img-fluid" style="border: 1px solid black; margin-top: 15px; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="VR Headset"  >
-        </div>
+    <div class="col-sm-6">
+      <h3><b>{{ product.get_productName() }}</b></h3>
+      <p>Price: ${{ product.get_productPrice() }}</p>
+      {% if product.get_productCondition() == "N" %}
+        <p>Product Condition: New</p>
+      {% elif product.get_productCondition() == "U" %}
+        <p>Product Condition: Used</p>
+      {% endif %}
+      <p>Quantity: {{ product.get_productQuantity() }}</p>
+      <p>Description: {{ product.get_productDescription() }}</p>
+    </div>
 
-        <div class="col-sm-6">
-          <div class="row">
-            <h2><a href="">{{ product.get_productName() }}</a></h2>
-          </div>
-          <div class="row">
-            <span style="font-size:120%"><b>Price: {{ product.get_productPrice() }}</b></span>
-          </div>
-          {% if product.get_productCondition() == "N" %}
-          <div class="row">
-            <span>Product Condition: New</span>
-          </div>
-          {% elif product.get_productCondition() == "U" %}
-          <div class="row">
-            <span>Product Condition: Used</span>
-          </div>
-          {% endif %}
-
-          <div class="row">
-            <span>Quantity: {{ product.get_productQuantity() }}</span>
-          </div>
-
-          <div class="row">
-            <span>Description: {{ product.get_productDescription() }} </span>
-          </div>
-        </div>
-
-        <div class="col-sm-2 " style="margin-top: 80px">
-          <div class="row">
-            <a href="/seller/updateProduct/{{product.get_productId()}}/"><button class="btn btn-primary" type="button" name="Update" height="20px" width="20px">Update</button></a>
-          </div>
-          <div class="row">
-            <a href="/seller/hideProduct/{{product.get_productId()}}/"><button class="btn btn-danger" type="button" name="Hide Product" style="margin-top: 10px">Hide Product for Sale</button></a>
-          </div>
-
-      </div>
-      </div>
-      <br>
-      <br>
+    <div class="col-sm-2 " style="margin:auto">
+      <a href="/seller/updateProduct/{{product.get_productId()}}/"><button class="btn button btn-primary" type="button" name="Update">Update Product</button></a>
+      <a href="/seller/hideProduct/{{product.get_productId()}}/"><button class="btn button btn-danger" type="button" name="Hide Product">Hide Product for Sale</button></a>
+    </div>
+  </div>
+    <br>
+    <br>
   {% endfor %}
+  {% if not productsList %}
+  <div class="row justify-content-center">
+    <div class="col-sm-6">
+      <p class="text-center">There are currently no products shown to the public.</p>
+    </div>
+  </div>
+  {% endif %}
 
-  <h1> <u>Hidden Products</u></h1>
-  {% for product in hiddenList %}
-      <div class="row">
-
+  {% if hiddenList %}
+    <h2><b>Hidden Products</b></h2>
+    {% for product in hiddenList %}
+    <div class="row">
       <div class="col-sm-4 ">
-        <img class="img-fluid" style="border: 1px solid black; margin-top: 15px; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="VR Headset" width="235px" height="235px" >
+        <img class="img-fluid" style="border: 1px solid black; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="">
       </div>
 
       <div class="col-sm-6">
-        <div class="row">
-          <h2><a href="">{{ product.get_productName() }}</a></h2>
-        </div>
-        <div class="row">
-          <span style="font-size:120%"><b>Price: {{ product.get_productPrice() }}</b></span>
-        </div>
+        <h3><b>{{ product.get_productName() }}</b></h3>
+        <p>Price: ${{ product.get_productPrice() }}</p>
         {% if product.get_productCondition() == "N" %}
-        <div class="row">
-          <span>Product Condition: New</span>
-        </div>
+          <p>Product Condition: New</p>
         {% elif product.get_productCondition() == "U" %}
-        <div class="row">
-          <span>Product Condition: Used</span>
-        </div>
+          <p>Product Condition: Used</p>
         {% endif %}
-
-        <div class="row">
-          <span>Quantity: {{ product.get_productQuantity() }}</span>
-        </div>
-
-        <div class="row">
-          <span>Description: {{ product.get_productDescription() }} </span>
-        </div>
+        <p>Quantity: {{ product.get_productQuantity() }}</p>
+        <p>Description: {{ product.get_productDescription() }}</p>
       </div>
 
-      <div class="col-sm-2 " style="margin-top: 80px">
-        <div class="row">
-          <a href="/seller/updateProduct/{{product.get_productId()}}/"><button class="btn btn-primary" type="button" name="Update" height="20px" width="20px">Update</button></a>
-        </div>
-        <div class="row">
-          <a href="/seller/showProduct/{{product.get_productId()}}/"><button class="btn btn-danger" type="button" name="Show Product" style="margin-top: 10px">Show Product for Sale</button></a>
-        </div>
-
+      <div class="col-sm-2 " style="margin:auto">
+        <a href="/seller/updateProduct/{{product.get_productId()}}/"><button class="btn button btn-primary" type="button" name="Update">Update Product</button></a>
+        <a href="/seller/showProduct/{{product.get_productId()}}/"><button class="btn button btn-danger" type="button" name="Show Product">Show Product for Sale</button></a>
+      </div>
     </div>
-    </div>
-    <br>
-    <br>
-  {% endfor %}
+    {% endfor %}
+  {% endif %}
 
 
 </div>
