@@ -229,7 +229,6 @@ def buyerProduct():
             resp.set_cookie("Cart",str(Cart))
         except:
             print("Error in retrieving Users from products.db.dat")
-        finally:
             # get the product,  qty,
             # CHECK if exist,
                 # if exist, you should not create a new object, you should retrieve the existing object and increase the qty
