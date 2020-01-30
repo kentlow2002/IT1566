@@ -9,6 +9,8 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
 import os
+import string
+import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm
 
@@ -197,10 +199,16 @@ def forget():
         userEmail = forgetPassForm.email.data
         for i in usersDict:
             if usersDict[i].getEmail() == userEmail:
-                msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password:")
-                mail.send(msg)
-                usersDict[i].setPassword("")
-                return render_template('thankemail.html')
+                try:
+                    tempPass = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
+                    msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password: "+tempPass)
+                    mail.send(msg)
+                    usersDict[i].setPassword(tempPass)
+                    db['Users'] = usersDict
+                    return render_template('thankemail.html')
+                except Exception as e:
+                    print(e)
+                    return render_template('forgot.html',form = forgetPassForm)
     return render_template('forget.html', form=forgetPassForm)
 
 # buyer
