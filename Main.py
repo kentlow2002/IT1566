@@ -281,23 +281,19 @@ def sellerIndex():
         hiddenList = []
         print(current_user.getID())
         for key in productsDict:   # loop through Dictionary
-            print("Main py : have products")
             product = productsDict.get(key)
             print(product.get_productName())
             print(product.get_userID())
             userID = int(current_user.getID())
-            print("TEst", product.get_userID())
             if userID == product.get_userID():
-                print("test")
                 if product.get_productStatus() == "public":
-                    print("hello")
                     productsList.append(product)
                 else:
-                    print("bye")
                     hiddenList.append(product)
         db.close()
     except:
         hiddenList = []
+        productsList = []
     return render_template('sellerIndex.html', productsList=productsList, count=len(productsList), hiddenList=hiddenList)
 
 
