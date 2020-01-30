@@ -197,7 +197,7 @@ def buyerProduct():
                 # if exist, you should not create a new object, you should retrieve the existing object and increase the qty
                 # else, create a cart object by sending the product and qty in, add to cartDict
             # save back to shelve
-        return redirect(url_for("buyerCart"))
+            return redirect(url_for("buyerCart"))
 
     # GET
     # retrieve one product
