@@ -234,7 +234,7 @@ def buyerProduct():
                 # if exist, you should not create a new object, you should retrieve the existing object and increase the qty
                 # else, create a cart object by sending the product and qty in, add to cartDict
             # save back to shelve
-        return redirect(url_for("buyerCart"))
+            return redirect(url_for("buyerCart"))
 
     # GET
     # retrieve one product
@@ -280,23 +280,19 @@ def sellerIndex():
         hiddenList = []
         print(current_user.getID())
         for key in productsDict:   # loop through Dictionary
-            print("Main py : have products")
             product = productsDict.get(key)
             print(product.get_productName())
             print(product.get_userID())
             userID = int(current_user.getID())
-            print("TEst", product.get_userID())
             if userID == product.get_userID():
-                print("test")
                 if product.get_productStatus() == "public":
-                    print("hello")
                     productsList.append(product)
                 else:
-                    print("bye")
                     hiddenList.append(product)
         db.close()
     except:
         hiddenList = []
+        productsList = []
     return render_template('sellerIndex.html', productsList=productsList, count=len(productsList), hiddenList=hiddenList)
 
 
