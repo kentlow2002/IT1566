@@ -66,14 +66,14 @@
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  transition: all 0.8s ease-out;
+  transition: all 0.5s ease-out;
 }
 .expand {
   height: 2000px;
   width: 2000px;
 }
 .rotate {
-  -webkit-animation: rotation 0.1s;
+  -webkit-animation: rotation 0.5s;
 }
 @-webkit-keyframes rotation {
   from {
