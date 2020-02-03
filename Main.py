@@ -225,6 +225,7 @@ def buyerProducts():
     productsDict = {}
     productsList = []
     productsSearch = ProductsSearch(request.form)
+
     try:
         db = shelve.open('products.db', 'r')
         productsDict = db['products']
@@ -259,8 +260,8 @@ def cart():
     if request.method == 'POST' and cartUpdateForm.validate():
         cartDict = {}
         try:
-            db = shelve.open('products.db.dat', "r")
-            cartDict = db["Products"]
+            db = shelve.open('products.db', "r")
+            cartDict = db["products"]
         except Exception as e:
             print(e)
         return redirect(url_for("buyerCheckout"))
