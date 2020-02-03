@@ -57,12 +57,39 @@
   opacity: 0.5;
 }
 
+.circle {
+  z-index: -1000;
+  top:-500px;
+  right:-500px;
+  position: absolute;
+  background: #343a40 !important;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  transition: all 0.5s ease-out;
+}
+.expand {
+  height: 2000px;
+  width: 2000px;
+}
+.rotate {
+  -webkit-animation: rotation 0.5s;
+}
+@-webkit-keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
 .content {
   font-size: 1.1em;
   width: 90%;
   margin: auto;
   margin-top: 20px;
-  margin-bottom: 200px;
+  margin-bottom: 300px;
 }
 
 textarea {
