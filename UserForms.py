@@ -21,3 +21,6 @@ class UserUpdateForm(Form):
 
 class ForgetPassForm(Form):
     email = StringField('Email:', [validators.Email(), validators.DataRequired()])
+
+class ProductsSearch(Form):
+    query = StringField('Search:')

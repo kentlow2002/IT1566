@@ -10,12 +10,13 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
 import os
+import re
 import string
 import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm
 
-from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm
+from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 from CartForm import CartUpdateForm
 app = Flask(__name__)
@@ -217,32 +218,40 @@ def forget():
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
-@app.route('/buyer/product', methods = ['GET','POST'])
-# @login_required
-def buyerProduct():
-    if request.method == 'POST':
-        cartDict = {}
-        try:
-            db = shelve.open('products.db','c')
-            cartDict = db['Cart']
-            addtocart = make_response(redirect(url_for("buyerCart")))
-            resp.set_cookie("Cart",str(Cart))
-        except:
-            print("Error in retrieving Users from products.db.dat")
-            # get the product,  qty,
-            # CHECK if exist,
-                # if exist, you should not create a new object, you should retrieve the existing object and increase the qty
-                # else, create a cart object by sending the product and qty in, add to cartDict
-            # save back to shelve
-            return redirect(url_for("buyerCart"))
 
-    # GET
-    # retrieve one product
-    return render_template('buyerProduct.html')
+@app.route('/buyer/product', methods=['GET','POST'])
+# @login_required
+def buyerProducts():
+    productsDict = {}
+    productsList = []
+    productsSearch = ProductsSearch(request.form)
+    try:
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        if request.method == 'POST':
+            query = productsSearch.query.data
+            for key in productsDict:   # loop through Dictionary
+                print("Main py : have products")
+                product = productsDict.get(key)
+                if product.get_productStatus() == "public" and (query.lower() in product.get_productName().lower() or query in product.get_productDescription().lower()):
+                    productsList.append(product)
+        else:
+            for key in productsDict:   # loop through Dictionary
+                print("Main py : have products")
+                product = productsDict.get(key)
+                if product.get_productStatus() == "public":
+                    productsList.append(product)
+        db.close()
+    except Exception as e:
+        print(e)
+
+    return render_template('buyerProduct.html',  productsList=productsList, form=productsSearch)
+
 @app.route('/buyer/retrieve')
 # @login_required
 def buyerRetrieve():
     return render_template('buyerRetrieve.html')
+
 @app.route('/buyer/cart', methods = ['GET','POST'])
 def cart():
     #if current_user.is_authenticated:
