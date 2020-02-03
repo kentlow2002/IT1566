@@ -3,8 +3,9 @@
   <a class="navbar-brand" href="/staff" title="Click here to go back to home page">IMS</a>
 
   <!-- button is for responsive in mobile -->
-  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" onclick="mobile_icon()">
+    <i class="navbar-toggler-icon" style="width:30px; height:30px;"></i>
+    <div id="circle" class="circle"></div>
   </button>
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -23,11 +24,9 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-            Admim Management
+            Admin Management
           </a>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/buyer/index">Buyer's Homepage</a>
-            <a class="dropdown-item" href="/seller/index">Seller's Homepage</a>
             <a class="dropdown-item" href="/staff/orders">View Pending Orders</a>
             <a class="dropdown-item" href="/staff/create" id="profile">Create staff account</a>
             <a class="dropdown-item" href="/staff/accounts" id="profile">View Accounts</a>

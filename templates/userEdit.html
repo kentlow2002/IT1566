@@ -27,12 +27,12 @@
 						<div class="form-group">
 							{{ render_field(form.email,class="form-control") }}
 						</div>
-		      	<div class="form-group">
-							{{ render_field(form.newPassword,class="form-control") }}
-						</div>
 						<div class="form-group">
 							{{ render_field(form.oldPassword,class="form-control") }}
 							<p style="margin-top:5px">In order for your changes to be saved, please enter your current password</p>
+						</div>
+		      	<div class="form-group">
+							{{ render_field(form.newPassword,class="form-control") }}
 						</div>
 						<button type="submit" class="btn btn-primary">Save Changes</button>
 						{{ form.deleteAcc(class="btn btn-danger") }}

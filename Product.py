@@ -79,5 +79,3 @@ class Product:
 
     def set_productStatusHidden(self):
         self.__productStatus = "hidden"
-
-

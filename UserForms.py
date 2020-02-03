@@ -18,3 +18,6 @@ class UserUpdateForm(Form):
     oldPassword = PasswordField('Current Password', [validators.Length(min=8,max=150), validators.DataRequired()])
     newPassword = PasswordField('New Password', [validators.Length(min=8,max=150), validators.Optional()])
     deleteAcc = SubmitField('Delete Account')
+
+class ForgetPassForm(Form):
+    email = StringField('Email:', [validators.Email(), validators.DataRequired()])
