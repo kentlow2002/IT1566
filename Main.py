@@ -14,7 +14,7 @@ import re
 import string
 import random
 from ReportForms import CreateReportForm
-from ProductForms import CreateProductForm
+from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct
 
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
@@ -75,8 +75,10 @@ def login():
 
             if passwordValid == 1 and usernameValid == 1:
                 login_user(usersDict.get(userID), remember=userLogInForm.remember.data)
+                resp = ''
                 if current_user.getType() == "Buyer":
                     resp = make_response(redirect(url_for("buyerIndex")))
+                    resp.set_cookie('cart',{})
                 elif current_user.getType() == "Seller":
                     resp = make_response(redirect(url_for("sellerIndex")))
                 else:
@@ -224,12 +226,17 @@ def buyerIndex():
 def buyerProducts():
     productsDict = {}
     productsList = []
+    cartProducts = {}
     productsSearch = ProductsSearch(request.form)
-
+    addProductForm = AddCartProduct(request.form)
     try:
         db = shelve.open('products.db', 'r')
         productsDict = db['products']
         if request.method == 'POST':
+            if addProductForm.addProduct.data == True:
+                cart = request.cookies.get('cart')
+                print(cart)
+                cart[int(addProductForm.productId.data)] = productsDict[int(addProductForm.productId.data)]
             query = productsSearch.query.data
             for key in productsDict:   # loop through Dictionary
                 print("Main py : have products")
@@ -246,7 +253,7 @@ def buyerProducts():
     except Exception as e:
         print(e)
 
-    return render_template('buyerProduct.html',  productsList=productsList, form=productsSearch)
+    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
 
 @app.route('/buyer/retrieve')
 # @login_required
@@ -265,6 +272,7 @@ def cart():
         except Exception as e:
             print(e)
         return redirect(url_for("buyerCheckout"))
+
     return render_template('buyerCart.html')
 @app.route('/buyer/checkout')
 # @login_required

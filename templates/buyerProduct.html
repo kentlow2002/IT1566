@@ -8,16 +8,16 @@
 
   <div class="row">
     <div class="col-sm-8">
-      <form class="form" method="POST">
-        {{ form.query.label(style='float:left;font-size:1.1em;margin-right:10px;') }}
-        {{ form.query(class="form-control",style='max-width:500px;float:left;')|safe }}
-        {% if form.query.errors %}
-            {% for error in form.query.errors %}
+      <searchForm class="searchForm" method="POST">
+        {{ searchForm.query.label(style='float:left;font-size:1.1em;margin-right:10px;') }}
+        {{ searchForm.query(class="form-control",style='max-width:500px;float:left;')|safe }}
+        {% if searchForm.query.errors %}
+            {% for error in searchForm.query.errors %}
                 <div class="text-danger">{{ error }}</div>
             {% endfor %}
         {% endif %}
         <button type="submit" name="button" class="btn btn-primary">Search</button>
-      </form>
+      </searchForm>
     </div>
   </div>
 
@@ -41,7 +41,7 @@
     </div>
 
     <div class="col-sm-2" style="margin:auto">
-      <a href="/buyer/cart" class="btn button btn-primary" >Buy this product!</a>
+      {{ addForm.addProduct(class="btn btn-primary") }}
     </div>
   </div>
 
