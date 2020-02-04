@@ -519,7 +519,8 @@ def updateUser(id):
         user = userDict.get(id)
         user.setUsername(updateStaffForm.username.data)
         user.setEmail(updateStaffForm.email.data)
-        user.setPassword(updateStaffForm.password.data)
+        if updateStaffForm.password.data.isalnum():
+            user.setPassword(updateStaffForm.password.data)
         db['Users'] = userDict
         db.close()
         return redirect(url_for('staffAccounts'))
