@@ -85,7 +85,7 @@
               <label for="year">Year</label>
               <input class="form-control" id="year" type="number" min="1990" value="">
             </div>
-            <button class="btn button btn-success" onclick="filter()">Filter</button>
+            <button class="btn btn-success" onclick="filter()">Filter</button>
           </div>
         </div>
         <br>
@@ -105,8 +105,8 @@
               <tr>
                 <td id="date">{{ reports.get_reportDate() }}</td>
                 <td>{{ reports.get_itemSold() }}</td>
-                <td>{{ reports.get_revenue() }}</td>
-                <td>{{ reports.get_commission() }}</td>
+                <td>{{ "%.2f" % reports.get_revenue() }}</td>
+                <td>{{ "%.2f" % reports.get_commission() }}</td>
                 <td>
                   <form action="{{url_for('reportsDeleteMonthly', id=reports.get_reportDate().replace('/', '-'))}}" method="POST">
                     <button class="btn button btn-danger"><strong><u>Delete</u></strong></button>

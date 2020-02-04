@@ -57,31 +57,15 @@
   opacity: 0.5;
 }
 
-.circle {
-  z-index: -1000;
-  top:-500px;
-  right:-500px;
-  position: absolute;
-  background: #343a40 !important;
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-  transition: all 0.5s ease-out;
-}
-.expand {
-  height: 2000px;
-  width: 2000px;
-}
-.rotate {
-  -webkit-animation: rotation 0.5s;
-}
-@-webkit-keyframes rotation {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-  }
+.topnav .search-container button {
+  float: right;
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
 }
 
 .content {
@@ -89,7 +73,6 @@
   width: 90%;
   margin: auto;
   margin-top: 20px;
-  margin-bottom: 300px;
 }
 
 textarea {
@@ -147,7 +130,6 @@ input {
 }
 
 #table table, #table table thead {
-   border: black 2px solid;
    margin: auto;
 }
 

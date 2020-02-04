@@ -6,44 +6,54 @@
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
 
-  <div class="row">
-    <div class="col-sm-8">
-      <form class="form" method="POST">
-        {{ form.query.label(style='float:left;font-size:1.1em;margin-right:10px;') }}
-        {{ form.query(class="form-control",style='max-width:500px;float:left;')|safe }}
-        {% if form.query.errors %}
+  <div class="container-fluid content">
+    <div class="row">
+      <div class="col-sm-8">
+        <div class="search-container">
+          <form class="form" method="POST">
+            {{ form.query(class="form-control",style='max-width:500px;float:left;border-radius:0;clear:left', placeholder="Search...")|safe }}
+            {% if form.query.errors %}
             {% for error in form.query.errors %}
-                <div class="text-danger">{{ error }}</div>
+            <div class="text-danger">{{ error }}</div>
             {% endfor %}
-        {% endif %}
-        <button type="submit" name="button" class="btn btn-primary">Search</button>
-      </form>
+            {% endif %}
+            <button type="submit" name="button" class="fa fa-search btn-primary" style="width:38px;height:38px;float:left"></button>
+          </form>
+        </div>
+      </div>
     </div>
+
+    {% for product in productsList %}
+      <br>
+      <div class="row"">
+        <div class="col-sm-3" style="margin: auto;">
+          <img class="img-fluid" style="border: 1px solid black; height: 200px; width: 200px;" src= "{{ product.get_productPicture() }}" alt="">
+        </div>
+
+        <div class="col-sm-7">
+          <h3><b>{{ product.get_productName() }}</b></h3>
+          <div class="row">
+            <div class="col-sm-4">
+              <p>Price: ${{ "%.2f" % product.get_productPrice() }}</p>
+            </div>
+            <div class="col-sm-5">
+              {% if product.get_productCondition() == "N" %}
+              <p>Product Condition: New</p>
+              {% elif product.get_productCondition() == "U" %}
+              <p>Product Condition: Used</p>
+              {% endif %}
+            </div>
+            <div class="col-sm-3">
+              <p>Quantity: {{ product.get_productQuantity() }}</p>
+            </div>
+          </div>
+          <p>Description: <span style="font-size:0.9em; color:gray;">{{ product.get_productDescription() }}</span></p>
+        </div>
+
+        <div class="col-sm-2" style="margin:auto">
+          <a href="/buyer/cart" class="btn button btn-primary">Add to Cart<i class="fa fa-shopping-cart" style="font-size:25px;"></i></a>
+        </div>
+      </div>
+    {% endfor %}
   </div>
-
-  {% for product in productsList %}
-  <br>
-  <div class="row">
-    <div class="col-sm-4">
-      <img class="img-fluid" style="border: 1px solid black; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="">
-    </div>
-
-    <div class="col-sm-6">
-      <h3><b>{{ product.get_productName() }}</b></h3>
-      <p>Price: ${{ product.get_productPrice() }}</p>
-      {% if product.get_productCondition() == "N" %}
-        <p>Product Condition: New</p>
-      {% elif product.get_productCondition() == "U" %}
-        <p>Product Condition: Used</p>
-      {% endif %}
-      <p>Quantity: {{ product.get_productQuantity() }}</p>
-      <p>Description: {{ product.get_productDescription() }}</p>
-    </div>
-
-    <div class="col-sm-2" style="margin:auto">
-      <a href="/buyer/cart" class="btn button btn-primary" >Buy this product!</a>
-    </div>
-  </div>
-
-  {% endfor %}
 {% endblock %}
