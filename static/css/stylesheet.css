@@ -57,17 +57,6 @@
   opacity: 0.5;
 }
 
-.topnav .search-container button {
-  float: right;
-  padding: 6px 10px;
-  margin-top: 8px;
-  margin-right: 16px;
-  background: #ddd;
-  font-size: 17px;
-  border: none;
-  cursor: pointer;
-}
-
 .content {
   font-size: 1.1em;
   width: 90%;
