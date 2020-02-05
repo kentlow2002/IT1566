@@ -663,7 +663,10 @@ def ans(Tid):
             db = shelve.open("faq.db", "w")
             faqDict = db["ticket"]
             faq = faqDict.get(Tid)
-            faq.setAns(updatefaqForm.answer.data)
+            faq.setQn(updatefaqForm.question.data)
+            if updatefaqForm.answer.data.isalnum():
+                faq.setAns(updatefaqForm.answer.data)
+
             db["ticket"] = faqDict
             db.close()
             #except:
