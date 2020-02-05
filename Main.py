@@ -14,7 +14,7 @@ import re
 import string
 import random
 from ReportForms import CreateReportForm
-from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct
+from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct, CheckoutForm
 
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
@@ -78,7 +78,7 @@ def login():
                 resp = ''
                 if current_user.getType() == "Buyer":
                     resp = make_response(redirect(url_for("buyerIndex")))
-                    resp.set_cookie('cart',{})
+                    resp.set_cookie('cart',str({}))
                 elif current_user.getType() == "Seller":
                     resp = make_response(redirect(url_for("sellerIndex")))
                 else:
@@ -226,23 +226,29 @@ def buyerIndex():
 def buyerProducts():
     productsDict = {}
     productsList = []
-    cartProducts = {}
     productsSearch = ProductsSearch(request.form)
     addProductForm = AddCartProduct(request.form)
+    db = shelve.open('products.db', 'r')
+    productsDict = db['products']
     try:
         db = shelve.open('products.db', 'r')
         productsDict = db['products']
         if request.method == 'POST':
+            print(addProductForm.addProduct.data)
             if addProductForm.addProduct.data == True:
-                cart = request.cookies.get('cart')
+                cart = eval(request.cookies.get('cart'))
                 print(cart)
-                cart[int(addProductForm.productId.data)] = productsDict[int(addProductForm.productId.data)]
-            query = productsSearch.query.data
-            for key in productsDict:   # loop through Dictionary
-                print("Main py : have products")
-                product = productsDict.get(key)
-                if product.get_productStatus() == "public" and (query.lower() in product.get_productName().lower() or query in product.get_productDescription().lower()):
-                    productsList.append(product)
+                cart[addProductForm.productId.data] = 1
+                resp = make_response(redirect(url_for('cart')))
+                resp.set_cookie('cart',str(cart))
+                return resp
+            else:
+                query = productsSearch.query.data
+                for key in productsDict:   # loop through Dictionary
+                    print("Main py : have products")
+                    product = productsDict.get(key)
+                    if product.get_productStatus() == "public" and (query.lower() in product.get_productName().lower() or query in product.get_productDescription().lower()):
+                        productsList.append(product)
         else:
             for key in productsDict:   # loop through Dictionary
                 print("Main py : have products")
@@ -263,21 +269,60 @@ def buyerRetrieve():
 @app.route('/buyer/cart', methods = ['GET','POST'])
 def cart():
     #if current_user.is_authenticated:
-    cartUpdateForm = CartUpdateForm(request.form)
-    if request.method == 'POST' and cartUpdateForm.validate():
-        cartDict = {}
-        try:
-            db = shelve.open('products.db', "r")
-            cartDict = db["products"]
-        except Exception as e:
-            print(e)
-        return redirect(url_for("buyerCheckout"))
-
-    return render_template('buyerCart.html')
-@app.route('/buyer/checkout')
+    productsDict = {}
+    productsList = [[],[]]
+    editCartProduct = EditCartProduct(request.form)
+    try:
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        cart = eval(request.cookies.get('cart'))
+        if request.method == "POST":
+            productId = editCartProduct.productId.data
+            cart[productId] = editCartProduct.productQuantity.data
+            resp = make_response(redirect(url_for('cart')))
+            resp.set_cookie('cart',str(cart))
+            return resp
+        for i in cart:
+            productsList[0].append(productsDict[i])
+            productsList[1].append(cart[i])
+    except Exception as e:
+        print(e)
+    print(productsList)
+    return render_template('buyerCart.html',productsList=productsList,editForm=editCartProduct)
+@app.route('/buyer/checkout', methods = ['GET','POST'])
 # @login_required
 def buyerCheckout():
-    return render_template('buyerCheckout.html')
+    productsDict = {}
+    usersDict = {}
+    productsList = [[],[]]
+    totalPrice = 0
+    checkoutForm = CheckoutForm(request.form)
+    try:
+        db = shelve.open('products.db','r')
+        productsDict = db['products']
+        cart = eval(request.cookies.get('cart'))
+        userdb = shelve.open('Users.db','r')
+        usersDict = userdb['Users']
+        userID = int(request.cookies.get('userID'))
+        userEmail = usersDict[userID].getEmail()
+        if request.method == "POST":
+            emailBody = ''
+            for i in cart:
+                emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
+            msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
+            mail.send(msg)
+            cart = {}
+            resp = make_response(redirect(url_for('buyerIndex')))
+            resp.set_cookie('cart',cart)
+            return cart
+        for i in cart:
+            productsList[0].append(productsDict[i])
+            productsList[1].append(cart[i])
+            totalPrice += productsDict[i].get_productPrice()*cart[i]
+    except Exception as e :
+        print(e)
+
+    return render_template('buyerCheckout.html',form=checkoutForm,productsDict=productsDict,productsList=productsList,totalPrice=totalPrice)
 @app.route('/buyer/thanks')
 # @login_required
 def buyerThanks():

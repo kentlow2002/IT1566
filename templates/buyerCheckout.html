@@ -4,48 +4,66 @@
 {% include "includes/_navbarBuyer.html" %}
 {% endblock %}
 {% block content %}
-<form class="" action="index.html" method="post">
-  <div class="row text-center">
-    <div class="col-sm-6">
+{% from "includes/_formhelper.html" import render_field %}
+  <div class="row justify-content-center">
+    <div class="col-sm-7">
       <br>
       <h2>Checkout Page</h2>
-      <br>
-      <div class="col-sm-6">
-        <label for="name">Full Name</label>
-        <input class="form-control" type="text" name="" value="" id="name" enabled>
-      </div>
+      <form class="form" method="POST">
+        <div class="row">
+          <div class="col">
+            {{ render_field(form.firstName,class='form-control') }}
+          </div>
+          <div class="col">
+            {{ render_field(form.lastName,class='form-control') }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            {{ render_field(form.cardNum,class='form-control') }}
+          </div>
+          <div class="col">
+            {{ render_field(form.CVV,class='form-control') }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            {{ render_field(form.expiryMonth,class='form-control') }}
+          </div>
+          <div class="col">
+            {{ render_field(form.expiryYear,class='form-control') }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            {{ render_field(form.shippingAddr,class='form-control') }}
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="confirm('Are you sure you want to confirm this order?')">Purchase</button>
 
-      <div class="col-sm-6">
-        <label for="name">Card Number</label>
-        <input class="form-control" type="text" name="" value="" id="card" min="1">
-      </div>
-
-      <div class="col-sm-6">
-        <label for="name">CVV</label>
-        <input  class="form-control" type="text" name="" value="" id="CVV" min="1">
-      </div>
-
+      </form>
     </div>
-
-
-    <div class="col-sm-6" >
+    <div class="col-sm-5">
+      <table class='table'>
+        <tr>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+        </tr>
+          {% for i in range(productsList[0]|length) %}
+            <tr>
+              <td>{{ productsList[0][i].get_productName() }}</td>
+              <td>{{ productsList[1][i] }}</td>
+              <td>{{ productsList[0][i].get_productPrice()*productsList[1][i] }}</td>
+            </tr>
+          {% endfor %}
+        <tr>
+          <td><b>Total</b></td>
+          <td></td>
+          <td><b>{{ totalPrice }}</b></td>
+        </tr>
+      </table>
     </div>
-
-    <div class="col-sm-6" >
-      <label>Shipping Address:</label>
-      <textarea  class="form-control" rows="4" cols="50"></textarea>
-      <!--end of input-->
-    </div>
-
-    <div class="col-sm-6" >
-    </div>
-
-    <div class="col-sm-6" >
-      <a href="/buyer/index" class="button">Purchase</a>
-    </div>
-
-
-
   </div>
 
   {% endblock %}
