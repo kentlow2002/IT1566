@@ -145,6 +145,7 @@ def signedUp():
     return render_template('signedup.html')
 
 @app.route('/userEdit',methods=["GET","POST"])
+@login_required
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
     if request.method == "POST" and userUpdateForm.validate():
@@ -559,9 +560,6 @@ def staffOrders():
 def staffUpdate():
     return render_template('staffUpdate.html')
 
-#@app.route('/staff/profile')
-#def staffProfile():
-#    return render_template('staffProfile.html')
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
     updateStaffForm = StaffUpdateForm(request.form)
@@ -880,10 +878,10 @@ def reportsCreate():
                 today = datetime.today()
 
                 if correctedDate > today:
-                    flash("The date %s have not pass, Please try again." % correctedDate)
+                    flash("The date %s have not pass. Please try again." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
             except:
-                flash("The date %s is a invalid date/format, Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate)
                 return redirect(url_for("reportsCreate"))
 
             # transaction = open("test.txt", "r")
