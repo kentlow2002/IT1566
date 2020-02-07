@@ -30,16 +30,21 @@
               <tr>
                 <td>{{ user.getID() }}</td>
                 <td>{{ user.getUsername() }}</td>
-                <td>{{ user.getEmail() }}</td>
+                <td><a href="mailto:{{ user.getEmail() }}">{{ user.getEmail() }}</a></td>
                 <td>{{ user.getType() }}</td>
-                <td><a href="/staffEdit/{{user.getID()}}" class="btn btn-warning">Update</a></td>
-                <td>
+
                   {%  if user.getID() != UserID  %}
-                  <form action="{{url_for('deleteUser', id=user.getID())}}" method="POST">
-                    <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">
-                  </form>
+                  <td><a href="/staffEdit/{{user.getID()}}" class="btn btn-warning">Update</a></td>
+                  <td>
+                    <form action="{{url_for('deleteUser', id=user.getID())}}" method="POST">
+                      <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">
+                    </form>
+                  </td>
+                  {% else %}
+                  <div class="row justify-content-center">
+                    <td colspan=2><a href="/staffEdit/{{user.getID()}}" style="width:95%;" class="btn btn-warning">Update</a></td>
+                  </div>
                   {%  endif  %}
-                </td>
               </tr>
               {% endfor %}
             </tbody>

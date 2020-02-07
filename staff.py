@@ -11,7 +11,7 @@ class CreateStaffForm(Form):
 class StaffUpdateForm(Form):
     username = StringField('Username', [validators.Length(min=8,max=150), validators.DataRequired()])
     email = StringField('Email', [validators.Length(min=8,max=150), validators.Email(), validators.DataRequired()])
-    password = PasswordField('New Password', [validators.Length(min=12,max=150), validators.DataRequired()])
+    password = PasswordField('New Password', [validators.Length(min=12,max=150), validators.Optional()])
 #{Admin}matthias
 #helpmeplease
 #matthiasb
@@ -19,5 +19,5 @@ class StaffUpdateForm(Form):
 #matthiass
 #helpmeplease
 class FaqForm(Form):
-    answer = StringField('Answer', [validators.Length(min=1,max=150), validators.DataRequired()])
+    answer = StringField('Answer', [validators.Length(min=1,max=150), validators.Optional()])
     question = StringField('Question', [validators.Length(min=1,max=150), validators.DataRequired()])

@@ -36,7 +36,7 @@
         <img id="output" src="" alt="" style="border: 1px solid black; height: 400px; width: 400px">
       </div>
       <div class="row">
-        {{ render_field(form.productPicture, class="custom-file", required="", onchange="loadFile(event)") }}
+        {{ render_field(form.productPicture, class="custom-file", required="", onchange="loadFile(event)", accept="image/*") }}
       </div>
     </div>
     <div class="col-sm-2">
@@ -51,7 +51,7 @@
       </div>
       <div class="row">
         <div class="form-group">
-          {{ render_field(form.productCondition, class="form-check") }}
+          {{ render_field(form.productCondition, class="form-check", style="list-style-type:none;margin:0;padding:0;") }}
         </div>
       </div>
       <div class="row">

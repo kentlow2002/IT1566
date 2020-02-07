@@ -11,11 +11,11 @@
       <div class="col-sm-8">
         <div class="search-container">
           <form class="form" method="POST">
-            {{ form.query(class="form-control",style='max-width:500px;float:left;border-radius:0;clear:left', placeholder="Search...")|safe }}
-            {% if form.query.errors %}
-            {% for error in form.query.errors %}
-            <div class="text-danger">{{ error }}</div>
-            {% endfor %}
+            {{ searchForm.query(class="form-control",style='max-width:500px;float:left;border-radius:0;clear:left', placeholder="Search...")|safe }}
+            {% if searchForm.query.errors %}
+              {% for error in searchForm.query.errors %}
+                <div class="text-danger">{{ error }}</div>
+              {% endfor %}
             {% endif %}
             <button type="submit" name="button" class="fa fa-search btn-primary" style="width:38px;height:38px;float:left"></button>
           </form>
@@ -50,10 +50,12 @@
           <p>Description: <span style="font-size:0.9em; color:gray;">{{ product.get_productDescription() }}</span></p>
         </div>
 
-        <div class="col-sm-2" style="margin:auto">
-          <a href="/buyer/cart" class="btn button btn-primary">Add to Cart<i class="fa fa-shopping-cart" style="font-size:25px;"></i></a>
-        </div>
-      </div>
-    {% endfor %}
+    <div class="col-sm-2" style="margin:auto">
+      <form class="form" method="post">
+        {{ addForm.productId(type='hidden',value=product.get_productId()) }}
+        {{ addForm.addProduct(class='btn btn-primary button') }}
+      </form>
+    </div>
   </div>
+  {% endfor %}
 {% endblock %}
