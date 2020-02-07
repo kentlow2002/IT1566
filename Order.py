@@ -30,6 +30,7 @@ class Order:
         return self.__orderStatus
     def set_orderStatus(self, orderStatus):
         self.__orderStatus = orderStatus
-
-
-
+    def get_orderAddr(self):
+        return self.__orderAddr
+    def set_orderAddr(self,orderAddr):
+        self.__orderAddr = orderAddr
