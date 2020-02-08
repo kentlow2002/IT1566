@@ -98,7 +98,6 @@ def login():
     return render_template('login.html', form=userLogInForm)
 
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     return render_template('logout.html')
@@ -221,7 +220,7 @@ def forget():
                             return render_template('forget.html', form=forgetEmailForm)
 
                     tokendb['Tokens'] = tokenDict
-                    msg = Message("You have made a request to reset your password.",recipients=[userEmail],body="<h1><b>X Store<b></h1>\nTo set a new password for your account, please click on the following link or paste the link into your browser.\n"+urlString)
+                    msg = Message("You have made a request to reset your password.",recipients=[userEmail],html="<h1><b>X Store</b></h1>To set a new password for your account, please click on the following link or paste the link into your browser:"+urlString+"<br>If you did not request to change your password, please ignore this email.")
                     mail.send(msg)
                     '''msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password: "+tempPass)
                     mail.send(msg)
@@ -357,7 +356,13 @@ def cart():
         cart = eval(request.cookies.get('cart'))
         if request.method == "POST":
             productId = editCartProduct.productId.data
-            cart[productId] = editCartProduct.productQuantity.data
+            if editCartProduct.productQuantity.data <= 0:
+                cart.pop(productId)
+            elif editCartProduct.productQuantity.data > productsDict[productId].get_productQuantity():
+                flash('You attempted to buy more than the available amount for '+productsDict[productId].get_productName(),'error')
+            else:
+                cart[productId] = editCartProduct.productQuantity.data
+                flash('Quantity saved.')
             resp = make_response(redirect(url_for('cart')))
             resp.set_cookie('cart',str(cart))
             return resp

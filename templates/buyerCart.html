@@ -10,46 +10,59 @@
           <h2>Your Cart</h2>
         </div>
       </div>
-          {% for i in range(productsList[0]|length) %}
-            <br>
-            <div class="row"">
-              <div class="col-sm-3" style="margin: auto;">
-                <img class="img-fluid" style="border: 1px solid black; height: 200px; width: 200px;" src= "{{ productsList[0][i].get_productPicture() }}" alt="">
-              </div>
+      {% if productsList[0]|length > 0 %}
+        {% for i in range(productsList[0]|length) %}
+          <br>
+          <div class="row"">
+            <div class="col-sm-3" style="margin: auto;">
+              <img class="img-fluid" style="border: 1px solid black; height: 200px; width: 200px;" src= "{{ productsList[0][i].get_productPicture() }}" alt="">
+            </div>
 
-              <div class="col-sm-7">
-                <h3><b>{{ productsList[0][i].get_productName() }}</b></h3>
-                <div class="row">
-                  <div class="col-sm-4">
-                    <p>Price: ${{ "%.2f" % productsList[0][i].get_productPrice() }}</p>
-                  </div>
-                  <div class="col-sm-5">
-                    {% if productsList[0][i].get_productCondition() == "N" %}
-                    <p>Product Condition: New</p>
-                    {% elif productsList[0][i].get_productCondition() == "U" %}
-                    <p>Product Condition: Used</p>
-                    {% endif %}
-                  </div>
-                  <div class="col-sm-3">
-                    <p>Available: {{ productsList[0][i].get_productQuantity() }}</p>
-                  </div>
+            <div class="col-sm-7">
+              <h3><b>{{ productsList[0][i].get_productName() }}</b></h3>
+              <div class="row">
+                <div class="col-sm-4">
+                  <p>Price: ${{ "%.2f" % productsList[0][i].get_productPrice() }}</p>
+                </div>
+                <div class="col-sm-5">
+                  {% if productsList[0][i].get_productCondition() == "N" %}
+                  <p>Product Condition: New</p>
+                  {% elif productsList[0][i].get_productCondition() == "U" %}
+                  <p>Product Condition: Used</p>
+                  {% endif %}
+                </div>
+                <div class="col-sm-3">
+                  <p>Available: {{ productsList[0][i].get_productQuantity() }}</p>
                 </div>
               </div>
+            </div>
 
-            <div class="col-sm-2" style="margin:auto">
-              <form class="form" method="post">
-                {{ editForm.productId(type='hidden',value=productsList[0][i].get_productId()) }}
-                {{ editForm.productQuantity.label }}
-                {{ editForm.productQuantity(class="form-control",value=productsList[1][i])}}
-                <button type="submit" name="button" class="btn btn-primary">Save Quantity</button>
-              </form>
-            </div>
-          </div>
-          {% endfor %}
-          <div class="row justify-content-center">
-            <div class="col-sm-3">
-              <a href="/buyer/checkout" class="btn button btn-primary">Proceed to Checkout</a>
-            </div>
+          <div class="col-sm-2" style="margin:auto">
+            <form class="form" method="post">
+              {{ editForm.productId(type='hidden',value=productsList[0][i].get_productId()) }}
+              {{ editForm.productQuantity.label }}
+              {{ editForm.productQuantity(class="form-control",value=productsList[1][i])}}
+              <button type="submit" name="button" class="btn btn-primary">Save Quantity</button>
+            </form>
           </div>
         </div>
+        {% endfor %}
+        <div class="row justify-content-center">
+          <div class="col-sm-3">
+            <a href="/buyer/checkout" class="btn button btn-primary">Proceed to Checkout</a>
+          </div>
+        </div>
+      {% else %}
+        <div class="row justify-content-center">
+          <div class="col-sm-8 text-center">
+            You have no items in your cart
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-sm-3">
+            <a href="/buyer/product" class="btn button btn-primary" style="width:100%;">View Products</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
 {% endblock %}
