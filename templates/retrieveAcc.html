@@ -30,7 +30,7 @@
               <tr>
                 <td>{{ user.getID() }}</td>
                 <td>{{ user.getUsername() }}</td>
-                <td>{{ user.getEmail() }}</td>
+                <td><a href="mailto:{{ user.getEmail() }}">{{ user.getEmail() }}</a></td>
                 <td>{{ user.getType() }}</td>
 
                   {%  if user.getID() != UserID  %}

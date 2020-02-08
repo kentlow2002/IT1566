@@ -19,5 +19,5 @@ class StaffUpdateForm(Form):
 #matthiass
 #helpmeplease
 class FaqForm(Form):
-    answer = StringField('Answer', [validators.Length(min=1,max=150), validators.DataRequired()])
+    answer = StringField('Answer', [validators.Length(min=1,max=150), validators.Optional()])
     question = StringField('Question', [validators.Length(min=1,max=150), validators.DataRequired()])

@@ -146,6 +146,7 @@ def signedUp():
     return render_template('signedup.html')
 
 @app.route('/userEdit',methods=["GET","POST"])
+@login_required
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
     if request.method == "POST" and userUpdateForm.validate():
@@ -603,39 +604,98 @@ def deleteUser(id):
 
 @app.route('/staff/orders')
 def staffOrders():
-    return render_template('staffOrders.html')
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('staffOrders.html', orderList=orderList)
 
-@app.route('/staff/update')
+@app.route('/buyer/orders')
+def buyerOrders():
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('ordersRecent.html', orderList=orderList, UserID = current_user.getID())
+
+@app.route('/staff/update/<int:id>')
 def staffUpdate():
-    return render_template('staffUpdate.html')
+    if current_user.is_authenticated:
+        orderUpdateForm = OrderUpdateForm(request.form)
+        if request.method == 'POST' and orderUpdateForm.validate():
+            orderDict = {}
+            db = shelve.open('Orders.db', 'w') #change if name of db isnt Orders.db
+            orderDict = db['Orders']
+            order = orderDict.get(id)
+            if orderUpdateForm.addr.data.isalnum():
+                order.set_orderStatus(orderUpdateForm.addr.data)
+            if orderUpdateForm.status.data.isalnum():
+                order.set_orderStatus(orderUpdateForm.status.data)
+            db['Orders'] = orderDict
+            db.close()
+            return redirect(url_for('staffOrders'))
 
-#@app.route('/staff/profile')
-#def staffProfile():
-#    return render_template('staffProfile.html')
+        else:
+            userDict = {}
+            db = shelve.open('Orders.db', 'c')
+            orderDict = db['Orders']
+            db.close()
+            order = orderDict.get(id)
+            orderUpdateForm.addr.data = get_orderAddr()
+            orderUpdateForm.status.data = get_orderStatus()
+    else:
+        return redirect(url_for("index"))
+    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
+
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
-    updateStaffForm = StaffUpdateForm(request.form)
-    if request.method == 'POST' and updateStaffForm.validate():
-        userDict = {}
-        db = shelve.open('Users.db', 'w')
-        userDict = db['Users']
-        user = userDict.get(id)
-        user.setUsername(updateStaffForm.username.data)
-        user.setEmail(updateStaffForm.email.data)
-        if updateStaffForm.password.data.isalnum():
-            user.setPassword(updateStaffForm.password.data)
-        db['Users'] = userDict
-        db.close()
-        return redirect(url_for('staffAccounts'))
+    if current_user.is_authenticated:
+        updateStaffForm = StaffUpdateForm(request.form)
+        if request.method == 'POST' and updateStaffForm.validate():
+            userDict = {}
+            db = shelve.open('Users.db', 'w')
+            userDict = db['Users']
+            user = userDict.get(id)
+            user.setUsername(updateStaffForm.username.data)
+            user.setEmail(updateStaffForm.email.data)
+            if updateStaffForm.password.data.isalnum():
+                user.setPassword(updateStaffForm.password.data)
+            db['Users'] = userDict
+            db.close()
+            return redirect(url_for('staffAccounts'))
 
+        else:
+            userDict = {}
+            db = shelve.open('Users.db', 'c')
+            userDict = db['Users']
+            db.close()
+            user = userDict.get(id)
+            updateStaffForm.username.data = user.getUsername()
+            updateStaffForm.email.data = user.getEmail()
     else:
-        userDict = {}
-        db = shelve.open('Users.db', 'c')
-        userDict = db['Users']
-        db.close()
-        user = userDict.get(id)
-        updateStaffForm.username.data = user.getUsername()
-        updateStaffForm.email.data = user.getEmail()
+        return redirect(url_for("index"))
     return render_template('staffEdit.html', form=updateStaffForm)
 
 @app.route('/staff/accounts')
@@ -766,7 +826,10 @@ def ans(Tid):
             db = shelve.open("faq.db", "w")
             faqDict = db["ticket"]
             faq = faqDict.get(Tid)
-            faq.setAns(updatefaqForm.answer.data)
+            faq.setQn(updatefaqForm.question.data)
+            if updatefaqForm.answer.data.isalnum():
+                faq.setAns(updatefaqForm.answer.data)
+
             db["ticket"] = faqDict
             db.close()
             #except:
@@ -927,10 +990,10 @@ def reportsCreate():
                 today = datetime.today()
 
                 if correctedDate > today:
-                    flash("The date %s have not pass, Please try again." % correctedDate)
+                    flash("The date %s have not pass. Please try again." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
             except:
-                flash("The date %s is a invalid date/format, Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate)
                 return redirect(url_for("reportsCreate"))
 
             # transaction = open("test.txt", "r")
