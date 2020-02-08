@@ -557,7 +557,7 @@ def staffOrders():
     if current_user.is_authenticated:
         db = shelve.open("Orders.db", "c")
         try:
-            orderDict = db["Users"]
+            orderDict = db['Orders']
             orderList = []
             for key in orderDict:
                 order = orderDict.get(key)
@@ -570,6 +570,25 @@ def staffOrders():
     else:
         return redirect(url_for("index"))
     return render_template('staffOrders.html', orderList=orderList)
+
+@app.route('/buyer/orders')
+def buyerOrders():
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('ordersRecent.html', orderList=orderList, UserID = current_user.getID())
 
 @app.route('/staff/update/<int:id>')
 def staffUpdate():
@@ -598,7 +617,7 @@ def staffUpdate():
             orderUpdateForm.status.data = get_orderStatus()
     else:
         return redirect(url_for("index"))
-    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = orderDict.get(id))
+    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
 
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
