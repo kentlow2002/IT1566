@@ -16,6 +16,10 @@ class User(UserMixin):
 
     def loginCheck(self,passwdInput):
         n = hashlib.sha256(passwdInput.encode('ascii')).digest()
+        '''if n==self.__userPassword:
+            return 1
+        else:
+            return 0'''
         if n!=self.__userPassword:
             return 0
         else:
@@ -55,8 +59,8 @@ class User(UserMixin):
         return self.__username+' '+self.__userEmail+' '+str(self.__userPassword)+' '+self.__userType+' '+str(self.__userID)
 
 class Buyer(User):
-    def __init__(self,username,userEmail,userPassword,userType,userID):
-        super().__init__(username,userEmail,userPassword, userType,userID)
+    def __init__(self,username,userEmail,userPassword,userID):
+        super().__init__(username,userEmail,userPassword,'Buyer',userID)
         self.__buyerAddr = ""
 
     def buyerDelete(self):
@@ -72,8 +76,8 @@ class Buyer(User):
         return super().__str__() + ' ' + self.__buyerAddr
 
 class Seller(User):
-    def __init__(self,username,userEmail,userPassword,userType,userID):
-        super().__init__(username,userEmail,userPassword,userType,userID)
+    def __init__(self,username,userEmail,userPassword,userID):
+        super().__init__(username,userEmail,userPassword,'Seller',userID)
 
     def sellerDelete(self):
         return 0
@@ -84,3 +88,31 @@ class Staff(User):
 
     def staffDelete():
         return 0
+
+class Token:
+    def __init__(self,token,expiry):
+        self.__tokenHash = self.tokenHash(token)
+        self.__status = ''
+        self.__expiry = expiry
+
+    def tokenHash(self,x):
+        print(x)
+        m = hashlib.sha256(x.encode('ascii')).digest()
+        return m
+
+    def tokenCheck(self,y):
+        m = hashlib.sha256(y.encode('ascii')).digest()
+        print(y,self.__tokenHash,m)
+        if self.__tokenHash == m:
+            return True
+        else:
+            return False
+
+    def get_status(self):
+        return self.__status
+
+    def get_expiry(self):
+        return self.__expiry
+
+    def set_status(self,newStatus):
+        self.__status = newStatus

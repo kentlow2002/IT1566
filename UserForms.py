@@ -19,8 +19,12 @@ class UserUpdateForm(Form):
     newPassword = PasswordField('New Password', [validators.Length(min=8,max=150), validators.Optional()])
     deleteAcc = SubmitField('Delete Account')
 
-class ForgetPassForm(Form):
+class ForgetEmailForm(Form):
     email = StringField('Email:', [validators.Email(), validators.DataRequired()])
+
+class ForgetPassForm(Form):
+    newPasswd = PasswordField('New Password:', [validators.Length(min=8,max=150), validators.DataRequired()])
+    newPasswdConf = PasswordField('Confirm your new password:', [validators.Length(min=8,max=150), validators.DataRequired()])
 
 class ProductsSearch(Form):
     query = StringField('Search:')

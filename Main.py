@@ -5,10 +5,11 @@ import Product as p
 import Faq as f
 import Cart as c
 import shelve
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 import os
 import re
 import string
@@ -16,7 +17,7 @@ import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct, CheckoutForm
 
-from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm, ProductsSearch
+from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetEmailForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 from CartForm import CartUpdateForm
 app = Flask(__name__)
@@ -123,9 +124,9 @@ def signUp():
             user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         else:
             if createUserForm.type.data == "Buyer":
-                user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+                user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
             else:
-                user = u.Seller(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+                user = u.Seller(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         usersDict[user.getID()] = user
         db['Users'] = usersDict
         # Test codes
@@ -192,28 +193,77 @@ def userEdit():
 
 @app.route('/forget',methods=['GET','POST'])
 def forget():
-    forgetPassForm = ForgetPassForm(request.form)
-    if request.method == "POST" and forgetPassForm.validate():
+    forgetEmailForm = ForgetEmailForm(request.form)
+    if request.method == "POST" and forgetEmailForm.validate():
         usersDict = {}
         try:
             db = shelve.open('Users.db','r')
             usersDict = db['Users']
+            tokendb = shelve.open('Tokens.db','c')
+            tokenDict = tokendb['Tokens']
         except Exception as e:
             print(e)
-        userEmail = forgetPassForm.email.data
+        userEmail = forgetEmailForm.email.data
         for i in usersDict:
             if usersDict[i].getEmail() == userEmail:
+                print('lul')
                 try:
                     tempPass = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
-                    msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password: "+tempPass)
+                    urlString = '127.0.0.1:5000/forget/'+tempPass
+                    if i not in tokenDict:
+                        tokenDict[i] = u.Token(tempPass,datetime.now() + timedelta(minutes=5))
+                    else:
+                        if datetime.now() > tokenDict[i].get_expiry():
+                            tokenDict[i] = u.Token(tempPass,datetime.now() + timedelta(minutes=5))
+                        else:
+                            flash('You may have requested to change your password too soon. Please try again later.')
+                            return render_template('forget.html', form=forgetEmailForm)
+
+                    tokendb['Tokens'] = tokenDict
+                    msg = Message("You have made a request to reset your password.",recipients=[userEmail],body="<h1><b>X Store<b></h1>\nTo set a new password for your account, please click on the following link or paste the link into your browser.\n"+urlString)
+                    mail.send(msg)
+                    '''msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password: "+tempPass)
                     mail.send(msg)
                     usersDict[i].setPassword(tempPass)
-                    db['Users'] = usersDict
+                    db['Users'] = usersDict'''
                     return render_template('thankemail.html')
                 except Exception as e:
                     print(e)
-                    return render_template('forgot.html',form = forgetPassForm)
-    return render_template('forget.html', form=forgetPassForm)
+    return render_template('forget.html', form=forgetEmailForm)
+
+@app.route('/forget/<token>',methods=['GET','POST'])
+def passReset(token):
+    forgetPassForm = ForgetPassForm(request.form)
+
+    try:
+        print(token)
+        tokendb = shelve.open('Tokens.db','c')
+        tokenDict = tokendb['Tokens']
+        for i in tokenDict:
+            if tokenDict[i].tokenCheck(token) == True and datetime.now()<tokenDict[i].get_expiry():
+                currentToken = tokenDict[i]
+
+                if request.method == 'POST' and forgetPassForm.validate():
+                    db = shelve.open('Users.db','c')
+                    usersDict = db['Users']
+                    if forgetPassForm.newPasswd.data == forgetPassForm.newPasswdConf.data and not(usersDict[i].loginCheck(forgetPassForm.newPasswd.data)):
+                        usersDict[i].setPassword(forgetPassForm.newPasswd.data)
+                        db['Users'] = usersDict
+                        flash('Please log in with your new password.')
+                        return redirect(url_for('login'))
+                    else:
+                        if forgetPassForm.newPasswd.data != forgetPassForm.newPasswdConf.data:
+                            flash('The passwords in the fields below do not match!')
+                        if usersDict[i].loginCheck(forgetPassForm.newPasswd.data):
+                            flash('Please do not use your previous password!')
+                        return render_template('passReset.html',form=forgetPassForm)
+                else:
+                    return render_template('passReset.html',form=forgetPassForm)
+
+    except Exception as e:
+        print(e)
+
+    return redirect(url_for('index'))
 
 # buyer
 @app.route('/buyer/index')

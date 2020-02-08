@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %} Login - X Store {% endblock %}
+
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+  <div class="container-fluid content">
+    <div class="row justify-content-center">
+      <form class='form' method="POST">
+        <div class="col-sm-12">
+          <p>Please set your new password</p>
+          {{ render_field(form.newPasswd,class='form-control') }}
+          {{ render_field(form.newPasswdConf,class='form-control') }}
+          <button type="submit" class="btn btn-primary">Change Password</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+{% endblock %}
