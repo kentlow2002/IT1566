@@ -35,7 +35,7 @@
                 <td>{{ order.get_orderStatus() }}</td>
                 <td>{{ order.get_orderAddr() }}</td>
 
-                <td><a href="staffUpdate.html"><button class="btn" style='background-color:blue'>Update</button></a></td>
+                <td><a href="/staff/update/{{ order.get_orderId() }}"><button class="btn" style='background-color:blue'>Update</button></a></td>
               </tr>
               {% endfor %}
             </tbody>
