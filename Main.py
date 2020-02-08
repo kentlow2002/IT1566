@@ -222,6 +222,32 @@ def forget():
 def buyerIndex():
     return render_template('buyerIndex.html')
 
+@app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
+def buyerDetailedProducts(id):
+    product = ""
+    productsDict = {}
+    db = shelve.open('products.db', 'r')
+    productsDict = db['products']
+    addProductForm = AddCartProduct(request.form)
+    try:
+        for x in productsDict:
+            if id == x:
+                if productsDict[x].get_productStatus() == "public":
+                    product = productsDict[x]
+            if request.method == 'POST':
+                print(addProductForm.addProduct.data)
+                if addProductForm.addProduct.data == True:
+                    cart = eval(request.cookies.get('cart'))
+                    print(cart)
+                    cart[addProductForm.productId.data] = 1
+                    resp = make_response(redirect(url_for('cart')))
+                    resp.set_cookie('cart',str(cart))
+                    return resp
+    except:
+        print("error")
+    db.close()
+    return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
+
 @app.route('/buyer/product', methods=['GET','POST'])
 # @login_required
 def buyerProducts():
@@ -261,6 +287,8 @@ def buyerProducts():
         print(e)
 
     return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
+
+
 
 @app.route('/buyer/retrieve')
 # @login_required
@@ -412,6 +440,7 @@ def sellerListProduct():
         return redirect(url_for('sellerIndex'))
 
     return render_template('sellerListProduct.html', form=createProductForm)
+
 
 @app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
 def updateProduct(id):

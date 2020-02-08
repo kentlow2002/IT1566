@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %} Welcome - X Store {% endblock %}
+{% block navbar %}
+{% include "includes/_navbarBuyer.html" %}
+{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+  <div class="container-fluid content">
+ <div class="row">
+    <div class="col-sm-4 ">
+      <img class="img-fluid" style="border: 1px solid black; height: 250px; width: 250px" src= "{{ product.get_productPicture() }}" alt="">
+    </div>
+
+    <div class="col-sm-6">
+      <h3><b>{{ product.get_productName() }}</b></h3>
+      <p>Price: ${{ "%.2f" % product.get_productPrice() }}</p>
+      {% if product.get_productCondition() == "N" %}
+        <p>Product Condition: New</p>
+      {% elif product.get_productCondition() == "U" %}
+        <p>Product Condition: Used</p>
+      {% endif %}
+      <p>Quantity Left: {{ product.get_productQuantity() }}</p>
+      <p>Description: {{ product.get_productDescription() }}</p>
+    </div>
+
+  <form class="form" method="post">
+        {{ addForm.productId(type='hidden',value=product.get_productId()) }}
+        {{ addForm.addProduct(class='btn btn-primary button') }}
+  </form>
+
+  </div>
+
+
+  </div>
+{% endblock %}
