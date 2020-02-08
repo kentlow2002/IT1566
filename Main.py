@@ -5,7 +5,8 @@ import Product as p
 import Faq as f
 import Cart as c
 import shelve
-from datetime import datetime
+from datetime import datetime, timedelta
+import calendar
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
@@ -145,7 +146,6 @@ def signedUp():
     return render_template('signedup.html')
 
 @app.route('/userEdit',methods=["GET","POST"])
-@login_required
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
     if request.method == "POST" and userUpdateForm.validate():
@@ -560,6 +560,9 @@ def staffOrders():
 def staffUpdate():
     return render_template('staffUpdate.html')
 
+#@app.route('/staff/profile')
+#def staffProfile():
+#    return render_template('staffProfile.html')
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
     updateStaffForm = StaffUpdateForm(request.form)
@@ -838,7 +841,6 @@ def reportsCreate():
                             date = "/".join(date)
                             date = datetime.strptime(date, "%m/%Y")
                         else:
-                            print(date)
                             del date[:2]
                             date = "/".join(date)
                             date = datetime.strptime(date, "%Y")
@@ -878,29 +880,11 @@ def reportsCreate():
                 today = datetime.today()
 
                 if correctedDate > today:
-                    flash("The date %s have not pass. Please try again." % strCorrectedDate)
+                    flash("The date %s have not pass, Please try again." % correctedDate)
                     return redirect(url_for("reportsCreate"))
             except:
-                flash("The date %s is a invalid date/format. Please try again." % formDate)
+                flash("The date %s is a invalid date/format, Please try again." % formDate)
                 return redirect(url_for("reportsCreate"))
-
-            # transaction = open("test.txt", "r")
-
-            import stepInDB
-            orders = {
-                stepInDB.Order(0, "12/12/2019", "testing", "delivered", "address", 100, 1),
-                stepInDB.Order(1, "13/12/2019", "testing", "delivered", "address", 200, 9),
-                stepInDB.Order(2, "12/12/2019", "testing", "delivered", "address", 100, 5),
-                stepInDB.Order(3, "12/12/2019", "testing", "delivered", "address", 300, 4),
-                stepInDB.Order(4, "14/12/2019", "testing", "delivered", "address", 400, 3),
-                stepInDB.Order(5, "12/12/2019", "testing", "delivered", "address", 100, 15),
-                stepInDB.Order(6, "13/12/2019", "testing", "delivered", "address", 150, 10),
-                stepInDB.Order(7, "13/12/2018", "testing", "delivered", "address", 150, 10),
-                stepInDB.Order(8, "13/12/2017", "testing", "delivered", "address", 150, 10),
-            }
-            stepInOrdersDB = shelve.open("stepInOrdersDB.db", "c")
-            stepInOrdersDB["test"] = orders
-            stepInOrdersDB.close()
 
 
 
@@ -908,14 +892,41 @@ def reportsCreate():
             stepInOrdersDB = shelve.open("stepInOrdersDB.db", "r")
             order = stepInOrdersDB["test"]
             if createReportForm.type.data == "D":
-                if today >= correctedDate:
+                # only use this code if there is a no db for daily
+                """sdate = date(2018, 1, 1)   # start date
+                edate = date.today()   # end date
+
+                delta = edate - sdate       # as timedelta
+                dateList = []
+                for i in range(delta.days + 1):
+                    day = sdate + timedelta(days=i)
+                    dateList.append(day.strftime("%d/%m/%Y"))
+
+                for i in dateList:
+                    print(i)
+                    productCount = 0
+                    productPrice = 0
+                    for userid in order:
+                        history = order[userid]
+                        for key in history:
+                            data = history[key]
+                            if dateValidator(data.get_orderDate()).strftime("%d/%m/%Y") == i:
+                                productCount += int(data.get_orderQuan())
+                                productPrice += float(data.get_orderPrice())
+                    report = r.Report(createReportForm.type.data, i, productCount, productPrice)
+                    reportDict[i] = report
+                    db["Daily"] = reportDict"""
+                if (today - timedelta(days=1)) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for all in order:
-                            if dateValidator(all.get_orderDate()).strftime("%d/%m/%Y") == strCorrectedDate:
-                                productCount += int(all.get_orderQuan())
-                                productPrice += float(all.get_orderPrice())
+                        for userid in order:
+                            history = order[userid]
+                            for key in history:
+                                data = history[key]
+                                if dateValidator(data.get_orderDate()).strftime("%d/%m/%Y") == strCorrectedDate:
+                                    productCount += int(data.get_orderQuan())
+                                    productPrice += float(data.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Daily"] = reportDict
@@ -928,14 +939,17 @@ def reportsCreate():
                     return redirect(url_for("reportsCreate"))
 
             elif createReportForm.type.data == "M":
-                if today > correctedDate:
+                if (today - timedelta(days=calendar.monthrange(today.year, today.month)[1])) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for all in order:
-                            if dateValidator(all.get_orderDate()).strftime("%m/%Y") == strCorrectedDate:
-                                productCount += int(all.get_orderQuan())
-                                productPrice += float(all.get_orderPrice())
+                        for userid in order:
+                            history = order[userid]
+                            for key in history:
+                                data = history[key]
+                                if dateValidator(data.get_orderDate()).strftime("%m/%Y") == strCorrectedDate:
+                                    productCount += int(data.get_orderQuan())
+                                    productPrice += float(data.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Monthly"] = reportDict
@@ -948,14 +962,17 @@ def reportsCreate():
                     return redirect(url_for("reportsCreate"))
 
             else:
-                if today > correctedDate:
+                if (today - timedelta(days=365)) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for all in order:
-                            if dateValidator(all.get_orderDate()).strftime("%Y") == strCorrectedDate:
-                                productCount += int(all.get_orderQuan())
-                                productPrice += float(all.get_orderPrice())
+                        for userid in order:
+                            history = order[userid]
+                            for key in history:
+                                data = history[key]
+                                if dateValidator(data.get_orderDate()).strftime("%Y") == strCorrectedDate:
+                                    productCount += int(data.get_orderQuan())
+                                    productPrice += float(data.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Yearly"] = reportDict
