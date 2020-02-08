@@ -146,6 +146,7 @@ def signedUp():
     return render_template('signedup.html')
 
 @app.route('/userEdit',methods=["GET","POST"])
+@login_required
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
     if request.method == "POST" and userUpdateForm.validate():
@@ -703,9 +704,7 @@ def staffUpdate():
         return redirect(url_for("index"))
     return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
 
-#@app.route('/staff/profile')
-#def staffProfile():
-#    return render_template('staffProfile.html')
+
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
     if current_user.is_authenticated:
@@ -1025,11 +1024,8 @@ def reportsCreate():
                     strCorrectedDate = correctedDate.strftime("%Y")
                 today = datetime.today()
 
-                if correctedDate > today:
-                    flash("The date %s have not pass, Please try again." % correctedDate)
-                    return redirect(url_for("reportsCreate"))
             except:
-                flash("The date %s is a invalid date/format, Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate)
                 return redirect(url_for("reportsCreate"))
 
 
