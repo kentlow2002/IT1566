@@ -1,5 +1,5 @@
 class Order:
-    def __init__(self,orderId,orderDate,orderDesc,orderStatus,orderAddr,orderPrice,orderQuan,):
+    def __init__(self,orderId,orderDate,orderDesc,orderStatus,orderAddr,orderPrice,orderQuan,userID):
         self.__orderDict = {}
         self.__orderId = 0 #to differentiate same products but bought by different users
         self.__orderDate = orderDate
@@ -8,6 +8,7 @@ class Order:
         self.__orderAddr = orderAddr
         self.__orderPrice = orderPrice
         self.__orderQuan = orderQuan
+        self.__userID = userID
 
     def addProduct(self,productList):
         self.__orderList.append(productList)
@@ -34,3 +35,7 @@ class Order:
         return self.__orderAddr
     def set_orderAddr(self,orderAddr):
         self.__orderAddr = orderAddr
+    def get_userID(self):
+        return self.__userID
+    def set_userID(self, userID):
+        self.__userID =  userID

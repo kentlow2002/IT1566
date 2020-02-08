@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %} Ask a Question {% endblock %}
+{% block navbar %}
+	{% if usertype == "Buyer" %}
+		{% include "includes/_navbarBuyer.html" %}
+	{% elif usertype == "Seller" %}
+		{% include "includes/_navbarSeller.html" %}
+	{% else %}
+		{% include "includes/_navbarStaff.html" %}
+	{% endif %}
+{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<div class="container-fluid content">
+  <div id="table" style="display:block" align = "center">
+		<h3>Recent orders</h3>
+    <br>
+    <div id="recentO">
+      <table class="table table-striped justify-content-centre text-center">
+				<thead>
+					<tr>
+						<th>Order ID</th>
+						<th>Order Date</th>
+						<th>Order Description</th>
+						<th>Status</th>
+						<th>Order Address</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in orderList %}
+						{% if order.get_userID() == UserID %}
+						<tr>
+							<td>{{ order.get_orderId() }}</td>
+							<td>{{ order.get_orderDate() }}</td>
+							<td>{{ order.get_orderDesc() }}</td>
+							<td>{{ order.get_orderStatus() }}</td>
+							<td>{{ order.get_orderAddr() }}</td>
+						</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
