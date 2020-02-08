@@ -16,7 +16,7 @@ import string
 import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct, CheckoutForm
-
+from ordersForms import OrderUpdateForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 from CartForm import CartUpdateForm
@@ -222,6 +222,32 @@ def forget():
 def buyerIndex():
     return render_template('buyerIndex.html')
 
+@app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
+def buyerDetailedProducts(id):
+    product = ""
+    productsDict = {}
+    db = shelve.open('products.db', 'r')
+    productsDict = db['products']
+    addProductForm = AddCartProduct(request.form)
+    try:
+        for x in productsDict:
+            if id == x:
+                if productsDict[x].get_productStatus() == "public":
+                    product = productsDict[x]
+            if request.method == 'POST':
+                print(addProductForm.addProduct.data)
+                if addProductForm.addProduct.data == True:
+                    cart = eval(request.cookies.get('cart'))
+                    print(cart)
+                    cart[addProductForm.productId.data] = 1
+                    resp = make_response(redirect(url_for('cart')))
+                    resp.set_cookie('cart',str(cart))
+                    return resp
+    except:
+        print("error")
+    db.close()
+    return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
+
 @app.route('/buyer/product', methods=['GET','POST'])
 # @login_required
 def buyerProducts():
@@ -261,6 +287,8 @@ def buyerProducts():
         print(e)
 
     return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
+
+
 
 @app.route('/buyer/retrieve')
 # @login_required
@@ -413,6 +441,7 @@ def sellerListProduct():
 
     return render_template('sellerListProduct.html', form=createProductForm)
 
+
 @app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
 def updateProduct(id):
     updateProductForm = CreateProductForm(request.form)
@@ -554,39 +583,101 @@ def deleteUser(id):
 
 @app.route('/staff/orders')
 def staffOrders():
-    return render_template('staffOrders.html')
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('staffOrders.html', orderList=orderList)
 
-@app.route('/staff/update')
+@app.route('/buyer/orders')
+def buyerOrders():
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('ordersRecent.html', orderList=orderList, UserID = current_user.getID())
+
+@app.route('/staff/update/<int:id>')
 def staffUpdate():
-    return render_template('staffUpdate.html')
+    if current_user.is_authenticated:
+        orderUpdateForm = OrderUpdateForm(request.form)
+        if request.method == 'POST' and orderUpdateForm.validate():
+            orderDict = {}
+            db = shelve.open('Orders.db', 'w') #change if name of db isnt Orders.db
+            orderDict = db['Orders']
+            order = orderDict.get(id)
+            if orderUpdateForm.addr.data.isalnum():
+                order.set_orderStatus(orderUpdateForm.addr.data)
+            if orderUpdateForm.status.data.isalnum():
+                order.set_orderStatus(orderUpdateForm.status.data)
+            db['Orders'] = orderDict
+            db.close()
+            return redirect(url_for('staffOrders'))
+
+        else:
+            userDict = {}
+            db = shelve.open('Orders.db', 'c')
+            orderDict = db['Orders']
+            db.close()
+            order = orderDict.get(id)
+            orderUpdateForm.addr.data = get_orderAddr()
+            orderUpdateForm.status.data = get_orderStatus()
+    else:
+        return redirect(url_for("index"))
+    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
 
 #@app.route('/staff/profile')
 #def staffProfile():
 #    return render_template('staffProfile.html')
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
-    updateStaffForm = StaffUpdateForm(request.form)
-    if request.method == 'POST' and updateStaffForm.validate():
-        userDict = {}
-        db = shelve.open('Users.db', 'w')
-        userDict = db['Users']
-        user = userDict.get(id)
-        user.setUsername(updateStaffForm.username.data)
-        user.setEmail(updateStaffForm.email.data)
-        if updateStaffForm.password.data.isalnum():
-            user.setPassword(updateStaffForm.password.data)
-        db['Users'] = userDict
-        db.close()
-        return redirect(url_for('staffAccounts'))
+    if current_user.is_authenticated:
+        updateStaffForm = StaffUpdateForm(request.form)
+        if request.method == 'POST' and updateStaffForm.validate():
+            userDict = {}
+            db = shelve.open('Users.db', 'w')
+            userDict = db['Users']
+            user = userDict.get(id)
+            user.setUsername(updateStaffForm.username.data)
+            user.setEmail(updateStaffForm.email.data)
+            if updateStaffForm.password.data.isalnum():
+                user.setPassword(updateStaffForm.password.data)
+            db['Users'] = userDict
+            db.close()
+            return redirect(url_for('staffAccounts'))
 
+        else:
+            userDict = {}
+            db = shelve.open('Users.db', 'c')
+            userDict = db['Users']
+            db.close()
+            user = userDict.get(id)
+            updateStaffForm.username.data = user.getUsername()
+            updateStaffForm.email.data = user.getEmail()
     else:
-        userDict = {}
-        db = shelve.open('Users.db', 'c')
-        userDict = db['Users']
-        db.close()
-        user = userDict.get(id)
-        updateStaffForm.username.data = user.getUsername()
-        updateStaffForm.email.data = user.getEmail()
+        return redirect(url_for("index"))
     return render_template('staffEdit.html', form=updateStaffForm)
 
 @app.route('/staff/accounts')
