@@ -389,22 +389,36 @@ def buyerCheckout():
         usersDict = userdb['Users']
         userID = int(request.cookies.get('userID'))
         userEmail = usersDict[userID].getEmail()
-        if request.method == "POST":
-            emailBody = ''
-            for i in cart:
-                emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
-            msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
-            mail.send(msg)
-            cart = {}
-            resp = make_response(redirect(url_for('buyerIndex')))
-            resp.set_cookie('cart',cart)
-            return cart
-        for i in cart:
-            productsList[0].append(productsDict[i])
-            productsList[1].append(cart[i])
-            totalPrice += productsDict[i].get_productPrice()*cart[i]
+
     except Exception as e :
         print(e)
+    for i in cart:
+        productsList[0].append(productsDict[i])
+        productsList[1].append(cart[i])
+        totalPrice += productsDict[i].get_productPrice()*cart[i]
+    if request.method == "POST":
+        ordersDict = {}
+        ordersCount = -1
+        ordersdb = shelve.open('Orders.db','c')
+        try:
+            ordersDict = ordersdb['Orders']
+            ordersCount = ordersdb['count']
+        except Exception as e:
+            print(e)
+        ordersCount += 1
+        ordersDict[userID] = {}
+        ordersDict[userID][ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]))
+        ordersdb['Orders'] = ordersDict
+        ordersdb['count'] = ordersCount
+        emailBody = ''
+        for i in cart:
+            emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
+        msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
+        mail.send(msg)
+        cart = {}
+        resp = make_response(redirect(url_for('buyerIndex')))
+        resp.set_cookie('cart',str(cart))
+        return resp
 
     return render_template('buyerCheckout.html',form=checkoutForm,productsDict=productsDict,productsList=productsList,totalPrice=totalPrice)
 @app.route('/buyer/thanks')
