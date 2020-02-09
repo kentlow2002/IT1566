@@ -2,9 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ccf6aa02-5caf-41b9-a215-d752374cff33" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/faq.db.bak" beforeDir="false" afterPath="$PROJECT_DIR$/faq.db.bak" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/faq.db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/faq.db.dat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/faq.db.dir" beforeDir="false" afterPath="$PROJECT_DIR$/faq.db.dir" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reportsStorage.db.bak" beforeDir="false" afterPath="$PROJECT_DIR$/reportsStorage.db.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reportsStorage.db.dat" beforeDir="false" afterPath="$PROJECT_DIR$/reportsStorage.db.dat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reportsStorage.db.dir" beforeDir="false" afterPath="$PROJECT_DIR$/reportsStorage.db.dir" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/buyerProduct.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/buyerProduct.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
