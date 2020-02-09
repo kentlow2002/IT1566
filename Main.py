@@ -52,7 +52,7 @@ def load_user(user_id):
 def index():
     try:
         productsDict = {}
-        db = shelve.open('products.db', 'r')
+        db = shelve.open('products.db', 'c')
         productsDict = db['products']
         publicDict = {}
         productsList = []
@@ -67,7 +67,7 @@ def index():
             productsList.append([product, key])
 
     except:
-        print("error")
+        productsList = ""
     return render_template('index.html', productsList = productsList)
 
 @app.route('/login', methods=["GET","POST"])
@@ -294,7 +294,7 @@ def passReset(token):
 def buyerIndex():
     try:
         productsDict = {}
-        db = shelve.open('products.db', 'r')
+        db = shelve.open('products.db', 'c')
         productsDict = db['products']
         publicDict = {}
         productsList = []
@@ -309,9 +309,8 @@ def buyerIndex():
             productsList.append([product, key])
 
     except:
-        print("error")
-
-    return render_template('buyerIndex.html', productsList = productsList)
+        productsList = ""
+    return render_template('buyerindex.html', productsList = productsList)
 
 @app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
 def buyerDetailedProducts(id):
@@ -351,10 +350,8 @@ def buyerProducts():
     productsList = []
     productsSearch = ProductsSearch(request.form)
     addProductForm = AddCartProduct(request.form)
-    db = shelve.open('products.db', 'r')
-    productsDict = db['products']
     try:
-        db = shelve.open('products.db', 'r')
+        db = shelve.open('products.db', 'c')
         productsDict = db['products']
         if request.method == 'POST':
             print(addProductForm.addProduct.data)
@@ -381,6 +378,7 @@ def buyerProducts():
         db.close()
     except Exception as e:
         print(e)
+        productsList = ""
 
     try:
         usertype = current_user.getType()
@@ -539,7 +537,7 @@ def sellerIndex():
     productsDict = {}
 
     try:
-        db = shelve.open('products.db', 'r')
+        db = shelve.open('products.db', 'c')
         productsDict = db['products']
         productsList = []
         hiddenList = []
