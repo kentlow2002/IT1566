@@ -17,7 +17,7 @@ import string
 import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct, CheckoutForm
-
+from ordersForms import OrderUpdateForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetEmailForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 from CartForm import CartUpdateForm
@@ -146,6 +146,7 @@ def signedUp():
     return render_template('signedup.html')
 
 @app.route('/userEdit',methods=["GET","POST"])
+@login_required
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
     if request.method == "POST" and userUpdateForm.validate():
@@ -406,8 +407,7 @@ def buyerCheckout():
         except Exception as e:
             print(e)
         ordersCount += 1
-        ordersDict[userID] = {}
-        ordersDict[userID][ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]))
+        ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
         ordersdb['count'] = ordersCount
         emailBody = ''
@@ -651,22 +651,20 @@ def deleteUser(id):
     return redirect(url_for('staffAccounts'))
 
 @app.route('/staff/orders')
+@login_required
 def staffOrders():
-    if current_user.is_authenticated:
-        db = shelve.open("Orders.db", "c")
-        try:
-            orderDict = db['Orders']
-            orderList = []
-            for key in orderDict:
-                order = orderDict.get(key)
-                orderList.append(order)
-        except:
-            print("Error in retrieving order storage.")
-            orderList = []
-        finally:
-            db.close()
-    else:
-        return redirect(url_for("index"))
+    db = shelve.open("Orders.db", "c")
+    try:
+        orderDict = db['Orders']
+        orderList = []
+        for orderId in orderDict:
+            order = orderDict.get(orderId)
+            orderList.append(order)
+    except Exception as e:
+        print(e)
+        orderList = []
+    finally:
+        db.close()
     return render_template('staffOrders.html', orderList=orderList)
 
 @app.route('/buyer/orders')
@@ -688,38 +686,33 @@ def buyerOrders():
         return redirect(url_for("index"))
     return render_template('ordersRecent.html', orderList=orderList, UserID = current_user.getID())
 
-@app.route('/staff/update/<int:id>')
-def staffUpdate():
-    if current_user.is_authenticated:
-        orderUpdateForm = OrderUpdateForm(request.form)
-        if request.method == 'POST' and orderUpdateForm.validate():
-            orderDict = {}
-            db = shelve.open('Orders.db', 'w') #change if name of db isnt Orders.db
-            orderDict = db['Orders']
-            order = orderDict.get(id)
-            if orderUpdateForm.addr.data.isalnum():
-                order.set_orderStatus(orderUpdateForm.addr.data)
-            if orderUpdateForm.status.data.isalnum():
-                order.set_orderStatus(orderUpdateForm.status.data)
-            db['Orders'] = orderDict
-            db.close()
-            return redirect(url_for('staffOrders'))
-
-        else:
-            userDict = {}
-            db = shelve.open('Orders.db', 'c')
-            orderDict = db['Orders']
-            db.close()
-            order = orderDict.get(id)
-            orderUpdateForm.addr.data = get_orderAddr()
-            orderUpdateForm.status.data = get_orderStatus()
+@app.route('/staff/update/<int:id>', methods=['GET','POST'])
+@login_required
+def staffUpdate(id):
+    orderUpdateForm = OrderUpdateForm(request.form)
+    try:
+        db = shelve.open('Orders.db', 'c') #change if name of db isnt Orders.db
+        orderDict = db['Orders']
+        order = orderDict.get(id)
+    except Exception as e:
+        print(e)
+    if request.method == 'POST' and orderUpdateForm.validate():
+        if orderUpdateForm.addr.data.isalnum():
+            order.set_orderAddr(orderUpdateForm.addr.data)
+        if orderUpdateForm.status.data.isalnum():
+            order.set_orderStatus(orderUpdateForm.status.data)
+        if orderUpdateForm.desc.data.isalnum():
+            order.set_orderDesc(orderUpdateForm.desc.data)
+        orderDict[id] = order
+        db['Orders'] = orderDict
+        return redirect(url_for('staffOrders'))
     else:
-        return redirect(url_for("index"))
-    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
+        orderUpdateForm.addr.data = order.get_orderAddr()
+        orderUpdateForm.status.data = order.get_orderStatus()
+        orderUpdateForm.desc.data = order.get_orderDesc()
+    return render_template('updateOrder.html', form=orderUpdateForm, order=order)
 
-#@app.route('/staff/profile')
-#def staffProfile():
-#    return render_template('staffProfile.html')
+
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
     if current_user.is_authenticated:
@@ -1039,11 +1032,8 @@ def reportsCreate():
                     strCorrectedDate = correctedDate.strftime("%Y")
                 today = datetime.today()
 
-                if correctedDate > today:
-                    flash("The date %s have not pass, Please try again." % correctedDate)
-                    return redirect(url_for("reportsCreate"))
             except:
-                flash("The date %s is a invalid date/format, Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate)
                 return redirect(url_for("reportsCreate"))
 
 
