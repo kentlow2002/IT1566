@@ -48,12 +48,14 @@
         <tr>
           <th>Product Name</th>
           <th>Quantity</th>
-          <th>Price</th>
+          <th>Unit Price</th>
+          <th>Subtotal</th>
         </tr>
           {% for i in range(productsList[0]|length) %}
             <tr>
               <td>{{ productsList[0][i].get_productName() }}</td>
               <td>{{ productsList[1][i] }}</td>
+              <td>{{ productsList[0][i].get_productPrice() }}</td>
               <td>{{ productsList[0][i].get_productPrice()*productsList[1][i] }}</td>
             </tr>
           {% endfor %}

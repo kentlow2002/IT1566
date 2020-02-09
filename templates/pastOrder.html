@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %} Welcome - X Store {% endblock %}
+{% block navbar %}
+{% include "includes/_navbarBuyer.html" %}
+{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+  <div class="container-fluid content">
+    <br>
+    <div class="row">
+
+      <div class="product col-sm-9">
+        {% for product in productsList[0] %}
+        <div class="row">
+          <div class="col-sm-3" style="margin: auto;">
+            <img class="img-fluid" style="border: 1px solid black; height: 200px; width: 200px;" src= "{{ product.get_productPicture() }}" alt="">
+          </div>
+
+          <div class="col-sm-7">
+            <h3><b>{{ product.get_productName() }}</b></h3>
+            <div class="row col-sm-12">
+              <p>Price: ${{ "%.2f" % product.get_productPrice() }}</p>
+            </div>
+            <div class="row col-sm-12">
+              {% if product.get_productCondition() == "N" %}
+              <p>Product Condition: New</p>
+              {% elif product.get_productCondition() == "U" %}
+              <p>Product Condition: Used</p>
+              {% endif %}
+            </div>
+            <div class="row col-sm-12">
+              <a href="/buyer/product/{{product.get_productId()}}/"><button class="btn button btn-info" type="button" name="View More">View More</button></a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="quantity col-sm-3">
+        {% for quantity in productsList[1] %}
+        <div class="row">
+          <div class="col-sm-12">
+            <p><span><b>Quantity:</b></span> {{ quantity }}<p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

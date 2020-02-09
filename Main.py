@@ -412,6 +412,36 @@ def buyerRetrieve():
 
     return render_template('buyerRetrieve.html', orderList=orderList, UserID = current_user.getID())
 
+@app.route('/buyer/retrieve/order/<int:id>', methods=["POST"])
+@login_required
+def pastOrder(id):
+    db = shelve.open("Orders.db", "c")
+    try:
+        orderDict = db['Orders']
+        order = orderDict.get(id)
+        cart = order.get_orderDict()
+        productsList = [[],[]]
+        try:
+            productsDict = {}
+            db = shelve.open('products.db', 'c')
+            productsDict = db['products']
+            for key in productsDict:   # loop through Dictionary
+                for productid in cart:
+                    if key == productid:
+                        product = productsDict.get(key)
+                        productsList[0].append(product)
+                        productsList[1].append(cart[productid])
+        except:
+            print("error")
+    except:
+        print("Error in retrieving order storage.")
+    finally:
+        db.close()
+
+
+
+    return render_template('pastOrder.html',productsList=productsList)
+
 @app.route('/buyer/cart', methods = ['GET','POST'])
 @login_required
 def cart():
