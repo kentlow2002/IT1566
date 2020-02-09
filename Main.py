@@ -50,7 +50,25 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        publicDict = {}
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            product = productsDict.get(key)
+            print("Main py : have products", key, product)
+            if product.get_productStatus() == "public":
+                publicDict[key] = product
+
+        for key in list(publicDict)[-4:]:
+            product = productsDict.get(key)
+            productsList.append([product, key])
+
+    except:
+        print("error")
+    return render_template('index.html', productsList = productsList)
 
 @app.route('/login', methods=["GET","POST"])
 def login():
@@ -268,9 +286,28 @@ def passReset(token):
 
 # buyer
 @app.route('/buyer/index')
-# @login_required
+@login_required
 def buyerIndex():
-    return render_template('buyerIndex.html')
+    try:
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        publicDict = {}
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            product = productsDict.get(key)
+            print("Main py : have products", key, product)
+            if product.get_productStatus() == "public":
+                publicDict[key] = product
+
+        for key in list(publicDict)[-4:]:
+            product = productsDict.get(key)
+            productsList.append([product, key])
+
+    except:
+        print("error")
+
+    return render_template('buyerIndex.html', productsList = productsList)
 
 @app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
 def buyerDetailedProducts(id):
@@ -299,7 +336,7 @@ def buyerDetailedProducts(id):
     return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
 
 @app.route('/buyer/product', methods=['GET','POST'])
-# @login_required
+@login_required
 def buyerProducts():
     productsDict = {}
     productsList = []
@@ -362,6 +399,7 @@ def buyerRetrieve():
     return render_template('buyerRetrieve.html', orderList=orderList, UserID = current_user.getID())
 
 @app.route('/buyer/cart', methods = ['GET','POST'])
+@login_required
 def cart():
     #if current_user.is_authenticated:
     productsDict = {}
