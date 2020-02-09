@@ -117,6 +117,7 @@ def login():
     return render_template('login.html', form=userLogInForm)
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return render_template('logout.html')
@@ -345,7 +346,6 @@ def buyerDetailedProducts(id):
     return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm, usertype = usertype)
 
 @app.route('/buyer/product', methods=['GET','POST'])
-# @login_required
 def buyerProducts():
     productsDict = {}
     productsList = []
@@ -473,7 +473,7 @@ def cart():
     print(productsList)
     return render_template('buyerCart.html',productsList=productsList,editForm=editCartProduct)
 @app.route('/buyer/checkout', methods = ['GET','POST'])
-# @login_required
+@login_required
 def buyerCheckout():
     productsDict = {}
     usersDict = {}
@@ -481,7 +481,7 @@ def buyerCheckout():
     totalPrice = 0
     checkoutForm = CheckoutForm(request.form)
     try:
-        db = shelve.open('products.db','r')
+        db = shelve.open('products.db','c')
         productsDict = db['products']
         cart = eval(request.cookies.get('cart'))
         userdb = shelve.open('Users.db','r')
@@ -497,39 +497,45 @@ def buyerCheckout():
         totalPrice += productsDict[i].get_productPrice()*cart[i]
     if request.method == "POST":
         ordersDict = {}
-        ordersCount = -1
+        ordersCount = 0
         ordersdb = shelve.open('Orders.db','c')
         try:
             ordersDict = ordersdb['Orders']
-            ordersCount = ordersdb['count']
+            while True:
+                if ordersDict[ordersCount] == "null":
+                     break
+                ordersCount += 1
         except Exception as e:
             print(e)
-        ordersCount += 1
+        for i in cart:
+            available = productsDict[i].get_productQuantity()
+            productsDict[i].set_productQuantity(available-cart.get(i))
+        db['products'] = productsDict
+        print(ordersCount)
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
-        ordersdb['count'] = ordersCount
         emailBody = ''
         for i in cart:
             emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
         msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
         mail.send(msg)
         cart = {}
-        resp = make_response(redirect(url_for('buyerIndex')))
+        resp = make_response(redirect(url_for('buyerThanks')))
         resp.set_cookie('cart',str(cart))
         return resp
 
     return render_template('buyerCheckout.html',form=checkoutForm,productsDict=productsDict,productsList=productsList,totalPrice=totalPrice)
 @app.route('/buyer/thanks')
-# @login_required
+@login_required
 def buyerThanks():
     return render_template('buyerThanks.html')
+
 # seller
 
 
 @app.route('/seller/index')
 @login_required
 def sellerIndex():
-
     productsDict = {}
 
     try:
@@ -556,6 +562,7 @@ def sellerIndex():
 
 
 @app.route('/seller/listing', methods=['GET', 'POST'])
+@login_required
 def sellerListProduct():
     createProductForm = CreateProductForm(request.form)
     if request.method == 'POST' and createProductForm.validate():
@@ -610,6 +617,7 @@ def sellerListProduct():
 
 
 @app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
+@login_required
 def updateProduct(id):
     updateProductForm = CreateProductForm(request.form)
     #   POST: when click on submit button to send the data to server
@@ -676,6 +684,7 @@ def updateProduct(id):
 
 
 @app.route('/seller/hideProduct/<int:id>/', methods=['GET', 'POST'])
+@login_required
 def hideProduct(id):
     productsDict = {}
     # retrieve from persistence
@@ -692,6 +701,7 @@ def hideProduct(id):
     return redirect(url_for('sellerIndex'))
 
 @app.route('/seller/showProduct/<int:id>/', methods=['GET', 'POST'])
+@login_required
 def showProduct(id):
     print("hi")
 
@@ -711,6 +721,7 @@ def showProduct(id):
 
 # staff
 @app.route('/staff/create', methods=['GET', 'POST'])
+@login_required
 def staffCreate():
     if current_user.is_authenticated:
         createUserForm = CreateUserForm(request.form)
@@ -739,6 +750,7 @@ def staffCreate():
     return render_template('staffCreate.html', form=createUserForm)
 
 @app.route('/deleteUser/<int:id>', methods=['POST'])
+@login_required
 def deleteUser(id):
     usersDict = {}
     db = shelve.open('Users.db', 'w')
@@ -766,6 +778,7 @@ def staffOrders():
     return render_template('staffOrders.html', orderList=orderList)
 
 @app.route('/buyer/orders')
+@login_required
 def buyerOrders():
     if current_user.is_authenticated:
         db = shelve.open("Orders.db", "c")
@@ -812,6 +825,7 @@ def staffUpdate(id):
 
 
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
+@login_required
 def updateUser(id):
     if current_user.is_authenticated:
         updateStaffForm = StaffUpdateForm(request.form)
@@ -841,6 +855,7 @@ def updateUser(id):
     return render_template('staffEdit.html', form=updateStaffForm)
 
 @app.route('/staff/accounts')
+@login_required
 def staffAccounts():
     if current_user.is_authenticated:
         db = shelve.open("Users.db", "c")
@@ -960,6 +975,7 @@ def faqstaff():
     return render_template('FAQstaff.html', faqList=faqList, usertype = current_user.getType())
 
 @app.route('/answerFAQ/<int:Tid>/', methods=['GET', 'POST'])
+@login_required
 def ans(Tid):
     updatefaqForm = FaqForm(request.form)
     if current_user.is_authenticated:
@@ -1400,7 +1416,7 @@ def reportsDeleteYearly(id):
 
 #orders
 @app.route('/order')
-#@login_required
+@login_required
 def order():
     #if current_user.is_authenticated and current_user.getType() == "Buyer":
         orderDict = {}

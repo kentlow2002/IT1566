@@ -23,8 +23,8 @@ class EditCartProduct(Form):
 class CheckoutForm(Form):
     firstName = StringField('First Name', [validators.DataRequired()])
     lastName = StringField('Last Name', [validators.DataRequired()])
-    cardNum = IntegerField('Card Number', [validators.DataRequired(),validators.Length(min=16,max=16)])
-    CVV = IntegerField('CVV', [validators.DataRequired(),validators.Length(min=3,max=3)])
+    cardNum = IntegerField('Card Number', [validators.DataRequired(),validators.Length(min=14,max=16)])
+    CVV = IntegerField('CVV', [validators.DataRequired(),validators.Length(min=3,max=4)])
     expiryMonth = IntegerField('Expiry Month', [validators.DataRequired(),validators.Length(min=2,max=2)])
     expiryYear = IntegerField('Expiry Year', [validators.DataRequired(),validators.Length(min=2,max=2)])
     shippingAddr = StringField('Shipping Address', [validators.DataRequired(),validators.Length(min=10)])

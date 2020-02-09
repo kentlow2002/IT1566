@@ -8,8 +8,8 @@ class CreateUserForm(Form):
     password = PasswordField('Password', [validators.Length(min=8,max=150), validators.DataRequired()])
 
 class UserLogInForm(Form):
-    username = StringField('Username', [validators.Length(min=8,max=150), validators.DataRequired()])
-    password = PasswordField('Password', [validators.Length(min=8,max=150), validators.DataRequired()])
+    username = StringField('Username', [validators.DataRequired()])
+    password = PasswordField('Password', [validators.DataRequired()])
     remember = BooleanField("Remember me")
 
 class UserUpdateForm(Form):
