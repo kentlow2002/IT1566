@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 {% block title %} {{ product.get_productName() }} {% endblock %}
 {% block navbar %}
-{% include "includes/_navbarBuyer.html" %}
+	{% if usertype == "Buyer" %}
+		{% include "includes/_navbarBuyer.html" %}
+	{% elif usertype == "Seller" %}
+		{% include "includes/_navbarSeller.html" %}
+	{% elif usertype == "Staff" %}
+		{% include "includes/_navbarStaff.html" %}
+	{% else %}
+		{% include "includes/_navbarIndex.html" %}
+	{% endif %}
 {% endblock %}
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}

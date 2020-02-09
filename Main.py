@@ -336,10 +336,16 @@ def buyerDetailedProducts(id):
     except:
         print("error")
     db.close()
-    return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
+
+    try:
+        usertype = current_user.getType()
+    except:
+        usertype = None
+
+    return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm, usertype = usertype)
 
 @app.route('/buyer/product', methods=['GET','POST'])
-@login_required
+# @login_required
 def buyerProducts():
     productsDict = {}
     productsList = []
@@ -376,12 +382,17 @@ def buyerProducts():
     except Exception as e:
         print(e)
 
-    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm, usertype = current_user.getType())
+    try:
+        usertype = current_user.getType()
+    except:
+        usertype = None
+
+    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm, usertype = usertype)
 
 
 
 @app.route('/buyer/retrieve')
-# @login_required
+@login_required
 def buyerRetrieve():
     if current_user.is_authenticated:
         db = shelve.open("Orders.db", "c")
