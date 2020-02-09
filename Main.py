@@ -89,7 +89,7 @@ def login():
                 print("checking")
                 return resp
             else:
-                flash("Invalid Username/Password! Please Try Again.")
+                flash("Invalid Username/Password! Please Try Again.", category="error")
                 return redirect(url_for("login"))
 
         except Exception as e:
@@ -1041,7 +1041,7 @@ def reportsCreate():
                 today = datetime.today()
 
             except:
-                flash("The date %s is a invalid date/format. Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate, category="error")
                 return redirect(url_for("reportsCreate"))
 
 
@@ -1090,7 +1090,7 @@ def reportsCreate():
                         db["Daily"] = reportDict
                     else:
                         db["Daily"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
                     flash("The date %s have to be elapsed to be created." % strCorrectedDate)
@@ -1113,10 +1113,10 @@ def reportsCreate():
                         db["Monthly"] = reportDict
                     else:
                         db["Monthly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
+                    flash("The month %s have to be elapsed to be created." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
 
             else:
@@ -1136,16 +1136,16 @@ def reportsCreate():
                         db["Yearly"] = reportDict
                     else:
                         db["Yearly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The year %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
+                    flash("The year %s have to be elapsed to be created." % strCorrectedDate, category="error")
                     return redirect(url_for("reportsCreate"))
 
             stepInOrdersDB.close()
             db.close()
 
-            flash("The report for %s has be generated successfully" % strCorrectedDate)
+            flash("The report for %s has be generated successfully" % strCorrectedDate, category="success")
             if createReportForm.type.data == "D":
                 return redirect(url_for("reportsDaily"))
             elif createReportForm.type.data == "M":
