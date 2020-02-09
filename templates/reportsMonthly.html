@@ -29,50 +29,6 @@
         <canvas id="myChart" width="200" height="80">
           <p>Your browser does not support canvas</p>
         </canvas>
-        <script>
-          var report = document.getElementById("myChart").getContext("2d");
-
-          var char = new Chart(report, {
-            // the type of Chart
-            type: "bar",
-
-            // the data for our datasets
-            data: {
-              labels: [
-              {% for reports in monthlyList %}
-              "{{ reports.get_reportDate() }}",
-              {% endfor %}
-              ],
-              datasets: [{
-                label: "Number of items sold",
-                data: [
-                {% for reports in monthlyList %}
-                {{ reports.get_itemSold() }},
-                {% endfor %}
-                ],
-                backgroundColor: "rgba(255, 0, 0, 0.5)"
-              }, {
-                label: "Average Price Per Item ($)",
-                data: [
-                {% for reports in monthlyList %}
-                {{ reports.get_revenue() }}/{{ reports.get_itemSold() }},
-                {% endfor %}
-                ],
-                backgroundColor: "rgba(11, 156, 49, 0.5)",
-
-              }]
-            },
-            options: {
-              scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true
-                  }
-                }]
-              }
-            }
-          })
-        </script>
       </div>
       <div id="table" style="display:block" align = "center">
         <div id="filter">
@@ -120,51 +76,116 @@
       </div>
     </div>
 <script>
-function filter() {
-  // Declare variables
-  var dayFilter, monthFilter, yearFilter, tr, td, i, date;
-  monthFilter = document.getElementById("month").value;
-  yearFilter = document.getElementById("year").value;
-  report = document.getElementById("report");
-  tr = report.getElementsByTagName('tr');
+  var dateList = [
+  {% for reports in monthlyList %}
+  "{{ reports.get_reportDate() }}",
+  {% endfor %}
+  ];
+  var filteredDates = [];
+  var report = document.getElementById("myChart").getContext("2d");
+  if (!Array.isArray(filteredDates) || !filteredDates.length) {
+    var char = new Chart(report, {
+      // the type of Chart
+      type: "bar",
 
-  // Loop through all list items, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    date = td.innerText.split("/");
-    if (monthFilter.length == 1) {
-      monthFilter = "0" + monthFilter;
-    }
+      // the data for our datasets
+      data: {
+        labels: dateList,
+        datasets: [{
+          label: "Number of items sold",
+          data: [
+          {% for reports in monthlyList %}
+          {{ reports.get_itemSold() }},
+          {% endfor %}
+          ],
+          backgroundColor: "rgba(255, 0, 0, 0.5)"
+        }, {
+          label: "Average Price Per Item ($)",
+          data: [
+          {% for reports in monthlyList %}
+          {{ reports.get_revenue() }}/{{ reports.get_itemSold() }},
+          {% endfor %}
+          ],
+          backgroundColor: "rgba(11, 156, 49, 0.5)",
 
-    if (monthFilter != "" && yearFilter != "") {
-      if (monthFilter == date[0] && yearFilter == date[1]) {
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    })
+  }
+
+  function filter() {
+    var filteredDates = [];
+    // Declare variables
+    var dayFilter, monthFilter, yearFilter, tr, td, i, date;
+    monthFilter = document.getElementById("month").value;
+    yearFilter = document.getElementById("year").value;
+    report = document.getElementById("report");
+    tr = report.getElementsByTagName('tr');
+
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      date = td.innerText.split("/");
+      if (monthFilter.length == 1) {
+        monthFilter = "0" + monthFilter;
+      }
+
+      if (monthFilter != "" && yearFilter != "") {
+        if (monthFilter == date[0] && yearFilter == date[1]) {
+          tr[i].style.display = "";
+          filteredDates.push(tr[i].getElementsByTagName("td")[0].innerText);
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+
+
+      else if (monthFilter == "" && yearFilter != "") {
+        if (yearFilter == date[1]) {
+          tr[i].style.display = "";
+          filteredDates.push(tr[i].getElementsByTagName("td")[0].innerText);
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+
+      else if (monthFilter != "" && yearFilter == "") {
+        if (monthFilter == date[0]) {
+          tr[i].style.display = "";
+          filteredDates.push(tr[i].getElementsByTagName("td")[0].innerText);
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+
+      else if (monthFilter == "" && yearFilter == "") {
         tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
+        filteredDates.push(tr[i].getElementsByTagName("td")[0].innerText);
       }
     }
-
-
-    else if (monthFilter == "" && yearFilter != "") {
-      if (yearFilter == date[1]) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
+    if (Array.isArray(filteredDates) || filteredDates.length) {
+      char.data.labels = filteredDates;
+      char.data.datasets[0].data = [];
+      char.data.datasets[1].data = [];
+      for (var i in filteredDates) {
+        {% for reports in monthlyList %}
+        if (filteredDates[i] == '{{ reports.get_reportDate() }}' ) {
+          char.data.datasets[0].data.push({{ reports.get_itemSold() }});
+          char.data.datasets[1].data.push({{ reports.get_revenue() }}/{{ reports.get_itemSold() }});
+        }
+        {% endfor %}
       }
-    }
-
-    else if (monthFilter != "" && yearFilter == "") {
-      if (monthFilter == date[0]) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }
-
-    else if (monthFilter == "" && yearFilter == "") {
-      tr[i].style.display = "";
+      char.update();
     }
   }
-}
 </script>
 {% endblock %}

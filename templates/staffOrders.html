@@ -17,9 +17,11 @@
             <thead>
               <tr>
                 <th>Order ID</th>
+                <th>User ID</th>
                 <th>Order Date</th>
                 <th>Order Description</th>
                 <th>Status</th>
+                <th>Order Address</th>
                 <th></th>
               </tr>
             </thead>
@@ -27,12 +29,13 @@
               {% for order in orderList %}
               <tr>
                 <td>{{ order.get_orderId() }}</td>
+                <td>{{ order.get_userID() }}</td>
                 <td>{{ order.get_orderDate() }}</td>
                 <td>{{ order.get_orderDesc() }}</td>
                 <td>{{ order.get_orderStatus() }}</td>
                 <td>{{ order.get_orderAddr() }}</td>
 
-                <td><a href="staffUpdate.html"><button class="btn" style='background-color:blue'>Update</button></a></td>
+                <td><a href="/staff/update/{{ order.get_orderId() }}"><button class="btn" style='background-color:blue'>Update</button></a></td>
               </tr>
               {% endfor %}
             </tbody>

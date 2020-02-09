@@ -5,10 +5,12 @@ import Product as p
 import Faq as f
 import Cart as c
 import shelve
-from datetime import datetime
+from datetime import datetime, timedelta
+import calendar
 from flask import Flask, render_template, request, redirect, url_for, make_response, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 import os
 import re
 import string
@@ -16,7 +18,7 @@ import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct, CheckoutForm
 
-from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetPassForm, ProductsSearch
+from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetEmailForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 from CartForm import CartUpdateForm
 app = Flask(__name__)
@@ -97,7 +99,6 @@ def login():
     return render_template('login.html', form=userLogInForm)
 
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     return render_template('logout.html')
@@ -123,9 +124,9 @@ def signUp():
             user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         else:
             if createUserForm.type.data == "Buyer":
-                user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+                user = u.Buyer(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
             else:
-                user = u.Seller(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, createUserForm.type.data, count)
+                user = u.Seller(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         usersDict[user.getID()] = user
         db['Users'] = usersDict
         # Test codes
@@ -145,6 +146,7 @@ def signedUp():
     return render_template('signedup.html')
 
 @app.route('/userEdit',methods=["GET","POST"])
+@login_required
 def userEdit():
     userUpdateForm = UserUpdateForm(request.form)
     if request.method == "POST" and userUpdateForm.validate():
@@ -192,34 +194,109 @@ def userEdit():
 
 @app.route('/forget',methods=['GET','POST'])
 def forget():
-    forgetPassForm = ForgetPassForm(request.form)
-    if request.method == "POST" and forgetPassForm.validate():
+    forgetEmailForm = ForgetEmailForm(request.form)
+    if request.method == "POST" and forgetEmailForm.validate():
         usersDict = {}
         try:
             db = shelve.open('Users.db','r')
             usersDict = db['Users']
+            tokendb = shelve.open('Tokens.db','c')
+            tokenDict = tokendb['Tokens']
         except Exception as e:
             print(e)
-        userEmail = forgetPassForm.email.data
+        userEmail = forgetEmailForm.email.data
         for i in usersDict:
             if usersDict[i].getEmail() == userEmail:
+                print('lul')
                 try:
                     tempPass = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=10))
-                    msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password: "+tempPass)
+                    urlString = '127.0.0.1:5000/forget/'+tempPass
+                    if i not in tokenDict:
+                        tokenDict[i] = u.Token(tempPass,datetime.now() + timedelta(minutes=5))
+                    else:
+                        if datetime.now() > tokenDict[i].get_expiry():
+                            tokenDict[i] = u.Token(tempPass,datetime.now() + timedelta(minutes=5))
+                        else:
+                            flash('You may have requested to change your password too soon. Please try again later.')
+                            return render_template('forget.html', form=forgetEmailForm)
+
+                    tokendb['Tokens'] = tokenDict
+                    msg = Message("You have made a request to reset your password.",recipients=[userEmail],html="<h1><b>X Store</b></h1>To set a new password for your account, please click on the following link or paste the link into your browser:"+urlString+"<br>If you did not request to change your password, please ignore this email.")
+                    mail.send(msg)
+                    '''msg = Message("Your password has been reset.",recipients=[userEmail],body="To login, please use the following password: "+tempPass)
                     mail.send(msg)
                     usersDict[i].setPassword(tempPass)
-                    db['Users'] = usersDict
+                    db['Users'] = usersDict'''
                     return render_template('thankemail.html')
                 except Exception as e:
                     print(e)
-                    return render_template('forgot.html',form = forgetPassForm)
-    return render_template('forget.html', form=forgetPassForm)
+    return render_template('forget.html', form=forgetEmailForm)
+
+@app.route('/forget/<token>',methods=['GET','POST'])
+def passReset(token):
+    forgetPassForm = ForgetPassForm(request.form)
+
+    try:
+        print(token)
+        tokendb = shelve.open('Tokens.db','c')
+        tokenDict = tokendb['Tokens']
+        for i in tokenDict:
+            if tokenDict[i].tokenCheck(token) == True and datetime.now()<tokenDict[i].get_expiry():
+                currentToken = tokenDict[i]
+
+                if request.method == 'POST' and forgetPassForm.validate():
+                    db = shelve.open('Users.db','c')
+                    usersDict = db['Users']
+                    if forgetPassForm.newPasswd.data == forgetPassForm.newPasswdConf.data and not(usersDict[i].loginCheck(forgetPassForm.newPasswd.data)):
+                        usersDict[i].setPassword(forgetPassForm.newPasswd.data)
+                        db['Users'] = usersDict
+                        flash('Please log in with your new password.')
+                        return redirect(url_for('login'))
+                    else:
+                        if forgetPassForm.newPasswd.data != forgetPassForm.newPasswdConf.data:
+                            flash('The passwords in the fields below do not match!')
+                        if usersDict[i].loginCheck(forgetPassForm.newPasswd.data):
+                            flash('Please do not use your previous password!')
+                        return render_template('passReset.html',form=forgetPassForm)
+                else:
+                    return render_template('passReset.html',form=forgetPassForm)
+
+    except Exception as e:
+        print(e)
+
+    return redirect(url_for('index'))
 
 # buyer
 @app.route('/buyer/index')
 # @login_required
 def buyerIndex():
     return render_template('buyerIndex.html')
+
+@app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
+def buyerDetailedProducts(id):
+    product = ""
+    productsDict = {}
+    db = shelve.open('products.db', 'r')
+    productsDict = db['products']
+    addProductForm = AddCartProduct(request.form)
+    try:
+        for x in productsDict:
+            if id == x:
+                if productsDict[x].get_productStatus() == "public":
+                    product = productsDict[x]
+            if request.method == 'POST':
+                print(addProductForm.addProduct.data)
+                if addProductForm.addProduct.data == True:
+                    cart = eval(request.cookies.get('cart'))
+                    print(cart)
+                    cart[addProductForm.productId.data] = 1
+                    resp = make_response(redirect(url_for('cart')))
+                    resp.set_cookie('cart',str(cart))
+                    return resp
+    except:
+        print("error")
+    db.close()
+    return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
 
 @app.route('/buyer/product', methods=['GET','POST'])
 # @login_required
@@ -261,6 +338,8 @@ def buyerProducts():
 
     return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
 
+
+
 @app.route('/buyer/retrieve')
 # @login_required
 def buyerRetrieve():
@@ -278,7 +357,13 @@ def cart():
         cart = eval(request.cookies.get('cart'))
         if request.method == "POST":
             productId = editCartProduct.productId.data
-            cart[productId] = editCartProduct.productQuantity.data
+            if editCartProduct.productQuantity.data <= 0:
+                cart.pop(productId)
+            elif editCartProduct.productQuantity.data > productsDict[productId].get_productQuantity():
+                flash('You attempted to buy more than the available amount for '+productsDict[productId].get_productName(),'error')
+            else:
+                cart[productId] = editCartProduct.productQuantity.data
+                flash('Quantity saved.')
             resp = make_response(redirect(url_for('cart')))
             resp.set_cookie('cart',str(cart))
             return resp
@@ -411,6 +496,7 @@ def sellerListProduct():
         return redirect(url_for('sellerIndex'))
 
     return render_template('sellerListProduct.html', form=createProductForm)
+
 
 @app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
 def updateProduct(id):
@@ -553,39 +639,99 @@ def deleteUser(id):
 
 @app.route('/staff/orders')
 def staffOrders():
-    return render_template('staffOrders.html')
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('staffOrders.html', orderList=orderList)
 
-@app.route('/staff/update')
+@app.route('/buyer/orders')
+def buyerOrders():
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+    return render_template('ordersRecent.html', orderList=orderList, UserID = current_user.getID())
+
+@app.route('/staff/update/<int:id>')
 def staffUpdate():
-    return render_template('staffUpdate.html')
+    if current_user.is_authenticated:
+        orderUpdateForm = OrderUpdateForm(request.form)
+        if request.method == 'POST' and orderUpdateForm.validate():
+            orderDict = {}
+            db = shelve.open('Orders.db', 'w') #change if name of db isnt Orders.db
+            orderDict = db['Orders']
+            order = orderDict.get(id)
+            if orderUpdateForm.addr.data.isalnum():
+                order.set_orderStatus(orderUpdateForm.addr.data)
+            if orderUpdateForm.status.data.isalnum():
+                order.set_orderStatus(orderUpdateForm.status.data)
+            db['Orders'] = orderDict
+            db.close()
+            return redirect(url_for('staffOrders'))
 
-#@app.route('/staff/profile')
-#def staffProfile():
-#    return render_template('staffProfile.html')
+        else:
+            userDict = {}
+            db = shelve.open('Orders.db', 'c')
+            orderDict = db['Orders']
+            db.close()
+            order = orderDict.get(id)
+            orderUpdateForm.addr.data = get_orderAddr()
+            orderUpdateForm.status.data = get_orderStatus()
+    else:
+        return redirect(url_for("index"))
+    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
+
+
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
-    updateStaffForm = StaffUpdateForm(request.form)
-    if request.method == 'POST' and updateStaffForm.validate():
-        userDict = {}
-        db = shelve.open('Users.db', 'w')
-        userDict = db['Users']
-        user = userDict.get(id)
-        user.setUsername(updateStaffForm.username.data)
-        user.setEmail(updateStaffForm.email.data)
-        if updateStaffForm.password.data.isalnum():
-            user.setPassword(updateStaffForm.password.data)
-        db['Users'] = userDict
-        db.close()
-        return redirect(url_for('staffAccounts'))
+    if current_user.is_authenticated:
+        updateStaffForm = StaffUpdateForm(request.form)
+        if request.method == 'POST' and updateStaffForm.validate():
+            userDict = {}
+            db = shelve.open('Users.db', 'w')
+            userDict = db['Users']
+            user = userDict.get(id)
+            user.setUsername(updateStaffForm.username.data)
+            user.setEmail(updateStaffForm.email.data)
+            if updateStaffForm.password.data.isalnum():
+                user.setPassword(updateStaffForm.password.data)
+            db['Users'] = userDict
+            db.close()
+            return redirect(url_for('staffAccounts'))
 
+        else:
+            userDict = {}
+            db = shelve.open('Users.db', 'c')
+            userDict = db['Users']
+            db.close()
+            user = userDict.get(id)
+            updateStaffForm.username.data = user.getUsername()
+            updateStaffForm.email.data = user.getEmail()
     else:
-        userDict = {}
-        db = shelve.open('Users.db', 'c')
-        userDict = db['Users']
-        db.close()
-        user = userDict.get(id)
-        updateStaffForm.username.data = user.getUsername()
-        updateStaffForm.email.data = user.getEmail()
+        return redirect(url_for("index"))
     return render_template('staffEdit.html', form=updateStaffForm)
 
 @app.route('/staff/accounts')
@@ -716,7 +862,10 @@ def ans(Tid):
             db = shelve.open("faq.db", "w")
             faqDict = db["ticket"]
             faq = faqDict.get(Tid)
-            faq.setAns(updatefaqForm.answer.data)
+            faq.setQn(updatefaqForm.question.data)
+            if updatefaqForm.answer.data.isalnum():
+                faq.setAns(updatefaqForm.answer.data)
+
             db["ticket"] = faqDict
             db.close()
             #except:
@@ -837,7 +986,6 @@ def reportsCreate():
                             date = "/".join(date)
                             date = datetime.strptime(date, "%m/%Y")
                         else:
-                            print(date)
                             del date[:2]
                             date = "/".join(date)
                             date = datetime.strptime(date, "%Y")
@@ -876,30 +1024,9 @@ def reportsCreate():
                     strCorrectedDate = correctedDate.strftime("%Y")
                 today = datetime.today()
 
-                if correctedDate > today:
-                    flash("The date %s have not pass, Please try again." % correctedDate)
-                    return redirect(url_for("reportsCreate"))
             except:
-                flash("The date %s is a invalid date/format, Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate)
                 return redirect(url_for("reportsCreate"))
-
-            # transaction = open("test.txt", "r")
-
-            import stepInDB
-            orders = {
-                stepInDB.Order(0, "12/12/2019", "testing", "delivered", "address", 100, 1),
-                stepInDB.Order(1, "13/12/2019", "testing", "delivered", "address", 200, 9),
-                stepInDB.Order(2, "12/12/2019", "testing", "delivered", "address", 100, 5),
-                stepInDB.Order(3, "12/12/2019", "testing", "delivered", "address", 300, 4),
-                stepInDB.Order(4, "14/12/2019", "testing", "delivered", "address", 400, 3),
-                stepInDB.Order(5, "12/12/2019", "testing", "delivered", "address", 100, 15),
-                stepInDB.Order(6, "13/12/2019", "testing", "delivered", "address", 150, 10),
-                stepInDB.Order(7, "13/12/2018", "testing", "delivered", "address", 150, 10),
-                stepInDB.Order(8, "13/12/2017", "testing", "delivered", "address", 150, 10),
-            }
-            stepInOrdersDB = shelve.open("stepInOrdersDB.db", "c")
-            stepInOrdersDB["test"] = orders
-            stepInOrdersDB.close()
 
 
 
@@ -907,14 +1034,41 @@ def reportsCreate():
             stepInOrdersDB = shelve.open("stepInOrdersDB.db", "r")
             order = stepInOrdersDB["test"]
             if createReportForm.type.data == "D":
-                if today >= correctedDate:
+                # only use this code if there is a no db for daily
+                """sdate = date(2018, 1, 1)   # start date
+                edate = date.today()   # end date
+
+                delta = edate - sdate       # as timedelta
+                dateList = []
+                for i in range(delta.days + 1):
+                    day = sdate + timedelta(days=i)
+                    dateList.append(day.strftime("%d/%m/%Y"))
+
+                for i in dateList:
+                    print(i)
+                    productCount = 0
+                    productPrice = 0
+                    for userid in order:
+                        history = order[userid]
+                        for key in history:
+                            data = history[key]
+                            if dateValidator(data.get_orderDate()).strftime("%d/%m/%Y") == i:
+                                productCount += int(data.get_orderQuan())
+                                productPrice += float(data.get_orderPrice())
+                    report = r.Report(createReportForm.type.data, i, productCount, productPrice)
+                    reportDict[i] = report
+                    db["Daily"] = reportDict"""
+                if (today - timedelta(days=1)) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for all in order:
-                            if dateValidator(all.get_orderDate()).strftime("%d/%m/%Y") == strCorrectedDate:
-                                productCount += int(all.get_orderQuan())
-                                productPrice += float(all.get_orderPrice())
+                        for userid in order:
+                            history = order[userid]
+                            for key in history:
+                                data = history[key]
+                                if dateValidator(data.get_orderDate()).strftime("%d/%m/%Y") == strCorrectedDate:
+                                    productCount += int(data.get_orderQuan())
+                                    productPrice += float(data.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Daily"] = reportDict
@@ -927,14 +1081,17 @@ def reportsCreate():
                     return redirect(url_for("reportsCreate"))
 
             elif createReportForm.type.data == "M":
-                if today > correctedDate:
+                if (today - timedelta(days=calendar.monthrange(today.year, today.month)[1])) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for all in order:
-                            if dateValidator(all.get_orderDate()).strftime("%m/%Y") == strCorrectedDate:
-                                productCount += int(all.get_orderQuan())
-                                productPrice += float(all.get_orderPrice())
+                        for userid in order:
+                            history = order[userid]
+                            for key in history:
+                                data = history[key]
+                                if dateValidator(data.get_orderDate()).strftime("%m/%Y") == strCorrectedDate:
+                                    productCount += int(data.get_orderQuan())
+                                    productPrice += float(data.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Monthly"] = reportDict
@@ -947,14 +1104,17 @@ def reportsCreate():
                     return redirect(url_for("reportsCreate"))
 
             else:
-                if today > correctedDate:
+                if (today - timedelta(days=365)) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for all in order:
-                            if dateValidator(all.get_orderDate()).strftime("%Y") == strCorrectedDate:
-                                productCount += int(all.get_orderQuan())
-                                productPrice += float(all.get_orderPrice())
+                        for userid in order:
+                            history = order[userid]
+                            for key in history:
+                                data = history[key]
+                                if dateValidator(data.get_orderDate()).strftime("%Y") == strCorrectedDate:
+                                    productCount += int(data.get_orderQuan())
+                                    productPrice += float(data.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Yearly"] = reportDict
