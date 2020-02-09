@@ -1,7 +1,0 @@
-stats-nothing
-networking-lab test (till wk 9) (practical) wk15
-biz-nothing
-
-dav- wk 15 prac written test
-uxd- presentation of assignment wk16
-app dev:nothing
