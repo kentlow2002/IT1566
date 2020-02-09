@@ -894,6 +894,7 @@ def faq():
         return redirect(url_for("index"))
     return render_template('FAQs.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
 @app.route('/faqType') #R faq by user type
+@login_required
 def faqTypeS():
     if current_user.is_authenticated:
         db = shelve.open("faq.db", "c")
@@ -915,6 +916,7 @@ def faqTypeS():
     return render_template('FAQtype.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
 
 @app.route('/faq/ask', methods=['GET', 'POST'])
+@login_required
 def ask():
     if current_user.is_authenticated:
         createFaqForm = FaqForm(request.form)
