@@ -376,7 +376,7 @@ def buyerProducts():
     except Exception as e:
         print(e)
 
-    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
+    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm, usertype = current_user.getType())
 
 
 
