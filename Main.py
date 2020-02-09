@@ -119,7 +119,10 @@ def signUp():
                 count += 1
         except:
             print("Error in retrieving Users from storage.db.")
-        print(count)
+        for i in usersDict:
+            if usersDict[i].getEmail() == createUserForm.email.data:
+                flash('This email has been used before! Please use a different email.', category='error')
+                return render_template('signup.html', form=createUserForm)
         if createUserForm.username.data[:7] == "{Admin}":
             user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         else:
