@@ -117,6 +117,7 @@ def login():
     return render_template('login.html', form=userLogInForm)
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return render_template('logout.html')
@@ -480,7 +481,7 @@ def buyerCheckout():
     totalPrice = 0
     checkoutForm = CheckoutForm(request.form)
     try:
-        db = shelve.open('products.db','r')
+        db = shelve.open('products.db','c')
         productsDict = db['products']
         cart = eval(request.cookies.get('cart'))
         userdb = shelve.open('Users.db','r')
@@ -496,24 +497,30 @@ def buyerCheckout():
         totalPrice += productsDict[i].get_productPrice()*cart[i]
     if request.method == "POST":
         ordersDict = {}
-        ordersCount = -1
+        ordersCount = 0
         ordersdb = shelve.open('Orders.db','c')
         try:
             ordersDict = ordersdb['Orders']
-            ordersCount = ordersdb['count']
+            while True:
+                if ordersDict[ordersCount] == "null":
+                     break
+                ordersCount += 1
         except Exception as e:
             print(e)
-        ordersCount += 1
+        for i in cart:
+            available = productsDict[i].get_productQuantity()
+            productsDict[i].set_productQuantity(available-cart.get(i))
+        db['products'] = productsDict
+        print(ordersCount)
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
-        ordersdb['count'] = ordersCount
         emailBody = ''
         for i in cart:
             emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
         msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
         mail.send(msg)
         cart = {}
-        resp = make_response(redirect(url_for('buyerIndex')))
+        resp = make_response(redirect(url_for('buyerThanks')))
         resp.set_cookie('cart',str(cart))
         return resp
 
