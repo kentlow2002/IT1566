@@ -486,21 +486,23 @@ def buyerCheckout():
         totalPrice += productsDict[i].get_productPrice()*cart[i]
     if request.method == "POST":
         ordersDict = {}
-        ordersCount = -1
+        ordersCount = 0
         ordersdb = shelve.open('Orders.db','c')
         try:
             ordersDict = ordersdb['Orders']
-            ordersCount = ordersdb['count']
+            while True:
+                if ordersDict[ordersCount] == "null":
+                     break
+                ordersCount += 1
         except Exception as e:
             print(e)
         for i in cart:
             available = productsDict[i].get_productQuantity()
             productsDict[i].set_productQuantity(available-cart.get(i))
         db['products'] = productsDict
-        ordersCount += 1
+        print(ordersCount)
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
-        ordersdb['count'] = ordersCount
         emailBody = ''
         for i in cart:
             emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
