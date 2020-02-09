@@ -913,7 +913,10 @@ def staffAccounts():
 @app.route('/faqAll')
 def faqAll():
     if current_user.is_authenticated:
-        return redirect(url_for("faqTypeS"))
+        if current_user.getType() == "Staff":
+            return redirect(url_for("faqstaff"))
+        else:
+            return redirect(url_for("faqTypeS"))
     else:
         db = shelve.open("faq.db", "c")
         try:
