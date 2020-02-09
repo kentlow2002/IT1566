@@ -343,7 +343,23 @@ def buyerProducts():
 @app.route('/buyer/retrieve')
 # @login_required
 def buyerRetrieve():
-    return render_template('buyerRetrieve.html')
+    if current_user.is_authenticated:
+        db = shelve.open("Orders.db", "c")
+        try:
+            orderDict = db['Orders']
+            orderList = []
+            for key in orderDict:
+                order = orderDict.get(key)
+                orderList.append(order)
+        except:
+            print("Error in retrieving order storage.")
+            orderList = []
+        finally:
+            db.close()
+    else:
+        return redirect(url_for("index"))
+
+    return render_template('buyerRetrieve.html', orderList=orderList, UserID = current_user.getID())
 
 @app.route('/buyer/cart', methods = ['GET','POST'])
 def cart():
