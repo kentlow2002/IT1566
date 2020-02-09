@@ -1,29 +1,41 @@
 {% extends "base.html" %}
-{% block title %} Welcome - X Store {% endblock %}
+{% block title %} Ask a Question {% endblock %}
 {% block navbar %}
 {% include "includes/_navbarBuyer.html" %}
 {% endblock %}
 {% block content %}
-    <div class="container-fluid content">
-      <div class="row justify-content-center">
-        <div class="row-sm-3">
-          <p class="text-center">Welcome, Buyer!</p>
-          <p class="text-center">These are your previous orders!</p>
-        </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-md-2 justify-content-center">
-          <img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style="">
-          <p class="text-center">Oculus Rift VR Headset</p>
-          <p class="text-center">Price: $650</p>
-          <img class="img-fluid" src="{{ url_for('static',filename='assets/ps4pro.jpg') }}" style="">
-          <p class="text-center">PS4 Pro</p>
-          <p class="text-center">Price: $540</p>
-          <img class="img-fluid" src="{{ url_for('static',filename='assets/galaxy fold black.jpg') }}" style="">
-          <p class="text-center">Samsung Galaxy Fold</p>
-          <p class="text-center">Price:$3000</p>
+{% from "includes/_formhelper.html" import render_field %}
 
-      </div>
+<div class="container-fluid content">
+  <div id="table" style="display:block" align = "center">
+		<h3>Recent orders</h3>
+    <br>
+    <div id="recentO">
+      <table class="table table-striped justify-content-centre text-center">
+				<thead>
+					<tr>
+						<th>Order ID</th>
+						<th>Order Date</th>
+						<th>Order Description</th>
+						<th>Status</th>
+						<th>Order Address</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for order in orderList %}
+						{% if order.get_userID() == UserID %}
+						<tr>
+							<td>{{ order.get_orderId() }}</td>
+							<td>{{ order.get_orderDate() }}</td>
+							<td>{{ order.get_orderDesc() }}</td>
+							<td>{{ order.get_orderStatus() }}</td>
+							<td>{{ order.get_orderAddr() }}</td>
+						</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+      </table>
     </div>
   </div>
+</div>
 {% endblock %}
