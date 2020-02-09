@@ -1,7 +1,13 @@
 {% extends "base.html" %}
-{% block title %} Welcome - X Store {% endblock %}
+{% block title %} Products {% endblock %}
 {% block navbar %}
-{% include "includes/_navbarBuyer.html" %}
+	{% if usertype == "Buyer" %}
+		{% include "includes/_navbarBuyer.html" %}
+	{% elif usertype == "Seller" %}
+		{% include "includes/_navbarSeller.html" %}
+	{% else %}
+		{% include "includes/_navbarStaff.html" %}
+	{% endif %}
 {% endblock %}
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
@@ -50,8 +56,9 @@
         </div>
 
     <div class="col-sm-2" style="margin:auto">
-      <a href="/buyer/product/{{product.get_productId()}}/"><button class="btn button btn-primary" type="button" name="View More">View More</button></a>
+      <a href="/buyer/product/{{product.get_productId()}}/"><button class="btn button btn-info" type="button" name="View More">View More</button></a>
     </div>
   </div>
   {% endfor %}
+</div>
 {% endblock %}

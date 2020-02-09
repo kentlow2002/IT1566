@@ -137,7 +137,10 @@ def signUp():
                 count += 1
         except:
             print("Error in retrieving Users from storage.db.")
-        print(count)
+        for i in usersDict:
+            if usersDict[i].getEmail() == createUserForm.email.data:
+                flash('This email has been used before! Please use a different email.', category='error')
+                return render_template('signup.html', form=createUserForm)
         if createUserForm.username.data[:7] == "{Admin}":
             user = u.Staff(createUserForm.username.data,createUserForm.email.data, createUserForm.password.data, count)
         else:
@@ -373,12 +376,12 @@ def buyerProducts():
     except Exception as e:
         print(e)
 
-    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
+    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm, usertype = current_user.getType())
 
 
 
 @app.route('/buyer/retrieve')
-# @login_required
+@login_required
 def buyerRetrieve():
     if current_user.is_authenticated:
         db = shelve.open("Orders.db", "c")
@@ -397,6 +400,36 @@ def buyerRetrieve():
         return redirect(url_for("index"))
 
     return render_template('buyerRetrieve.html', orderList=orderList, UserID = current_user.getID())
+
+@app.route('/buyer/retrieve/order/<int:id>', methods=["POST"])
+@login_required
+def pastOrder(id):
+    db = shelve.open("Orders.db", "c")
+    try:
+        orderDict = db['Orders']
+        order = orderDict.get(id)
+        cart = order.get_orderDict()
+        productsList = [[],[]]
+        try:
+            productsDict = {}
+            db = shelve.open('products.db', 'c')
+            productsDict = db['products']
+            for key in productsDict:   # loop through Dictionary
+                for productid in cart:
+                    if key == productid:
+                        product = productsDict.get(key)
+                        productsList[0].append(product)
+                        productsList[1].append(cart[productid])
+        except:
+            print("error")
+    except:
+        print("Error in retrieving order storage.")
+    finally:
+        db.close()
+
+
+
+    return render_template('pastOrder.html',productsList=productsList)
 
 @app.route('/buyer/cart', methods = ['GET','POST'])
 @login_required
