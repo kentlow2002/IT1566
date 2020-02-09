@@ -2,5 +2,6 @@ from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, v
 
 
 class OrderUpdateForm(Form):
-    addr = StringField('Address', [validators.Length(min=8,max=150), validators.Optional()])
-    status = SelectField('Status', choices=[("Pending, Pending"),("Shipping,Shipping"),("Delivered","Delivered"),("Cancelled","Cancelled")], default='Pending')
+    addr = StringField('Address', [validators.Optional()])
+    status = SelectField('Status', choices=[("Pending", "Pending"),("Shipping","Shipping"),("Delivered","Delivered"),("Cancelled","Cancelled")], default='Pending')
+    desc = TextAreaField('Description', [validators.Optional()])
