@@ -910,9 +910,29 @@ def staffAccounts():
     return render_template('retrieveAcc.html', userList=userList, UserID = current_user.getID())
 # whatever the person doing staff
 #FAQ
+@app.route('/faqAll')
+def faqAll():
+    if current_user.is_authenticated:
+        return redirect(url_for("faqTypeS"))
+    else:
+        db = shelve.open("faq.db", "c")
+        try:
+            faqDict = db["ticket"]
+            faqList = []
+            for key in faqDict:
+                faqs = faqDict.get(key)
+                faqList.append(faqs)
+        except:
+            print("Error in retrieving faq storage.")
+            faqList = []
+        finally:
+            db.close()
+    return render_template('FAQAll.html', faqList=faqList)
+
 @app.route('/faq') #R faq contact us
+@login_required
 def faq():
-    if current_user.is_authenticated:#############################
+    if current_user.is_authenticated:
         db = shelve.open("faq.db", "c")
         try:
             faqDict = db["ticket"]
@@ -988,13 +1008,44 @@ def ask():
                 return redirect(url_for('faq'))
             else:
                 return redirect(url_for("faqstaff"))
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
-        return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
-        return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
     return render_template('FAQask.html', form= createFaqForm, usertype = current_user.getType())
+@app.route('/faq/contact us', methods=['GET', 'POST'])
+def askAll():
+    if current_user.is_authenticated:
+        return redirect(url_for("ask"))
+    else:
+        createFaqForm = FaqForm(request.form)
+        if request.method == 'POST':
+            faqDict = {}
+            try:
+                db = shelve.open('faq.db', 'c')
+                faqDict = db["ticket"]
+                count = 0
+                while True:
+                    if faqDict[count] == "null":
+                         break
+                    count += 1
+            except KeyError:
+                try:
+                    count = count
+                except UnboundLocalError:
+                    count = 0
+            except:
+                print("Error in retrieving tickets from faq.db.")
+                count = 0
+            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, "Guest" , count, -1)
+            faqDict[tix.getTID()] = tix
+            db["ticket"] = faqDict
+            # Test codes
+            faqDict = db["ticket"]
+            tix = faqDict[tix.getTID()]
+            print(tix.getTID(), "was stored in shelve successfully ")
+            db.close()
+            print(faqDict)
+            return redirect(url_for("faqAll"))
+    return render_template('contactUs.html', form= createFaqForm)
 @app.route('/staff/faq') #R faq for staff
 @login_required
 def faqstaff():
