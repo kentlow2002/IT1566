@@ -23,11 +23,13 @@
 				</thead>
         <tbody>
         {% for faq in faqList %}
-          <tr>
-						<td>{{ faq.getType() }}</td>
-            <td>{{ faq.getQn() }}</td>
-						<td>{{ faq.getAns() }}</td>
-					</tr>
+					{% if faq.getType() != "Staff" %}
+	          <tr>
+							<td>{{ faq.getType() }}</td>
+	            <td>{{ faq.getQn() }}</td>
+							<td>{{ faq.getAns() }}</td>
+						</tr>
+						{% endif %}
         {% endfor %}
         </tbody>
       </table>
