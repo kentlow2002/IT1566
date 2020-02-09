@@ -17,7 +17,7 @@ import string
 import random
 from ReportForms import CreateReportForm
 from ProductForms import CreateProductForm, AddCartProduct, EditCartProduct, CheckoutForm
-
+from ordersForms import OrderUpdateForm
 from UserForms import CreateUserForm, UserLogInForm, UserUpdateForm, ForgetEmailForm, ForgetPassForm, ProductsSearch
 from staff import CreateStaffForm, StaffUpdateForm, FaqForm
 from CartForm import CartUpdateForm
@@ -50,7 +50,25 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        publicDict = {}
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            product = productsDict.get(key)
+            print("Main py : have products", key, product)
+            if product.get_productStatus() == "public":
+                publicDict[key] = product
+
+        for key in list(publicDict)[-4:]:
+            product = productsDict.get(key)
+            productsList.append([product, key])
+
+    except:
+        print("error")
+    return render_template('index.html', productsList = productsList)
 
 @app.route('/login', methods=["GET","POST"])
 def login():
@@ -89,7 +107,7 @@ def login():
                 print("checking")
                 return resp
             else:
-                flash("Invalid Username/Password! Please Try Again.")
+                flash("Invalid Username/Password! Please Try Again.", category="error")
                 return redirect(url_for("login"))
 
         except Exception as e:
@@ -268,9 +286,28 @@ def passReset(token):
 
 # buyer
 @app.route('/buyer/index')
-# @login_required
+@login_required
 def buyerIndex():
-    return render_template('buyerIndex.html')
+    try:
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        publicDict = {}
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            product = productsDict.get(key)
+            print("Main py : have products", key, product)
+            if product.get_productStatus() == "public":
+                publicDict[key] = product
+
+        for key in list(publicDict)[-4:]:
+            product = productsDict.get(key)
+            productsList.append([product, key])
+
+    except:
+        print("error")
+
+    return render_template('buyerIndex.html', productsList = productsList)
 
 @app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
 def buyerDetailedProducts(id):
@@ -299,7 +336,7 @@ def buyerDetailedProducts(id):
     return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
 
 @app.route('/buyer/product', methods=['GET','POST'])
-# @login_required
+@login_required
 def buyerProducts():
     productsDict = {}
     productsList = []
@@ -362,6 +399,7 @@ def buyerRetrieve():
     return render_template('buyerRetrieve.html', orderList=orderList, UserID = current_user.getID())
 
 @app.route('/buyer/cart', methods = ['GET','POST'])
+@login_required
 def cart():
     #if current_user.is_authenticated:
     productsDict = {}
@@ -406,22 +444,35 @@ def buyerCheckout():
         usersDict = userdb['Users']
         userID = int(request.cookies.get('userID'))
         userEmail = usersDict[userID].getEmail()
-        if request.method == "POST":
-            emailBody = ''
-            for i in cart:
-                emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
-            msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
-            mail.send(msg)
-            cart = {}
-            resp = make_response(redirect(url_for('buyerIndex')))
-            resp.set_cookie('cart',cart)
-            return cart
-        for i in cart:
-            productsList[0].append(productsDict[i])
-            productsList[1].append(cart[i])
-            totalPrice += productsDict[i].get_productPrice()*cart[i]
+
     except Exception as e :
         print(e)
+    for i in cart:
+        productsList[0].append(productsDict[i])
+        productsList[1].append(cart[i])
+        totalPrice += productsDict[i].get_productPrice()*cart[i]
+    if request.method == "POST":
+        ordersDict = {}
+        ordersCount = -1
+        ordersdb = shelve.open('Orders.db','c')
+        try:
+            ordersDict = ordersdb['Orders']
+            ordersCount = ordersdb['count']
+        except Exception as e:
+            print(e)
+        ordersCount += 1
+        ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
+        ordersdb['Orders'] = ordersDict
+        ordersdb['count'] = ordersCount
+        emailBody = ''
+        for i in cart:
+            emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
+        msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
+        mail.send(msg)
+        cart = {}
+        resp = make_response(redirect(url_for('buyerIndex')))
+        resp.set_cookie('cart',str(cart))
+        return resp
 
     return render_template('buyerCheckout.html',form=checkoutForm,productsDict=productsDict,productsList=productsList,totalPrice=totalPrice)
 @app.route('/buyer/thanks')
@@ -654,22 +705,20 @@ def deleteUser(id):
     return redirect(url_for('staffAccounts'))
 
 @app.route('/staff/orders')
+@login_required
 def staffOrders():
-    if current_user.is_authenticated:
-        db = shelve.open("Orders.db", "c")
-        try:
-            orderDict = db['Orders']
-            orderList = []
-            for key in orderDict:
-                order = orderDict.get(key)
-                orderList.append(order)
-        except:
-            print("Error in retrieving order storage.")
-            orderList = []
-        finally:
-            db.close()
-    else:
-        return redirect(url_for("index"))
+    db = shelve.open("Orders.db", "c")
+    try:
+        orderDict = db['Orders']
+        orderList = []
+        for orderId in orderDict:
+            order = orderDict.get(orderId)
+            orderList.append(order)
+    except Exception as e:
+        print(e)
+        orderList = []
+    finally:
+        db.close()
     return render_template('staffOrders.html', orderList=orderList)
 
 @app.route('/buyer/orders')
@@ -691,34 +740,31 @@ def buyerOrders():
         return redirect(url_for("index"))
     return render_template('ordersRecent.html', orderList=orderList, UserID = current_user.getID())
 
-@app.route('/staff/update/<int:id>')
-def staffUpdate():
-    if current_user.is_authenticated:
-        orderUpdateForm = OrderUpdateForm(request.form)
-        if request.method == 'POST' and orderUpdateForm.validate():
-            orderDict = {}
-            db = shelve.open('Orders.db', 'w') #change if name of db isnt Orders.db
-            orderDict = db['Orders']
-            order = orderDict.get(id)
-            if orderUpdateForm.addr.data.isalnum():
-                order.set_orderStatus(orderUpdateForm.addr.data)
-            if orderUpdateForm.status.data.isalnum():
-                order.set_orderStatus(orderUpdateForm.status.data)
-            db['Orders'] = orderDict
-            db.close()
-            return redirect(url_for('staffOrders'))
-
-        else:
-            userDict = {}
-            db = shelve.open('Orders.db', 'c')
-            orderDict = db['Orders']
-            db.close()
-            order = orderDict.get(id)
-            orderUpdateForm.addr.data = get_orderAddr()
-            orderUpdateForm.status.data = get_orderStatus()
+@app.route('/staff/update/<int:id>', methods=['GET','POST'])
+@login_required
+def staffUpdate(id):
+    orderUpdateForm = OrderUpdateForm(request.form)
+    try:
+        db = shelve.open('Orders.db', 'c') #change if name of db isnt Orders.db
+        orderDict = db['Orders']
+        order = orderDict.get(id)
+    except Exception as e:
+        print(e)
+    if request.method == 'POST' and orderUpdateForm.validate():
+        if orderUpdateForm.addr.data.isalnum():
+            order.set_orderAddr(orderUpdateForm.addr.data)
+        if orderUpdateForm.status.data.isalnum():
+            order.set_orderStatus(orderUpdateForm.status.data)
+        if orderUpdateForm.desc.data.isalnum():
+            order.set_orderDesc(orderUpdateForm.desc.data)
+        orderDict[id] = order
+        db['Orders'] = orderDict
+        return redirect(url_for('staffOrders'))
     else:
-        return redirect(url_for("index"))
-    return render_template('updateOrder.html', form=orderUpdateForm, orderiD = order.get_orderId())
+        orderUpdateForm.addr.data = order.get_orderAddr()
+        orderUpdateForm.status.data = order.get_orderStatus()
+        orderUpdateForm.desc.data = order.get_orderDesc()
+    return render_template('updateOrder.html', form=orderUpdateForm, order=order)
 
 
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
@@ -1041,7 +1087,7 @@ def reportsCreate():
                 today = datetime.today()
 
             except:
-                flash("The date %s is a invalid date/format. Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate, category="error")
                 return redirect(url_for("reportsCreate"))
 
 
@@ -1090,7 +1136,7 @@ def reportsCreate():
                         db["Daily"] = reportDict
                     else:
                         db["Daily"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
                     flash("The date %s have to be elapsed to be created." % strCorrectedDate)
@@ -1113,10 +1159,10 @@ def reportsCreate():
                         db["Monthly"] = reportDict
                     else:
                         db["Monthly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
+                    flash("The month %s have to be elapsed to be created." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
 
             else:
@@ -1136,16 +1182,16 @@ def reportsCreate():
                         db["Yearly"] = reportDict
                     else:
                         db["Yearly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The year %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
+                    flash("The year %s have to be elapsed to be created." % strCorrectedDate, category="error")
                     return redirect(url_for("reportsCreate"))
 
             stepInOrdersDB.close()
             db.close()
 
-            flash("The report for %s has be generated successfully" % strCorrectedDate)
+            flash("The report for %s has be generated successfully" % strCorrectedDate, category="success")
             if createReportForm.type.data == "D":
                 return redirect(url_for("reportsDaily"))
             elif createReportForm.type.data == "M":

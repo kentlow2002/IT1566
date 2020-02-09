@@ -9,16 +9,6 @@
 	         	<h4 class="text-center">Sign in to X Store</h4>
 	        </div>
 	      </div>
-				{% with messages = get_flashed_messages() %}
-	        {% if messages %}
-	          {% for message in messages %}
-	          <div class="alert alert-danger alert-dismissible fade show">
-	            <button type="button" class="close" data-dismiss="alert">&times;</button>
-	            {{ message }}
-	          </div>
-	          {% endfor %}
-	        {% endif %}
-	      {% endwith %}
 			<div class="row justify-content-center">
 				<div class="col-sm-5">
 					<form id="login" class="form" method="POST">
