@@ -5,8 +5,10 @@
 		{% include "includes/_navbarBuyer.html" %}
 	{% elif usertype == "Seller" %}
 		{% include "includes/_navbarSeller.html" %}
-	{% else %}
+	{% elif usertype == "Staff" %}
 		{% include "includes/_navbarStaff.html" %}
+	{% else %}
+		{% include "includes/_navbarIndex.html" %}
 	{% endif %}
 {% endblock %}
 {% block content %}
