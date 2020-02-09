@@ -376,7 +376,7 @@ def buyerProducts():
     except Exception as e:
         print(e)
 
-    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm)
+    return render_template('buyerProduct.html',  productsList=productsList, searchForm=productsSearch, addForm=addProductForm, usertype = current_user.getType())
 
 
 
@@ -440,7 +440,7 @@ def buyerCheckout():
     totalPrice = 0
     checkoutForm = CheckoutForm(request.form)
     try:
-        db = shelve.open('products.db','r')
+        db = shelve.open('products.db','c')
         productsDict = db['products']
         cart = eval(request.cookies.get('cart'))
         userdb = shelve.open('Users.db','r')
@@ -463,6 +463,10 @@ def buyerCheckout():
             ordersCount = ordersdb['count']
         except Exception as e:
             print(e)
+        for i in cart:
+            available = productsDict[i].get_productQuantity()
+            productsDict[i].set_productQuantity(available-cart.get(i))
+        db['products'] = productsDict
         ordersCount += 1
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
@@ -473,7 +477,7 @@ def buyerCheckout():
         msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
         mail.send(msg)
         cart = {}
-        resp = make_response(redirect(url_for('buyerIndex')))
+        resp = make_response(redirect(url_for('buyerThanks')))
         resp.set_cookie('cart',str(cart))
         return resp
 

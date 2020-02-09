@@ -1,15 +1,8 @@
 import User as u
+import Product as p
 import shelve
 
 
-db = shelve.open('Users.db','r')
-usersDict = db['Users']
-userEmail = 'test@alpha.com.sg'
-
-for i in usersDict:
-    print(usersDict[i].getEmail())
-    if usersDict[i].getEmail() == userEmail:
-        print('yes')
-        break
-    else:
-        print('no')
+db = shelve.open('Orders.db','r')
+ordersCount = db['count']
+print(ordersCount)
