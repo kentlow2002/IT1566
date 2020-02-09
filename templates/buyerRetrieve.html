@@ -19,6 +19,7 @@
 						<th>Order Description</th>
 						<th>Status</th>
 						<th>Order Address</th>
+            <th>Cart Items</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -30,6 +31,11 @@
 							<td>{{ order.get_orderDesc() }}</td>
 							<td>{{ order.get_orderStatus() }}</td>
 							<td>{{ order.get_orderAddr() }}</td>
+              <td>
+                <form action="{{url_for('pastOrder', id=order.get_orderId())}}" method="POST">
+                  <button class="btn button btn-info"><strong><u>View</u></strong></button>
+                </form>
+              </td>
 						</tr>
 						{% endif %}
 					{% endfor %}
