@@ -50,7 +50,25 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        publicDict = {}
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            product = productsDict.get(key)
+            print("Main py : have products", key, product)
+            if product.get_productStatus() == "public":
+                publicDict[key] = product
+
+        for key in list(publicDict)[-4:]:
+            product = productsDict.get(key)
+            productsList.append([product, key])
+
+    except:
+        print("error")
+    return render_template('index.html', productsList = productsList)
 
 @app.route('/login', methods=["GET","POST"])
 def login():
@@ -89,7 +107,7 @@ def login():
                 print("checking")
                 return resp
             else:
-                flash("Invalid Username/Password! Please Try Again.")
+                flash("Invalid Username/Password! Please Try Again.", category="error")
                 return redirect(url_for("login"))
 
         except Exception as e:
@@ -271,9 +289,28 @@ def passReset(token):
 
 # buyer
 @app.route('/buyer/index')
-# @login_required
+@login_required
 def buyerIndex():
-    return render_template('buyerIndex.html')
+    try:
+        productsDict = {}
+        db = shelve.open('products.db', 'r')
+        productsDict = db['products']
+        publicDict = {}
+        productsList = []
+        for key in productsDict:   # loop through Dictionary
+            product = productsDict.get(key)
+            print("Main py : have products", key, product)
+            if product.get_productStatus() == "public":
+                publicDict[key] = product
+
+        for key in list(publicDict)[-4:]:
+            product = productsDict.get(key)
+            productsList.append([product, key])
+
+    except:
+        print("error")
+
+    return render_template('buyerIndex.html', productsList = productsList)
 
 @app.route('/buyer/product/<int:id>/',  methods=['GET','POST'])
 def buyerDetailedProducts(id):
@@ -302,7 +339,7 @@ def buyerDetailedProducts(id):
     return render_template('buyerDetailedProduct.html', product=product, addForm=addProductForm)
 
 @app.route('/buyer/product', methods=['GET','POST'])
-# @login_required
+@login_required
 def buyerProducts():
     productsDict = {}
     productsList = []
@@ -365,6 +402,7 @@ def buyerRetrieve():
     return render_template('buyerRetrieve.html', orderList=orderList, UserID = current_user.getID())
 
 @app.route('/buyer/cart', methods = ['GET','POST'])
+@login_required
 def cart():
     #if current_user.is_authenticated:
     productsDict = {}
@@ -1052,7 +1090,7 @@ def reportsCreate():
                 today = datetime.today()
 
             except:
-                flash("The date %s is a invalid date/format. Please try again." % formDate)
+                flash("The date %s is a invalid date/format. Please try again." % formDate, category="error")
                 return redirect(url_for("reportsCreate"))
 
 
@@ -1101,7 +1139,7 @@ def reportsCreate():
                         db["Daily"] = reportDict
                     else:
                         db["Daily"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
                     flash("The date %s have to be elapsed to be created." % strCorrectedDate)
@@ -1124,10 +1162,10 @@ def reportsCreate():
                         db["Monthly"] = reportDict
                     else:
                         db["Monthly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
+                    flash("The month %s have to be elapsed to be created." % strCorrectedDate)
                     return redirect(url_for("reportsCreate"))
 
             else:
@@ -1147,16 +1185,16 @@ def reportsCreate():
                         db["Yearly"] = reportDict
                     else:
                         db["Yearly"] = reportDict
-                        flash("The date %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate)
+                        flash("The year %s already exists in the database, please delete the old report if a new report is required" % strCorrectedDate, category="error")
                         return redirect(url_for("reportsCreate"))
                 else:
-                    flash("The date %s have to be elapsed to be created." % strCorrectedDate)
+                    flash("The year %s have to be elapsed to be created." % strCorrectedDate, category="error")
                     return redirect(url_for("reportsCreate"))
 
             stepInOrdersDB.close()
             db.close()
 
-            flash("The report for %s has be generated successfully" % strCorrectedDate)
+            flash("The report for %s has be generated successfully" % strCorrectedDate, category="success")
             if createReportForm.type.data == "D":
                 return redirect(url_for("reportsDaily"))
             elif createReportForm.type.data == "M":

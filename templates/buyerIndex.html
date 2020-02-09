@@ -6,49 +6,30 @@
 {% block content %}
     <div class="container-fluid content">
       <div id="popular">
-        <div class="row justify-content-center">
-          <div class="col-sm-12">
-            <h4>Popular Products</h4>
+          <div class="row justify-content-center">
+            <div class="col-sm-12">
+              <h4>Newest Products</h4>
+            </div>
           </div>
-        </div>
-
-        <div  id="popular" class="row justify-content-center">
-          <div class="col-sm-3">
-            <a href="/buyer/product"><img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style=""></a>
-            <p class="text-center">Oculus Rift</p>
+          <div  id="newest" class="row justify-content-center">
+            {% for product in productsList %}
+              <div class="col-sm-3">
+                <div class="img-container text-center">
+                  <a href="/buyer/product/{{ product[1] }}">
+                    <img class="" style="border: 1px solid black; height: 200px; width: 200px; margin: auto;" src= "{{ product[0].get_productPicture() }}" alt="">
+                  </a>
+                  <p>{{ product[0].get_productName() }}</p>
+                </div>
+              </div>
+            {% endfor %}
           </div>
-          <div class="col-sm-3">
-            <img class="img-fluid" src="{{ url_for('static',filename='assets/galaxy fold black.jpg') }}" style="">
-            <p class="text-center">Samsung Galaxy Fold</p>
-          </div>
-          <div class="col-sm-3">
-            <img class="img-fluid" src="{{ url_for('static',filename='assets/ps4pro.jpg') }}" style="">
-            <p class="text-center">PS4 Pro</p>
-          </div>
-          <div class="col-sm-3">
-            <a href="/buyer/product"><img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style=""></a>
-            <p class="text-center">Oculus Rift</p>
-          </div>
-        </div>
-      </div>
-
-      <br>
-      <hr>
-      <br>
-
-      <div id="promotions">
-        <div class="row justify-content-center">
-          <div class="col-sm-12">
-            <h4 style="margin-top:15px;">Promotions</h4>
-          </div>
-        </div>
-
-        <div  id="promotions" class="row justify-content-center">
-          <div class="col-sm-3">
-            <a href="/buyer/product"><img class="img-fluid" src="{{ url_for('static',filename='assets/oculus.jpeg') }}" style=""></a>
-            <p class="text-center">50% off for Oculus Rift!</p>
-          </div>
-        </div>
+          {% if not productsList %}
+            <div class="row justify-content-center">
+              <div class="col-sm-6">
+                <p class="text-center">There are currently no products being sold.</p>
+              </div>
+            </div>
+          {% endif %}
       </div>
     </div>
 {% endblock %}
