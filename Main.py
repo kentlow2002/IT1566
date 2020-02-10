@@ -534,51 +534,59 @@ def buyerThanks():
 @app.route('/seller/index')
 @login_required
 def sellerIndex():
-    productsDict = {}
+    if current_user.is_authenticated and current_user.getType() == "Seller":
+        productsDict = {}
+        try:
+            db = shelve.open('products.db', 'c')
+            productsDict = db['products']
+            productsList = []
+            hiddenList = []
+            print(current_user.getID())
+            for key in productsDict:   # loop through Dictionary
+                product = productsDict.get(key)
+                print(product.get_productName())
+                print(product.get_userID())
+                userID = int(current_user.getID())
+                if userID == product.get_userID():
+                    if product.get_productStatus() == "public":
+                        productsList.append(product)
+                    else:
+                        hiddenList.append(product)
+                        db.close()
+        except:
+            hiddenList = []
+            productsList = []
+        return render_template('sellerIndex.html', productsList=productsList, count=len(productsList), hiddenList=hiddenList)
+    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+        return redirect(url_for("buyerIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Staff":
+        return redirect(url_for("reportsIndex"))
+    else:
+        return redirect(url_for("index"))
 
-    try:
-        db = shelve.open('products.db', 'c')
-        productsDict = db['products']
-        productsList = []
-        hiddenList = []
-        print(current_user.getID())
-        for key in productsDict:   # loop through Dictionary
-            product = productsDict.get(key)
-            print(product.get_productName())
-            print(product.get_userID())
-            userID = int(current_user.getID())
-            if userID == product.get_userID():
-                if product.get_productStatus() == "public":
-                    productsList.append(product)
-                else:
-                    hiddenList.append(product)
-        db.close()
-    except:
-        hiddenList = []
-        productsList = []
-    return render_template('sellerIndex.html', productsList=productsList, count=len(productsList), hiddenList=hiddenList)
 
 
 @app.route('/seller/listing', methods=['GET', 'POST'])
 @login_required
 def sellerListProduct():
-    createProductForm = CreateProductForm(request.form)
-    if request.method == 'POST' and createProductForm.validate():
-        print("test for validate")
-        productsDict = {}
-        db = shelve.open('products.db', 'c')
+    if current_user.is_authenticated and current_user.getType() == "Seller":
+        createProductForm = CreateProductForm(request.form)
+        if request.method == 'POST' and createProductForm.validate():
+            print("test for validate")
+            productsDict = {}
+            db = shelve.open('products.db', 'c')
 
-        try:
-            productsDict = db['products']
-            p.Product.countId = db['ProductCountId']
+            try:
+                productsDict = db['products']
+                p.Product.countId = db['ProductCountId']
 
-        except:
-            print("Error in retrieving Users form storage.db")
+            except:
+                print("Error in retrieving Users form storage.db")
 
 
-        # create an instance of class User
-        # send data from the form to class initializer
-        if request.files:
+                # create an instance of class User
+                # send data from the form to class initializer
+                if request.files:
                     productPicture = request.files[createProductForm.productPicture.name]
 
                     # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
@@ -589,95 +597,113 @@ def sellerListProduct():
                     # this shows the path where it gets saved to
                     print(os.path.join("static/assets", productPicture.filename))
 
-        # this saves it to the object
+                    # this saves it to the object
                     filepath = os.path.join("../../../static/assets", productPicture.filename)
 
-        userID = int(current_user.getID())
-        print("Main.py ln 258")
-        print(userID)
-        product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
-        print(userID)
+                    userID = int(current_user.getID())
+                    print("Main.py ln 258")
+                    print(userID)
+                    product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
+                    print(userID)
 
-        # Save the User instance in the usersDict, using userID as the key
-        productsDict[product.get_productId()] = product
-        db['products'] = productsDict
+                    # Save the User instance in the usersDict, using userID as the key
+                    productsDict[product.get_productId()] = product
+                    db['products'] = productsDict
 
-        # Save the countID to shelve/persistence
+                    # Save the countID to shelve/persistence
 
-        db['ProductCountId'] = p.Product.countId
-        print(product.get_productName(), "was stored in shelve successfully with Product ID =", product.get_productId())
+                    db['ProductCountId'] = p.Product.countId
+                    print(product.get_productName(), "was stored in shelve successfully with Product ID =", product.get_productId())
 
-        db.close()
+                    db.close()
 
-        return redirect(url_for('sellerIndex'))
+                    return redirect(url_for('sellerIndex'))
 
-    return render_template('sellerListProduct.html', form=createProductForm)
+        return render_template('sellerListProduct.html', form=createProductForm)
+
+    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+        return redirect(url_for("buyerIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Staff":
+        return redirect(url_for("reportsIndex"))
+    else:
+        return redirect(url_for("index"))
+
 
 
 @app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def updateProduct(id):
-    updateProductForm = CreateProductForm(request.form)
-    #   POST: when click on submit button to send the data to server
+    productDict = {}
+    db = shelve.open('products.db', 'w')
+    productDict = db['products']
+    product = productDict.get(id)
+    if current_user.is_authenticated and current_user.getID() == product.get_userID():
+
+        updateProductForm = CreateProductForm(request.form)
+        #   POST: when click on submit button to send the data to server
 
 
-    if request.method == 'POST' and updateProductForm.validate():
-        productDict = {}
-        db = shelve.open('products.db', 'w')
-        productDict = db['products']
+        if request.method == 'POST' and updateProductForm.validate():
 
-        product = productDict.get(id)
-        product.set_productName(updateProductForm.productName.data)
-        product.set_productCondition(updateProductForm.productCondition.data)
-        product.set_productPrice(updateProductForm.productPrice.data)
-        product.set_productQuantity(updateProductForm.productQuantity.data)
-        product.set_productDesc(updateProductForm.productDescription.data)
-        if request.files:
-            try:
-                productPicture = request.files[updateProductForm.productPicture.name]
 
-                # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
-                print(productPicture)
+            product.set_productName(updateProductForm.productName.data)
+            product.set_productCondition(updateProductForm.productCondition.data)
+            product.set_productPrice(updateProductForm.productPrice.data)
+            product.set_productQuantity(updateProductForm.productQuantity.data)
+            product.set_productDesc(updateProductForm.productDescription.data)
+            if request.files:
+                try:
+                    productPicture = request.files[updateProductForm.productPicture.name]
 
-                productPicture.save(os.path.join("static/assets", productPicture.filename))
+                    # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
+                    print(productPicture)
 
-                # this shows the path where it gets saved to
-                print(os.path.join("static/assets", productPicture.filename))
+                    productPicture.save(os.path.join("static/assets", productPicture.filename))
 
-                # this saves it to the object
-                filepath = os.path.join("../../../static/assets", productPicture.filename)
-                product.set_productPicture(filepath)
-            except:
-                product.set_productPicture(product.get_productPicture())
+                    # this shows the path where it gets saved to
+                    print(os.path.join("static/assets", productPicture.filename))
 
-        db['products'] = productDict  # write to shelve
-        db.close()
+                    # this saves it to the object
+                    filepath = os.path.join("../../../static/assets", productPicture.filename)
+                    product.set_productPicture(filepath)
+                except:
+                    product.set_productPicture(product.get_productPicture())
 
-        return redirect(url_for('sellerIndex'))
+            db['products'] = productDict  # write to shelve
+            db.close()
 
-    #   GET: when the page loads
+            return redirect(url_for('sellerIndex'))
+
+        #   GET: when the page loads
+        else:
+            # these 4 lines are exactly the same as retrieve data
+            productsDict = {}
+            db = shelve.open('products.db', 'r')
+            productsDict = db['products']
+            db.close()
+
+            #   find the data from Data Dictionary
+            product = productsDict.get(id)
+
+
+
+            #   display the data in the field
+            updateProductForm.productName.data = product.get_productName()
+            updateProductForm.productCondition.data = product.get_productCondition()
+            updateProductForm.productPrice.data = product.get_productPrice()
+            updateProductForm.productQuantity.data = product.get_productQuantity()
+            updateProductForm.productDescription.data = product.get_productDescription()
+
+
+            return render_template('updateProduct.html', form=updateProductForm, product=product)
+    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+        return redirect(url_for("buyerIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Staff":
+        return redirect(url_for("reportsIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Seller":
+        return redirect(url_for("sellerIndex"))
     else:
-        # these 4 lines are exactly the same as retrieve data
-        productsDict = {}
-        db = shelve.open('products.db', 'r')
-        productsDict = db['products']
-        db.close()
-
-        #   find the data from Data Dictionary
-        product = productsDict.get(id)
-
-
-
-        #   display the data in the field
-        updateProductForm.productName.data = product.get_productName()
-        updateProductForm.productCondition.data = product.get_productCondition()
-        updateProductForm.productPrice.data = product.get_productPrice()
-        updateProductForm.productQuantity.data = product.get_productQuantity()
-        updateProductForm.productDescription.data = product.get_productDescription()
-
-
-        return render_template('updateProduct.html', form=updateProductForm, product=product)
-
+        return redirect(url_for("index"))
 
 
 
@@ -685,36 +711,57 @@ def updateProduct(id):
 @login_required
 def hideProduct(id):
     productsDict = {}
-    # retrieve from persistence
     db = shelve.open('products.db', 'w')
     productsDict = db['products']
     product = productsDict.get(id)
-    product.set_productStatusHidden()
 
-    db['products'] = productsDict
+    if current_user.is_authenticated and current_user.getID() == product.get_userID():
+        # retrieve from persistence
+        product.set_productStatusHidden()
 
-    db.close()
-    print("product: ", productsDict)
+        db['products'] = productsDict
 
-    return redirect(url_for('sellerIndex'))
+        db.close()
+        print("product: ", productsDict)
+
+        return redirect(url_for('sellerIndex'))
+
+    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+        return redirect(url_for("buyerIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Staff":
+        return redirect(url_for("reportsIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Seller":
+        return redirect(url_for("sellerIndex"))
+    else:
+        return redirect(url_for("index"))
+
 
 @app.route('/seller/showProduct/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def showProduct(id):
-    print("hi")
-
     productsDict = {}
-    # retrieve from persistence
     db = shelve.open('products.db', 'w')
     productsDict = db['products']
     product = productsDict.get(id)
-    product.set_productStatusPublic()
+    if current_user.is_authenticated and current_user.getID() == product.get_userID():
 
-    db['products'] = productsDict
+        product.set_productStatusPublic()
 
-    db.close()
-    print("product: ", productsDict)
-    return redirect(url_for('sellerIndex'))
+        db['products'] = productsDict
+
+        db.close()
+        print("product: ", productsDict)
+        return redirect(url_for('sellerIndex'))
+
+    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+        return redirect(url_for("buyerIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Staff":
+        return redirect(url_for("reportsIndex"))
+    elif current_user.is_authenticated and current_user.getType() == "Seller":
+        return redirect(url_for("sellerIndex"))
+    else:
+        return redirect(url_for("index"))
+
 
 
 # staff
