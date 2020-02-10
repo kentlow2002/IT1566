@@ -947,7 +947,7 @@ def faq():
         faqList = []
     finally:
         db.close()
-            print(current_user.getID())
+        print(current_user.getID())
     return render_template('FAQs.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
 @app.route('/faqType') #R faq by user type
 @login_required
@@ -973,19 +973,16 @@ def ask():
     createFaqForm = FaqForm(request.form)
     if request.method == 'POST':
         faqDict = {}
+        count = 0
         try:
             db = shelve.open('faq.db', 'c')
             faqDict = db["ticket"]
-            count = 0
             while True:
                 if faqDict[count] == "null":
                      break
                 count += 1
         except KeyError:
-            try:
-                count = count
-            except UnboundLocalError:
-                count = 0
+            pass
         except:
             print("Error in retrieving tickets from faq.db.")
             count = 0
@@ -1011,19 +1008,16 @@ def askAll():
         createFaqForm = FaqForm(request.form)
         if request.method == 'POST':
             faqDict = {}
+            count = 0
             try:
                 db = shelve.open('faq.db', 'c')
                 faqDict = db["ticket"]
-                count = 0
                 while True:
                     if faqDict[count] == "null":
                          break
                     count += 1
             except KeyError:
-                try:
-                    count = count
-                except UnboundLocalError:
-                    count = 0
+                pass
             except:
                 print("Error in retrieving tickets from faq.db.")
                 count = 0
