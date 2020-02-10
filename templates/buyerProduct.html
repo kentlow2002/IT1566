@@ -63,5 +63,13 @@
   </div>
 
   {% endfor %}
+              {% if not productsList %}
+            <div class="row justify-content-center">
+              <div class="col-sm-6">
+                <p class="text-center">There are currently no products being sold.</p>
+              </div>
+            </div>
+          {% endif %}
+
    </div>
 {% endblock %}
