@@ -888,12 +888,9 @@ def staffUpdate(id):
         except Exception as e:
             print(e)
         if request.method == 'POST' and orderUpdateForm.validate():
-            if orderUpdateForm.addr.data.isalnum():
-                order.set_orderAddr(orderUpdateForm.addr.data)
-            if orderUpdateForm.status.data.isalnum():
-                order.set_orderStatus(orderUpdateForm.status.data)
-            if orderUpdateForm.desc.data.isalnum():
-                order.set_orderDesc(orderUpdateForm.desc.data)
+            order.set_orderAddr(orderUpdateForm.addr.data)
+            order.set_orderStatus(orderUpdateForm.status.data)
+            order.set_orderDesc(orderUpdateForm.desc.data)
             orderDict[id] = order
             db['Orders'] = orderDict
             return redirect(url_for('staffOrders'))

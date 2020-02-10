@@ -34,8 +34,9 @@
                 <td>{{ order.get_orderDesc() }}</td>
                 <td>{{ order.get_orderStatus() }}</td>
                 <td>{{ order.get_orderAddr() }}</td>
-
-                <td><a href="/staff/update/{{ order.get_orderId() }}"><button class="btn" style='background-color:blue'>Update</button></a></td>
+                {% if order.get_orderStatus() != "Delivered" and order.get_orderStatus() != "Cancelled" %}
+                  <td><a href="/staff/update/{{ order.get_orderId() }}"><button class="btn btn-warning">Update</button></a></td>
+                {% endif %}
               </tr>
               {% endfor %}
             </tbody>
