@@ -139,6 +139,9 @@ def signUp():
         except:
             print("Error in retrieving Users from storage.db.")
         for i in usersDict:
+            if usersDict[i].getUsername() == createUserForm.username.data:
+                flash('This username has been used! Please use a different username.', category='error')
+                return render_template('signup.html', form=createUserForm)
             if usersDict[i].getEmail() == createUserForm.email.data:
                 flash('This email has been used before! Please use a different email.', category='error')
                 return render_template('signup.html', form=createUserForm)
@@ -513,8 +516,9 @@ def buyerCheckout():
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
         emailBody = ''
+        emailBody += '<style>table {border: 1px solid black; border-collapse:collapse;} th, td {border: 1px solid black;}</style>'
         emailBody += '<h1><b>X Store</b></h1><br>This is what you purchased on ' + str(datetime.now().date()) + '.<br>'
-        emailBody += 'Transaction ID: ' + ordersCount + '<br>'
+        emailBody += 'Transaction ID: ' + str(ordersCount) + '<br>'
         emailBody += '<table>'
         emailBody += '<tr><th>Product Name</th><th>Quantity</th><th>Price per pc</th><th>Subtotal</th></tr>'
         for i in cart:
@@ -522,7 +526,8 @@ def buyerCheckout():
             emailBody += '<td>'+str(productsDict[i].get_productName())+'</td><td>'+str(cart[i])+'</td><td>$'+str(productsDict[i].get_productPrice())+'</td><td>'+str(cart[i]*productsDict[i].get_productPrice())+'<td>'
             emailBody += '</tr>'
         emailBody += '</table>'
-        msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
+        emailBody += '<br><b>Total Amount Paid: ${:.2f}</b>'.format(totalPrice)
+        msg = Message("You have ordered products from X Store",recipients=[userEmail],html=emailBody)
         mail.send(msg)
         cart = {}
         resp = make_response(redirect(url_for('buyerThanks')))
