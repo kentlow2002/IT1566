@@ -19,7 +19,9 @@
     <div id="faqs">
       <table class="table table-striped justify-content-centre text-center">
 				<thead>
-					<th>Type</th>
+					{% if usertype == "Staff"%}
+						<th>Type</th>
+					{% endif %}
 					<th>Question</th>
 					<th>Answer</th>
 				</thead>
@@ -28,7 +30,6 @@
 					{% if usertype != "Staff"%}
 						{% if usertype == faq.getType() %}
 		          <tr>
-								<td>{{ faq.getType() }}</td>
 		            <td>{{ faq.getQn() }}</td>
 								<td>{{ faq.getAns() }}</td>
 							</tr>
