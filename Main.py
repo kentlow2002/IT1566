@@ -516,8 +516,15 @@ def buyerCheckout():
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
         ordersdb['Orders'] = ordersDict
         emailBody = ''
+        emailBody += '<h1><b>X Store</b></h1><br>This is what you purchased on ' + str(datetime.now().date()) + '.<br>'
+        emailBody += 'Transaction ID: ' + ordersCount + '<br>'
+        emailBody += '<table>'
+        emailBody += '<tr><th>Product Name</th><th>Quantity</th><th>Price per pc</th><th>Subtotal</th></tr>'
         for i in cart:
-            emailBody += '\n '+str(productsDict[i].get_productName())+' '+str(cart[i])+' '+str(cart[i]*productsDict[i].get_productPrice())
+            emailBody += '<tr>'
+            emailBody += '<td>'+str(productsDict[i].get_productName())+'</td><td>'+str(cart[i])+'</td><td>$'+str(productsDict[i].get_productPrice())+'</td><td>'+str(cart[i]*productsDict[i].get_productPrice())+'<td>'
+            emailBody += '</tr>'
+        emailBody += '</table>'
         msg = Message("You have ordered products from X Store",recipients=[userEmail],body=emailBody)
         mail.send(msg)
         cart = {}
