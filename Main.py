@@ -733,7 +733,7 @@ def showProduct(id):
 @app.route('/staff/create', methods=['GET', 'POST'])
 @login_required
 def staffCreate():
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         createUserForm = CreateUserForm(request.form)
         if request.method == 'POST' and createUserForm.validate():
             usersDict = {}
@@ -755,9 +755,9 @@ def staffCreate():
             usersDict[user.getID()] = user
             db['Users'] = usersDict
             return redirect(url_for("staffAccounts"))
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -766,16 +766,16 @@ def staffCreate():
 @app.route('/deleteUser/<int:id>', methods=['POST'])
 @login_required
 def deleteUser(id):
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         usersDict = {}
         db = shelve.open('Users.db', 'w')
         usersDict = db['Users']
         usersDict.pop(id)
         db['Users'] = usersDict
         db.close()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -784,7 +784,7 @@ def deleteUser(id):
 @app.route('/staff/orders')
 @login_required
 def staffOrders():
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         db = shelve.open("Orders.db", "c")
         try:
             orderDict = db['Orders']
@@ -797,9 +797,9 @@ def staffOrders():
             orderList = []
         finally:
             db.close()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -808,7 +808,7 @@ def staffOrders():
 @app.route('/buyer/orders')
 @login_required
 def buyerOrders():
-    if current_user.is_authenticated and current_user.getType() == "Buyer":
+    if current_user.getType() == "Buyer":
         db = shelve.open("Orders.db", "c")
         try:
             orderDict = db['Orders']
@@ -821,9 +821,9 @@ def buyerOrders():
             orderList = []
         finally:
             db.close()
-    elif current_user.is_authenticated and current_user.getType() == "Staff":
+    elif current_user.getType() == "Staff":
         return redirect(url_for("redirectStaff"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -832,7 +832,7 @@ def buyerOrders():
 @app.route('/staff/update/<int:id>', methods=['GET','POST'])
 @login_required
 def staffUpdate(id):
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         orderUpdateForm = OrderUpdateForm(request.form)
         try:
             db = shelve.open('Orders.db', 'c') #change if name of db isnt Orders.db
@@ -854,9 +854,9 @@ def staffUpdate(id):
             orderUpdateForm.addr.data = order.get_orderAddr()
             orderUpdateForm.status.data = order.get_orderStatus()
             orderUpdateForm.desc.data = order.get_orderDesc()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -866,7 +866,7 @@ def staffUpdate(id):
 @app.route('/staffEdit/<int:id>/', methods=['GET', 'POST'])
 @login_required
 def updateUser(id):
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         updateStaffForm = StaffUpdateForm(request.form)
         if request.method == 'POST' and updateStaffForm.validate():
             userDict = {}
@@ -889,9 +889,9 @@ def updateUser(id):
             user = userDict.get(id)
             updateStaffForm.username.data = user.getUsername()
             updateStaffForm.email.data = user.getEmail()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -900,7 +900,7 @@ def updateUser(id):
 @app.route('/staff/accounts')
 @login_required
 def staffAccounts():
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         db = shelve.open("Users.db", "c")
         try:
             userDict = db["Users"]
@@ -913,9 +913,9 @@ def staffAccounts():
             userList = []
         finally:
             db.close()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -947,84 +947,70 @@ def faqAll():
 @app.route('/faq') #R faq contact us
 @login_required
 def faq():
-    if current_user.is_authenticated:
-        db = shelve.open("faq.db", "c")
-        try:
-            faqDict = db["ticket"]
-            faqList = []
-            for key in faqDict:
-                faqs = faqDict.get(key)
-                faqList.append(faqs)
-
-        except:
-            print("Error in retrieving faq storage.")
-            faqList = []
-        finally:
-            db.close()
-            print(current_user.getID())
-    else:
-        return redirect(url_for("index"))
+    db = shelve.open("faq.db", "c")
+    try:
+        faqDict = db["ticket"]
+        faqList = []
+        for key in faqDict:
+            faqs = faqDict.get(key)
+            faqList.append(faqs)
+    except:
+        print("Error in retrieving faq storage.")
+        faqList = []
+    finally:
+        db.close()
+        print(current_user.getID())
     return render_template('FAQs.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
 @app.route('/faqType') #R faq by user type
 @login_required
 def faqTypeS():
-    if current_user.is_authenticated:
-        db = shelve.open("faq.db", "c")
-        try:
-            faqDict = db["ticket"]
-            faqList = []
-            for key in faqDict:
-                faqs = faqDict.get(key)
-                faqList.append(faqs)
-
-        except:
-            print("Error in retrieving faq storage.")
-            faqList = []
-        finally:
-            db.close()
-            print(current_user.getID())
-    else:
-        return redirect(url_for("index"))
+    db = shelve.open("faq.db", "c")
+    try:
+        faqDict = db["ticket"]
+        faqList = []
+        for key in faqDict:
+            faqs = faqDict.get(key)
+            faqList.append(faqs)
+    except:
+        print("Error in retrieving faq storage.")
+        faqList = []
+    finally:
+        db.close()
+        print(current_user.getID())
     return render_template('FAQtype.html', faqList=faqList, usertype = current_user.getType(), UserID = current_user.getID())
 
 @app.route('/faq/ask', methods=['GET', 'POST'])
 @login_required
 def ask():
-    if current_user.is_authenticated:
-        createFaqForm = FaqForm(request.form)
-        if request.method == 'POST':
-            faqDict = {}
-            try:
-                db = shelve.open('faq.db', 'c')
-                faqDict = db["ticket"]
-                count = 0
-                while True:
-                    if faqDict[count] == "null":
-                         break
-                    count += 1
-            except KeyError:
-                try:
-                    count = count
-                except UnboundLocalError:
-                    count = 0
-            except:
-                print("Error in retrieving tickets from faq.db.")
-                count = 0
-            tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType(), count, current_user.getID())
-            faqDict[tix.getTID()] = tix
-            db["ticket"] = faqDict
-            # Test codes
+    createFaqForm = FaqForm(request.form)
+    if request.method == 'POST':
+        faqDict = {}
+        count = 0
+        try:
+            db = shelve.open('faq.db', 'c')
             faqDict = db["ticket"]
-            tix = faqDict[tix.getTID()]
-            print(tix.getTID(), "was stored in shelve successfully ")
-            db.close()
-            print(faqDict)
-            if current_user.getType() != "Staff":
-                return redirect(url_for('faq'))
-            else:
-                return redirect(url_for("faqstaff"))
-    else:
-        return redirect(url_for("index"))
+            while True:
+                if faqDict[count] == "null":
+                     break
+                count += 1
+        except KeyError:
+            pass
+        except:
+            print("Error in retrieving tickets from faq.db.")
+            count = 0
+        tix = f.Ticket(createFaqForm.question.data, createFaqForm.answer.data, current_user.getType(), count, current_user.getID())
+        faqDict[tix.getTID()] = tix
+        db["ticket"] = faqDict
+        # Test codes
+        faqDict = db["ticket"]
+        tix = faqDict[tix.getTID()]
+        print(tix.getTID(), "was stored in shelve successfully ")
+        db.close()
+        print(faqDict)
+        if current_user.getType() != "Staff":
+            return redirect(url_for('faq'))
+        else:
+            return redirect(url_for("faqstaff"))
     return render_template('FAQask.html', form= createFaqForm, usertype = current_user.getType())
 @app.route('/faq/contact us', methods=['GET', 'POST'])
 def askAll():
@@ -1034,19 +1020,16 @@ def askAll():
         createFaqForm = FaqForm(request.form)
         if request.method == 'POST':
             faqDict = {}
+            count = 0
             try:
                 db = shelve.open('faq.db', 'c')
                 faqDict = db["ticket"]
-                count = 0
                 while True:
                     if faqDict[count] == "null":
                          break
                     count += 1
             except KeyError:
-                try:
-                    count = count
-                except UnboundLocalError:
-                    count = 0
+                pass
             except:
                 print("Error in retrieving tickets from faq.db.")
                 count = 0
@@ -1064,7 +1047,7 @@ def askAll():
 @app.route('/staff/faq') #R faq for staff
 @login_required
 def faqstaff():
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         faqList = ""
         try:
             db = shelve.open("faq.db", "c")
@@ -1077,9 +1060,9 @@ def faqstaff():
             print("error in retrieving faqs")
         finally:
             db.close()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
@@ -1089,7 +1072,7 @@ def faqstaff():
 @login_required
 def ans(Tid):
     updatefaqForm = FaqForm(request.form)
-    if current_user.is_authenticated and current_user.getType() == "Staff":
+    if current_user.getType() == "Staff":
         if request.method == 'POST':
             #try:
             db = shelve.open("faq.db", "w")
@@ -1114,9 +1097,9 @@ def ans(Tid):
                 print("Error in retrieving faq storage. place 2")
             finally:
                 db.close()
-    elif current_user.is_authenticated and current_user.getType() == "Buyer":
+    elif current_user.getType() == "Buyer":
         return redirect(url_for("buyerIndex"))
-    elif current_user.is_authenticated and current_user.getType() == "Seller":
+    elif current_user.getType() == "Seller":
         return redirect(url_for("sellerIndex"))
     else:
         return redirect(url_for("index"))
