@@ -598,38 +598,38 @@ def sellerListProduct():
 
                 # create an instance of class User
                 # send data from the form to class initializer
-                if request.files:
-                    productPicture = request.files[createProductForm.productPicture.name]
+            if request.files:
+                productPicture = request.files[createProductForm.productPicture.name]
 
-                    # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
-                    print(productPicture)
+                # if this print does not show in console, add enctype="multipart/form-data" to the form tag in the html code
+                print(productPicture)
 
-                    productPicture.save(os.path.join("static/assets", productPicture.filename))
+                productPicture.save(os.path.join("static/assets", productPicture.filename))
 
-                    # this shows the path where it gets saved to
-                    print(os.path.join("static/assets", productPicture.filename))
+                # this shows the path where it gets saved to
+                print(os.path.join("static/assets", productPicture.filename))
 
-                    # this saves it to the object
-                    filepath = os.path.join("../../../static/assets", productPicture.filename)
+                # this saves it to the object
+                filepath = os.path.join("../../../static/assets", productPicture.filename)
 
-                    userID = int(current_user.getID())
-                    print("Main.py ln 258")
-                    print(userID)
-                    product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
-                    print(userID)
+            userID = int(current_user.getID())
+            print("Main.py ln 258")
+            print(userID)
+            product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
+            print(userID)
 
-                    # Save the User instance in the usersDict, using userID as the key
-                    productsDict[product.get_productId()] = product
-                    db['products'] = productsDict
+            # Save the User instance in the usersDict, using userID as the key
+            productsDict[product.get_productId()] = product
+            db['products'] = productsDict
 
-                    # Save the countID to shelve/persistence
+            # Save the countID to shelve/persistence
 
-                    db['ProductCountId'] = p.Product.countId
-                    print(product.get_productName(), "was stored in shelve successfully with Product ID =", product.get_productId())
+            db['ProductCountId'] = p.Product.countId
+            print(product.get_productName(), "was stored in shelve successfully with Product ID =", product.get_productId())
 
-                    db.close()
+            db.close()
 
-                    return redirect(url_for('sellerIndex'))
+            return redirect(url_for('sellerIndex'))
 
         return render_template('sellerListProduct.html', form=createProductForm)
 
@@ -639,7 +639,6 @@ def sellerListProduct():
         return redirect(url_for("reportsIndex"))
     else:
         return redirect(url_for("index"))
-
 
 
 @app.route('/seller/updateProduct/<int:id>/', methods=['GET', 'POST'])
