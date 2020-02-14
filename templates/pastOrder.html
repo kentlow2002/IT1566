@@ -8,44 +8,28 @@
 
   <div class="container-fluid content">
     <br>
-    <div class="row">
-
-      <div class="product col-sm-9">
-        {% for product in productsList[0] %}
+        {% for i in range(productsList[0]|length) %}
         <div class="row">
           <div class="col-sm-3" style="margin: auto;">
-            <img class="img-fluid" style="border: 1px solid black; height: 200px; width: 200px;" src= "{{ product.get_productPicture() }}" alt="">
+            <img class="img-fluid" style="border: 1px solid black; height: 200px; width: 200px;" src= "{{ productsList[0][i].get_productPicture() }}" alt="">
           </div>
 
-          <div class="col-sm-7">
-            <h3><b>{{ product.get_productName() }}</b></h3>
-            <div class="row col-sm-12">
-              <p>Price: ${{ "%.2f" % product.get_productPrice() }}</p>
-            </div>
-            <div class="row col-sm-12">
-              {% if product.get_productCondition() == "N" %}
+          <div class="col-sm-3">
+            <h3><b>{{ productsList[0][i].get_productName() }}</b></h3>
+              <p>Price: ${{ "%.2f" % productsList[0][i].get_productPrice() }}</p>
+              {% if productsList[0][i].get_productCondition() == "N" %}
               <p>Product Condition: New</p>
-              {% elif product.get_productCondition() == "U" %}
+              {% elif productsList[0][i].get_productCondition() == "U" %}
               <p>Product Condition: Used</p>
               {% endif %}
             </div>
-            <div class="row col-sm-12">
-              <a href="/buyer/product/{{product.get_productId()}}/"><button class="btn button btn-info" type="button" name="View More">View More</button></a>
+            <div class="col-sm-3">
+              <a href="/buyer/product/{{productsList[0][i].get_productId()}}/"><button class="btn button btn-info" type="button" name="View More">View More</button></a>
             </div>
+          <div class="col-sm-3">
+            <p><span><b>Quantity:</b></span> {{ productsList[1][i] }}<p>
           </div>
         </div>
         {% endfor %}
       </div>
-
-      <div class="quantity col-sm-3">
-        {% for quantity in productsList[1] %}
-        <div class="row">
-          <div class="col-sm-12">
-            <p><span><b>Quantity:</b></span> {{ quantity }}<p>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
 {% endblock %}

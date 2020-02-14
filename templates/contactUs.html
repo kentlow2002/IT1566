@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %} Ask a Question {% endblock %}
+{% block navbar %}
+	{% include "includes/_navbarIndex.html" %}
+{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+	    <div class="container-fluid content">
+	      <div class="row justify-content-center">
+	        <div class="col-sm-12">
+	         	<h4 class="text-center">Ask a question</h4>
+	        </div>
+	      </div>
+
+				<div class="row justify-content-center">
+					<div class="col-sm-6">
+						<br>
+						<form method="POST" class="form">
+							<div class="form-group">
+								{{ render_field(form.question, class="form-control") }}
+							</div>
+							<button type="submit" class="btn btn-primary">Ask question</button>
+			      		</form>
+					</div>
+	      </div>
+			</div>
+{% endblock %}
