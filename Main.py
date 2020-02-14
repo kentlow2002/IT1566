@@ -584,7 +584,6 @@ def sellerListProduct():
     if current_user.is_authenticated and current_user.getType() == "Seller":
         createProductForm = CreateProductForm(request.form)
         if request.method == 'POST' and createProductForm.validate():
-            print("test for validate")
             productsDict = {}
             db = shelve.open('products.db', 'c')
 
@@ -613,7 +612,6 @@ def sellerListProduct():
                 filepath = os.path.join("../../../static/assets", productPicture.filename)
 
             userID = int(current_user.getID())
-            print("Main.py ln 258")
             print(userID)
             product = p.Product(createProductForm.productName.data, createProductForm.productCondition.data, createProductForm.productPrice.data, createProductForm.productQuantity.data, createProductForm.productDescription.data, filepath, userID)
             print(userID)
@@ -727,7 +725,6 @@ def hideProduct(id):
     product = productsDict.get(id)
 
     if current_user.is_authenticated and current_user.getID() == product.get_userID():
-        # retrieve from persistence
         product.set_productStatusHidden()
 
         db['products'] = productsDict
