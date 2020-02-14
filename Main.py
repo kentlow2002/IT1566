@@ -1286,9 +1286,14 @@ def reportsCreate():
 
 
 
-            order = {}
-            stepInOrdersDB = shelve.open("stepInOrdersDB.db", "r")
-            order = stepInOrdersDB["test"]
+            orderDict = {}
+            orders = shelve.open("Orders.db", "c")
+            try:
+                orderDict = orders['Orders']
+            except Exception as e:
+                print(e)
+            finally:
+                orders.close()
             if createReportForm.type.data == "D":
                 # only use this code if there is a no db for daily
                 """sdate = date(2018, 1, 1)   # start date
@@ -1304,27 +1309,28 @@ def reportsCreate():
                     print(i)
                     productCount = 0
                     productPrice = 0
-                    for userid in order:
-                        history = order[userid]
-                        for key in history:
-                            data = history[key]
-                            if dateValidator(data.get_orderDate()).strftime("%d/%m/%Y") == i:
-                                productCount += int(data.get_orderQuan())
-                                productPrice += float(data.get_orderPrice())
+                    for key in orderDict:
+                        order = orderDict[key]
+                        if dateValidator(order.get_orderDate()).strftime("%d/%m/%Y") == i:
+                            cart = order.get_orderDict()
+                            for productid in cart:
+                                productCount += int(cart[productid])
+                            productPrice += float(order.get_orderPrice())
                     report = r.Report(createReportForm.type.data, i, productCount, productPrice)
                     reportDict[i] = report
                     db["Daily"] = reportDict"""
+
                 if (today - timedelta(days=1)) > correctedDate:
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for userid in order:
-                            history = order[userid]
-                            for key in history:
-                                data = history[key]
-                                if dateValidator(data.get_orderDate()).strftime("%d/%m/%Y") == strCorrectedDate:
-                                    productCount += int(data.get_orderQuan())
-                                    productPrice += float(data.get_orderPrice())
+                        for key in orderDict:
+                            order = orderDict[key]
+                            if dateValidator(order.get_orderDate().strftime("%d/%m/%Y")).strftime("%d/%m/%Y") == strCorrectedDate:
+                                cart = order.get_orderDict()
+                                for productid in cart:
+                                    productCount += int(cart[productid])
+                                productPrice += float(order.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Daily"] = reportDict
@@ -1341,13 +1347,13 @@ def reportsCreate():
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for userid in order:
-                            history = order[userid]
-                            for key in history:
-                                data = history[key]
-                                if dateValidator(data.get_orderDate()).strftime("%m/%Y") == strCorrectedDate:
-                                    productCount += int(data.get_orderQuan())
-                                    productPrice += float(data.get_orderPrice())
+                        for key in orderDict:
+                            order = orderDict[key]
+                            if dateValidator(order.get_orderDate().strftime("%m/%Y")).strftime("%m/%Y") == strCorrectedDate:
+                                cart = order.get_orderDict()
+                                for productid in cart:
+                                    productCount += int(cart[productid])
+                                productPrice += float(order.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Monthly"] = reportDict
@@ -1364,13 +1370,13 @@ def reportsCreate():
                     if strCorrectedDate not in reportDict:
                         productCount = 0
                         productPrice = 0
-                        for userid in order:
-                            history = order[userid]
-                            for key in history:
-                                data = history[key]
-                                if dateValidator(data.get_orderDate()).strftime("%Y") == strCorrectedDate:
-                                    productCount += int(data.get_orderQuan())
-                                    productPrice += float(data.get_orderPrice())
+                        for key in orderDict:
+                            order = orderDict[key]
+                            if dateValidator(order.get_orderDate().strftime("%Y")).strftime("%Y") == strCorrectedDate:
+                                cart = order.get_orderDict()
+                                for productid in cart:
+                                    productCount += int(cart[productid])
+                                productPrice += float(order.get_orderPrice())
                         report = r.Report(createReportForm.type.data, strCorrectedDate, productCount, productPrice)
                         reportDict[strCorrectedDate] = report
                         db["Yearly"] = reportDict
@@ -1382,7 +1388,6 @@ def reportsCreate():
                     flash("The year %s have to be elapsed to be created." % strCorrectedDate, category="error")
                     return redirect(url_for("reportsCreate"))
 
-            stepInOrdersDB.close()
             db.close()
 
             flash("The report for %s has be generated successfully" % strCorrectedDate, category="success")
