@@ -510,7 +510,11 @@ def buyerCheckout():
             print(e)
         for i in cart:
             available = productsDict[i].get_productQuantity()
-            productsDict[i].set_productQuantity(available-cart.get(i))
+            if cart.get(i) <= available:
+                productsDict[i].set_productQuantity(available-cart.get(i))
+            else:
+                flash("You have ordered a larger quantity than was available for "+productsDict[i].get_productName(),'error')
+                return redirect(url_for('cart'))
         db['products'] = productsDict
         print(ordersCount)
         ordersDict[ordersCount] = o.Order(cart, ordersCount, datetime.now(), '', 'Pending', checkoutForm.shippingAddr.data, totalPrice, len(productsList[1]), userID)
