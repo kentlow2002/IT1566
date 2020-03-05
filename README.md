@@ -18,6 +18,7 @@ This repo is a end-of-year project for Y1S2. We were tasked with creating a comp
     <li>Bootstrap 4.x</li>
   </ul>
 </ul>
+
 ## Installation
 Either git clone or download the zip file
 
