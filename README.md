@@ -27,4 +27,4 @@ Wen Da -
 and myself
 
 ## License
-No license. Refer to Usage.
+No license. Refer to <a href="#usage">Usage</a>
