@@ -1,55 +1,30 @@
 # IT1566
-Grp project for app dev it1566
 
-CRUD structure:
+## Description
+This repo is a end-of-year project for Y1S2. We were tasked with creating a complete E-commerce website with frontend and backend capabilities.
 
-Users super class
-  userType
-  userName
-  userEmail
-  userPassword
-  Buyer
+## Dependencies
+Python 3.x
+Backend
+  flask
+  flask-mail
+  flask-login
+  hashlib
+CSS
+  Bootstrap 4.x
 
-    Create BuyerAcc
-    Retrieve Acc details
-    Update Acc details
-    Delete Acc
+## Installation
+Either git clone or download the zip file
 
-  Seller
-    productsList
-    Create SellerAcc
-    Retrieve Acc details
-    Update Acc details
-    Delete Acc details
+## Usage
+Please refrain from using our project for your own school projects, work projects, etc. By "refrain" I mean don't use it.
 
-  Staff
+## Credits
+Jonathan - 
+Matthias - 
+Sukran - 
+Wen Da - 
+and myself
 
-    Create StaffAcc
-    Retrieve StaffAcc
-    Update Acc details
-    Delete Acc
-
-Products class
-  productName
-  productPrice
-  productDescription
-
-  Create Products
-  Retrieve Products
-  Update Products details
-  Delete Products
-
-Orders class
-  orderId
-  orderDate (ddmmyyyy)
-  orderNote
-
-  Create Orders
-  Retrieve Orders
-  Update Orders
-  Delete Orders
-
-Reports class
-  Create Reports (daily,monthly,yearly)
-  Retrieve Reports (daily,monthly,yearly)
-  Delete Reports
+## License
+No license. Refer to Usage.
